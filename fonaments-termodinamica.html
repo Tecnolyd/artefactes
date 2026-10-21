@@ -1,0 +1,802 @@
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>[hidden]{display:none!important}body{margin:0}</style>
+<title>Fonaments de termodinàmica</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+<style>
+/* Layout: quadern d'enginyeria — barra lateral de mòduls + pàgina central; calent (Th) i fred (Tc) codificats en color a tot arreu */
+:root{
+  --bg:#f3f5f8; --surface:#ffffff; --fg:#18202b; --muted:#566273; --line:#d6dce4;
+  --accent:#23395d; --accent-soft:#e3e9f3;
+  --hot:#bf4329; --hot-soft:#f8e2db; --cold:#2a66a8; --cold-soft:#dde9f6;
+  --work:#a46f12; --work-soft:#f6ead0; --ok:#2c7a4b; --ok-soft:#dcefe3; --bad:#b0291c; --bad-soft:#f8dedb;
+  --f-display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --f-body:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#11151b; --surface:#191f27; --fg:#e5e9ef; --muted:#9aa5b4; --line:#2b3440;
+  --accent:#a9c1e6; --accent-soft:#1f2b3d;
+  --hot:#f08a6f; --hot-soft:#3b211b; --cold:#72a9e8; --cold-soft:#18283b;
+  --work:#e3b450; --work-soft:#382c13; --ok:#6cc690; --ok-soft:#17301f; --bad:#f08478; --bad-soft:#3a1c19;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#11151b; --surface:#191f27; --fg:#e5e9ef; --muted:#9aa5b4; --line:#2b3440;
+  --accent:#a9c1e6; --accent-soft:#1f2b3d;
+  --hot:#f08a6f; --hot-soft:#3b211b; --cold:#72a9e8; --cold-soft:#18283b;
+  --work:#e3b450; --work-soft:#382c13; --ok:#6cc690; --ok-soft:#17301f; --bad:#f08478; --bad-soft:#3a1c19;
+  color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:17px;line-height:1.6}
+body.classe{font-size:20px}
+body.classe .est{display:none!important}
+h1,h2,h3,.ui{font-family:var(--f-display)}
+h2{font-size:2.2em;line-height:1.05;margin:.1em 0 .35em;font-weight:700;text-wrap:balance;letter-spacing:.005em}
+h3{font-size:1.35em;margin:1.6em 0 .4em;font-weight:600;text-wrap:balance}
+p{margin:.6em 0}
+.mono,.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line);padding:10px 16px;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.brand{font-family:var(--f-display);font-weight:700;font-size:1.3rem;letter-spacing:.02em}
+.brand span{color:var(--hot)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.seg button{font-family:var(--f-display);font-size:1rem;font-weight:600;border:0;background:transparent;color:var(--muted);padding:6px 16px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--surface)}
+.shell{display:grid;grid-template-columns:230px minmax(0,1fr);gap:28px;max-width:1240px;margin:0 auto;padding-inline:16px;padding-block:24px 48px}
+.side{position:sticky;top:76px;align-self:start;display:flex;flex-direction:column;gap:2px}
+.side button{display:flex;gap:10px;align-items:baseline;text-align:left;font-family:var(--f-display);font-size:1.08rem;font-weight:500;color:var(--muted);background:none;border:0;border-radius:8px;padding:8px 10px;cursor:pointer}
+.side button b{font-family:var(--f-mono);font-size:.8rem;font-weight:500;color:var(--muted);min-width:1.4em}
+.side button:hover{background:var(--accent-soft);color:var(--fg)}
+.side button[aria-current="true"]{background:var(--accent-soft);color:var(--fg);font-weight:700}
+.side button[aria-current="true"] b{color:var(--hot)}
+main{min-width:0;max-width:900px}
+body.classe main{max-width:1180px}
+.eyebrow{font-family:var(--f-display);text-transform:uppercase;letter-spacing:.12em;font-size:.85rem;color:var(--hot);font-weight:600;margin:0}
+.lead{font-size:1.12em;color:var(--fg);max-width:65ch}
+.est p,.est li{max-width:68ch}
+.fig{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;margin:18px 0}
+.fig svg{display:block;width:100%;height:auto}
+.svgwrap{overflow-x:auto}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.controls{display:grid;gap:10px;margin-top:12px}
+.ctl{display:grid;grid-template-columns:minmax(120px,190px) minmax(0,1fr) 92px;gap:10px;align-items:center;font-family:var(--f-display);font-size:1.05rem}
+.ctl output{font-family:var(--f-mono);font-size:.95rem;text-align:right}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:14px}
+.stat{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg)}
+.stat .k{font-family:var(--f-display);font-size:.95rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.stat .v{font-family:var(--f-mono);font-size:1.35em;font-variant-numeric:tabular-nums}
+.stat.hot .v{color:var(--hot)} .stat.cold .v{color:var(--cold)} .stat.work .v{color:var(--work)}
+.pill{display:inline-block;font-family:var(--f-display);font-weight:600;font-size:.95rem;border-radius:999px;padding:3px 12px}
+.pill.ok{background:var(--ok-soft);color:var(--ok)} .pill.bad{background:var(--bad-soft);color:var(--bad)} .pill.info{background:var(--accent-soft);color:var(--accent)}
+.msg{margin-top:10px;min-height:1.6em}
+.key{border:1px solid var(--line);background:var(--accent-soft);border-radius:12px;padding:14px 18px;margin:24px 0;font-style:italic;font-size:1.06em}
+.key::before{content:"Frase resum";display:block;font-style:normal;font-family:var(--f-display);text-transform:uppercase;letter-spacing:.1em;font-size:.8rem;color:var(--accent);font-weight:700;margin-bottom:4px}
+.note{border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin:16px 0;background:var(--surface)}
+.note strong{font-family:var(--f-display);font-size:1.08em}
+.tbl{overflow-x:auto;margin:14px 0;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:.93em}
+th,td{padding:8px 12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{font-family:var(--f-display);font-size:1.02em;font-weight:600;background:var(--bg)}
+tr:last-child td{border-bottom:0}
+td.h{color:var(--hot);font-weight:600} td.c{color:var(--cold);font-weight:600}
+.eq{font-family:var(--f-mono);font-size:1.05em;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 14px;display:inline-block;margin:6px 0}
+.btn{font-family:var(--f-display);font-weight:600;font-size:1.02rem;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:8px;padding:7px 14px;cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--surface);border-color:var(--accent)}
+.btn[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent)}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.pager{display:flex;justify-content:space-between;gap:12px;margin-top:40px;padding-top:16px;border-top:1px solid var(--line);flex-wrap:wrap}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:12px 0}
+.card{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--surface)}
+.card h4{font-family:var(--f-display);font-size:1.15em;margin:0 0 4px}
+.tag{font-family:var(--f-display);font-weight:600;font-size:.9rem}
+.tag.ok{color:var(--ok)} .tag.bad{color:var(--bad)}
+.stepper{display:flex;flex-wrap:wrap;gap:6px}
+.stagecard{margin-top:14px}
+.stagecard dl{display:grid;grid-template-columns:minmax(110px,170px) minmax(0,1fr);gap:6px 14px;margin:8px 0}
+.stagecard dt{font-family:var(--f-display);font-weight:600;color:var(--muted)}
+.stagecard dd{margin:0}
+.bar{display:flex;height:44px;border-radius:8px;overflow:hidden;border:1px solid var(--line);margin-top:10px}
+.bar div{display:flex;align-items:center;justify-content:center;font-family:var(--f-mono);font-size:.85rem;white-space:nowrap;overflow:hidden;transition:flex-basis .25s}
+.seg-w{background:var(--work-soft);color:var(--work)} .seg-p{background:var(--bad-soft);color:var(--bad)} .seg-c{background:var(--cold-soft);color:var(--cold)}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:8px;font-family:var(--f-display);font-size:1rem}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.gauge{position:relative;height:28px;border-radius:999px;background:var(--bg);border:1px solid var(--line);margin:22px 0 30px}
+.gauge .fill{position:absolute;inset:0 auto 0 0;border-radius:999px;background:var(--work-soft);border-right:3px solid var(--work)}
+.gauge .mark{position:absolute;top:-8px;bottom:-8px;width:3px;background:var(--hot)}
+.gauge .mlabel{position:absolute;top:32px;transform:translateX(-50%);font-family:var(--f-display);font-size:.9rem;color:var(--hot);white-space:nowrap}
+.field{display:grid;gap:4px;font-family:var(--f-display);font-size:1rem}
+.field input{font-family:var(--f-mono);font-size:1rem;padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);width:100%}
+.err{color:var(--bad);font-size:13px;min-height:1.2em;font-family:var(--f-display)}
+.quiz{display:grid;gap:14px}
+.q{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:var(--surface)}
+.q h4{font-family:var(--f-display);font-size:1.2em;margin:0 0 8px;font-weight:600}
+.q label{display:flex;gap:10px;align-items:flex-start;padding:6px 8px;border-radius:8px;cursor:pointer}
+.q label:hover{background:var(--bg)}
+.q label.right{background:var(--ok-soft)} .q label.wrong{background:var(--bad-soft)}
+.q .fb{margin-top:8px}
+.reveal{margin-top:8px}
+/* svg */
+.sv-t{fill:var(--fg);font-family:var(--f-display);font-size:16px;font-weight:600}
+.sv-s{fill:var(--muted);font-family:var(--f-display);font-size:14px}
+.sv-m{fill:var(--fg);font-family:var(--f-mono);font-size:13px}
+.sv-hot{fill:var(--hot-soft);stroke:var(--hot);stroke-width:1.2}
+.sv-cold{fill:var(--cold-soft);stroke:var(--cold);stroke-width:1.2}
+.sv-neu{fill:var(--bg);stroke:var(--muted);stroke-width:1.2}
+.sv-pipe{fill:none;stroke:var(--muted);stroke-width:2}
+.sv-front{fill:none;stroke:var(--muted);stroke-width:1;stroke-dasharray:6 5}
+.fl-hot{fill:var(--hot)} .fl-cold{fill:var(--cold)} .fl-work{fill:var(--work)} .fl-neu{fill:var(--muted)}
+.tx-hot{fill:var(--hot)} .tx-cold{fill:var(--cold)} .tx-work{fill:var(--work)}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+@media (max-width:820px){
+  .shell{grid-template-columns:minmax(0,1fr);gap:12px;padding-block:12px 40px}
+  .side{position:static;flex-direction:row;overflow-x:auto;gap:4px;padding-bottom:6px}
+  .side button{white-space:nowrap}
+  .ctl{grid-template-columns:minmax(0,1fr) 84px}
+  .ctl input{grid-column:1 / -1;grid-row:2}
+  h2{font-size:1.9em}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+@media (max-width:1040px){.shell{grid-template-columns:minmax(0,1fr);gap:12px}.side{position:static;flex-direction:row;overflow-x:auto;gap:4px;padding-bottom:6px}.side button,.soon{white-space:nowrap}main{max-width:none}}
+body.embed{font-size:16px}
+body.embed.classe{font-size:19px}
+body.embed .top{padding:6px 12px}
+body.embed .shell{max-width:none;padding-block:12px 32px}
+body.embed main,body.embed.classe main{max-width:none}
+body.embed h2{font-size:1.9em}
+body.embed .lead,body.embed .est p,body.embed .est li{max-width:none}
+:fullscreen body,body:fullscreen{overflow:auto}
+body.embed .shell{grid-template-columns:minmax(0,1fr);gap:12px}body.embed .side{position:static;flex-direction:row;overflow-x:auto;gap:4px;padding-bottom:6px}body.embed .side button,body.embed .soon{white-space:nowrap}
+.ver{font-family:var(--f-mono);font-size:.75rem;color:var(--muted);margin-left:8px}
+</style>
+
+<header class="top">
+  <div class="brand">Fonaments de <span>termodinàmica</span></div>
+  <div class="seg" role="group" aria-label="Mode de visualització">
+    <button id="mode-estudi" type="button" aria-pressed="true">Mode estudi</button>
+    <button id="mode-classe" type="button" aria-pressed="false">Mode classe</button>
+  </div>
+</header>
+
+<div class="shell">
+<nav class="side" aria-label="Mòduls">
+  <button type="button" data-go="balanc"><b>1</b>Balanç d'energia</button>
+  <button type="button" data-go="carnot"><b>2</b>Segon principi i Carnot</button>
+  <button type="button" data-go="cicle"><b>3</b>El cicle de Carnot</button>
+  <button type="button" data-go="eficiencies"><b>4</b>Eficiències</button>
+  <button type="button" data-go="frigorific"><b>5</b>El frigorífic</button>
+  <button type="button" data-go="entropia"><b>6</b>Entropia</button>
+  <button type="button" data-go="quiz"><b>7</b>Autoavaluació</button>
+</nav>
+
+<main>
+<!-- ============ 1 BALANÇ ============ -->
+<section class="mod" data-key="balanc">
+  <p class="eyebrow">Mòdul 1 · Primer principi</p>
+  <h2>Balanç d'energia d'una central de vapor</h2>
+  <p class="lead">Una màquina tèrmica rep calor d'una font calenta, en converteix una part en treball i cedeix la resta a una font freda. Si prenem tota la central com a sistema, tot el que entra ha de sortir.</p>
+
+  <div class="fig">
+    <div class="row" style="margin-bottom:8px"><span class="tag">On posem la frontera?</span>
+      <div class="seg" role="group" aria-label="Frontera del sistema"><button id="b-v-cen" type="button" aria-pressed="true">Tota la central</button><button id="b-v-maq" type="button" aria-pressed="false">Màquina per màquina</button></div></div>
+    <p id="b-view-note" style="margin-top:0"></p>
+    <div class="svgwrap">
+    <svg viewBox="0 0 640 420" role="img" aria-labelledby="b-title">
+      <title id="b-title">Esquema d'una central de vapor amb els fluxos d'energia</title>
+      <defs><marker id="pa" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1L9 5L1 9z" fill="var(--muted)"/></marker></defs>
+      <rect class="sv-front" x="110" y="50" width="400" height="320" rx="8"/>
+      <text class="sv-s" x="120" y="360" id="b-front-l">Sistema: tota la central</text>
+      <path class="sv-pipe" d="M410 105 H470 V151" marker-end="url(#pa)"/>
+      <path class="sv-pipe" d="M470 248 V315 H414" marker-end="url(#pa)"/>
+      <path class="sv-pipe" d="M230 315 H160 V243" marker-end="url(#pa)"/>
+      <path class="sv-pipe" d="M160 191 V105 H226" marker-end="url(#pa)"/>
+      <rect class="sv-hot" x="230" y="80" width="180" height="50" rx="8"/>
+      <text class="sv-t" x="320" y="111" text-anchor="middle">Caldera</text>
+      <polygon class="sv-neu" points="425,170 487,150 487,250 425,230"/>
+      <text class="sv-s" x="456" y="205" text-anchor="middle">Turbina</text>
+      <circle class="sv-neu" cx="160" cy="217" r="25"/>
+      <text class="sv-s" x="160" y="222" text-anchor="middle">Bomba</text>
+      <rect class="sv-cold" x="230" y="290" width="180" height="50" rx="8"/>
+      <text class="sv-t" x="320" y="321" text-anchor="middle">Condensador</text>
+      <g id="b-we-int"><path d="M423 215 H190" fill="none" stroke="var(--work)" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#pa)"/>
+      <text class="sv-m" x="306" y="207" text-anchor="middle" id="b-we-l">We = 2 kJ (circula per dins)</text></g>
+      <polygon id="b-a-we" class="fl-work" opacity="0"/>
+      <text class="sv-m tx-work" x="16" y="200" id="b-we-ext" opacity="0">We = 2 kJ</text>
+      <polygon id="b-a-qh" class="fl-hot"/>
+      <text class="sv-m tx-hot" x="334" y="34" id="b-qh-l">Qh = 100 kJ</text>
+      <polygon id="b-a-w" class="fl-work"/>
+      <text class="sv-m tx-work" x="560" y="180" text-anchor="middle" id="b-w-l">W = 40 kJ</text>
+      <polygon id="b-a-qc" class="fl-cold"/>
+      <text class="sv-m tx-cold" x="334" y="398" id="b-qc-l">|Qc| = 60 kJ</text>
+    </svg>
+    </div>
+    <div class="controls">
+      <label class="ctl" for="b-qh">Calor del forn, Qh <input id="b-qh" type="range" min="50" max="200" step="5" value="100"><output id="b-qh-o">100 kJ</output></label>
+      <label class="ctl" for="b-qc">Calor cedida, |Qc| <input id="b-qc" type="range" min="0" max="100" step="1" value="60"><output id="b-qc-o">60 kJ</output></label>
+      <label class="ctl" for="b-we">Treball de la bomba, We <input id="b-we" type="range" min="0" max="10" step="1" value="2"><output id="b-we-o">2 kJ</output></label>
+    </div>
+    <div class="stats">
+      <div class="stat hot"><div class="k">Entra</div><div class="v" id="b-in">100 kJ</div></div>
+      <div class="stat"><div class="k">Surt</div><div class="v" id="b-out">100 kJ</div></div>
+      <div class="stat work"><div class="k">Turbina, Ws</div><div class="v" id="b-ws">42 kJ</div></div>
+      <div class="stat work"><div class="k">Rendiment η</div><div class="v" id="b-eta">40 %</div></div>
+    </div>
+    <div class="msg" id="b-msg"></div>
+  </div>
+
+  <h3>Què entra, què surt i què circula per dins</h3>
+  <div class="tbl"><table>
+    <thead><tr><th></th><th>Magnitud</th><th>Què és</th></tr></thead>
+    <tbody>
+      <tr><td class="h">Entra</td><td class="mono">Qh</td><td>La calor del forn a la caldera. És l'única entrada d'energia de la central.</td></tr>
+      <tr><td style="color:var(--work);font-weight:600">Surt</td><td class="mono">W = Ws − We</td><td>El treball net útil, per exemple per moure el generador elèctric.</td></tr>
+      <tr><td class="c">Surt</td><td class="mono">|Qc|</td><td>La calor cedida a la font freda (riu, mar, atmosfera). No s'aprofita, però és inevitable.</td></tr>
+      <tr><td>Per dins</td><td class="mono">We</td><td>Part del treball de la turbina que mou la bomba. No creua la frontera, per això no entra al balanç.</td></tr>
+    </tbody>
+  </table></div>
+  <p class="eq">ΔU = 0 &nbsp;⇒&nbsp; Qh = W + |Qc| &nbsp;⇒&nbsp; η = W / Qh</p>
+
+  <div class="est">
+    <h3>Per què ΔU = 0?</h3>
+    <p>L'aigua fa un cicle tancat: s'escalfa a la caldera, fa treball a la turbina, es condensa i la bomba la torna a la caldera. Quan torna al punt de partida està exactament en el mateix estat. Per tant, sumant tot el cicle, la seva energia interna no ha canviat. La central intercanvia energia amb l'exterior, però l'energia de dins es manté constant, com un dipòsit amb una aixeta que l'omple i un desguàs que el buida al mateix ritme.</p>
+    <h3>We: la bomba i la turbina comparteixen treball</h3>
+    <p>La turbina fa un treball total Ws. Una part, We, es desvia cap a la bomba per tornar l'aigua a la caldera. Aquesta energia no surt de la central: la bomba la torna a injectar a l'aigua i fa la volta al cicle. El que surt cap a fora és el treball net, W = Ws − We.</p>
+    <h3>Per què |Qc| en valor absolut?</h3>
+    <p>Amb el criteri de signes del primer principi, la calor que surt és negativa. Escrivint |Qc| treballem amb un nombre positiu i posem el signe menys a mà: W = Qh − |Qc|. Així es veu clar que és calor que es resta perquè surt.</p>
+    <div class="note"><strong>L'energia no es perd.</strong> Quan diem "pèrdues" volem dir energia que no s'aprofita com a treball. El primer principi parla de quantitat (tot el que entra, surt); el segon principi parla de qualitat (no tota la calor es pot convertir en treball).</div>
+  </div>
+  <p class="key">L'energia no es perd mai: tot el que entra a la màquina en surt. Només una part surt com a treball útil, i la resta surt com a calor que ja no podem aprofitar.</p>
+  <div class="pager"><span></span><button class="btn primary" type="button" data-go="carnot">Següent: Segon principi i Carnot →</button></div>
+</section>
+
+<!-- ============ 2 CARNOT ============ -->
+<section class="mod" data-key="carnot" hidden>
+  <p class="eyebrow">Mòdul 2 · Segon principi</p>
+  <h2>La cascada de Carnot</h2>
+  <p class="lead">La calor "cau" de la font calenta a la freda i, mentre cau, en podem treure treball, com l'aigua que mou una roda de molí. El treball màxim depèn de l'alçada del salt de temperatura.</p>
+
+  <div class="fig">
+    <div class="svgwrap">
+    <svg viewBox="0 0 640 360" role="img" aria-labelledby="c-title">
+      <title id="c-title">Escala de temperatures: part aprofitable i part no aprofitable de la caiguda</title>
+      <line x1="150" y1="20" x2="150" y2="332" stroke="var(--muted)" stroke-width="1"/>
+      <rect id="c-up" x="250" y="0" width="110" height="10" rx="4" fill="var(--work-soft)" stroke="var(--work)"/>
+      <rect id="c-down" x="250" y="0" width="110" height="10" rx="4" fill="var(--bg)" stroke="var(--muted)" stroke-dasharray="5 4"/>
+      <line id="c-lh" x1="150" x2="520" stroke="var(--hot)" stroke-width="2.5"/>
+      <line id="c-lc" x1="150" x2="520" stroke="var(--cold)" stroke-width="2.5"/>
+      <line x1="150" y1="330" x2="520" y2="330" stroke="var(--muted)" stroke-width="2"/>
+      <text id="c-th-t" class="sv-m tx-hot" x="142" text-anchor="end">Th</text>
+      <text id="c-tc-t" class="sv-m tx-cold" x="142" text-anchor="end">Tc</text>
+      <text class="sv-m" x="142" y="334" text-anchor="end">0 K</text>
+      <text id="c-up-t" class="sv-t" x="376">Caiguda aprofitable</text>
+      <text id="c-up-s" class="sv-s" x="376">Th − Tc</text>
+      <text id="c-dn-t" class="sv-t" x="376">No aprofitable</text>
+      <text id="c-dn-s" class="sv-s" x="376">de Tc fins al zero absolut</text>
+    </svg>
+    </div>
+    <div class="controls">
+      <label class="ctl" for="c-th">Font calenta, Th <input id="c-th" type="range" min="100" max="900" step="10" value="400"><output id="c-th-o">400 °C</output></label>
+      <label class="ctl" for="c-tc">Font freda, Tc <input id="c-tc" type="range" min="0" max="100" step="1" value="20"><output id="c-tc-o">20 °C</output></label>
+    </div>
+    <div class="stats">
+      <div class="stat hot"><div class="k">Th</div><div class="v" id="c-thk">673 K</div></div>
+      <div class="stat cold"><div class="k">Tc</div><div class="v" id="c-tck">293 K</div></div>
+      <div class="stat work"><div class="k">ηc = 1 − Tc/Th</div><div class="v" id="c-eta">56,5 %</div></div>
+    </div>
+  </div>
+
+  <h3>Reversible o irreversible? El vídeo al revés</h3>
+  <p>Un procés és reversible si, reproduït cap enrere, seria igual de possible. Les "pèrdues" (fregaments, turbulències, calor que passa de calent a fred de cop) el fan irreversible.</p>
+  <div class="cards">
+    <div class="card"><h4>Cafè que es refreda</h4><p>Al revés, el cafè s'escalfaria sol agafant calor de l'aire.</p><span class="tag bad">Irreversible</span></div>
+    <div class="card"><h4>Pilota que bota</h4><p>Al revés, cada bot seria més alt que l'anterior.</p><span class="tag bad">Irreversible</span></div>
+    <div class="card"><h4>Pèndol sense fregament</h4><p>Al revés, es veuria exactament igual.</p><span class="tag ok">Reversible (ideal)</span></div>
+  </div>
+
+  <div class="est">
+    <h3>La hipòtesi de Carnot</h3>
+    <p>Entre dues temperatures donades, cap màquina pot superar el rendiment d'una màquina reversible. La màquina reversible és la que no té cap pèrdua per imperfecció: ni fregaments, ni fuites, ni turbulències. Per això és el sostre. No es pot construir, però és molt útil com a referència.</p>
+    <h3>Per què ni la màquina ideal arriba al 100 %?</h3>
+    <p>Hi ha dos tipus de calor que no es converteix en treball. Les pèrdues per imperfecció, que la màquina ideal no té. I la calor cedida a la font freda, que és obligatòria: per tornar el pistó a la posició inicial i repetir el cicle, cal refredar el gas abans de comprimir-lo, i per refredar-lo cal cedir calor a la font freda.</p>
+    <p>A la cascada, l'aigua cau de Th fins a Tc, però no fins a terra (0 K). L'aigua que arriba a baix encara té energia, i se'n va pel riu. Per arribar al 100 % caldria una font freda a 0 K, i el zero absolut és inassolible.</p>
+    <div class="note"><strong>Les temperatures, sempre en kelvin.</strong> T(K) = T(°C) + 273. Prova a pujar Th o a baixar Tc: el rendiment màxim augmenta perquè el salt és més gran. Per això les centrals treballen amb vapor tan calent i s'instal·len a prop de rius o del mar.</div>
+  </div>
+  <p class="key">La natura posa un límit a quanta calor es pot convertir en treball, i aquest límit només depèn de les temperatures de les dues fonts. La màquina ideal arriba just al límit; les reals es queden per sota.</p>
+  <div class="pager"><button class="btn" type="button" data-go="balanc">← Balanç d'energia</button><button class="btn primary" type="button" data-go="cicle">Següent: El cicle de Carnot →</button></div>
+</section>
+
+<!-- ============ 3 CICLE ============ -->
+<section class="mod" data-key="cicle" hidden>
+  <p class="eyebrow">Mòdul 3 · La màquina reversible</p>
+  <h2>El cicle de Carnot, etapa per etapa</h2>
+  <p class="lead">Un cilindre amb pistó i gas ideal, i tres bases on el podem posar: la font calenta, una base aïllant i la font freda. Tria una etapa o reprodueix el cicle sencer.</p>
+
+  <div class="fig">
+    <div class="row" style="justify-content:space-between">
+      <div class="stepper" role="group" aria-label="Etapes del cicle">
+        <button class="btn" type="button" data-stage="0" aria-pressed="true">1 → 2</button>
+        <button class="btn" type="button" data-stage="1" aria-pressed="false">2 → 3</button>
+        <button class="btn" type="button" data-stage="2" aria-pressed="false">3 → 4</button>
+        <button class="btn" type="button" data-stage="3" aria-pressed="false">4 → 1</button>
+      </div>
+      <button class="btn primary" type="button" id="cy-play">▶ Reprodueix el cicle</button>
+    </div>
+    <div class="two" style="margin-top:12px">
+      <svg viewBox="0 0 300 340" role="img" aria-labelledby="cy-t1">
+        <title id="cy-t1">Cilindre amb pistó sobre la base corresponent a l'etapa</title>
+        <rect x="88" y="18" width="124" height="234" rx="3" fill="none" stroke="var(--muted)" stroke-width="2"/>
+        <rect id="cy-gas-c" x="90" width="120" fill="var(--cold-soft)"/>
+        <rect id="cy-gas-h" x="90" width="120" fill="var(--hot)" opacity="0"/>
+        <rect id="cy-pis" x="90" width="120" height="14" fill="var(--muted)"/>
+        <rect id="cy-rod" x="144" y="0" width="12" fill="var(--muted)"/>
+        <rect id="cy-base" x="58" y="260" width="184" height="40" rx="6" class="sv-hot"/>
+        <text id="cy-base-t" class="sv-t" x="150" y="285" text-anchor="middle">Font calenta (Th)</text>
+        <polygon id="cy-q" class="fl-hot"/>
+        <text id="cy-q-t" class="sv-m tx-hot" x="262" y="150" text-anchor="middle">Qh</text>
+        <polygon id="cy-w" class="fl-work"/>
+        <text id="cy-w-t" class="sv-m tx-work" x="40" y="150" text-anchor="middle">W</text>
+        <text id="cy-temp" class="sv-m" x="150" y="325" text-anchor="middle">T = 600 K</text>
+      </svg>
+      <svg viewBox="0 0 380 320" role="img" aria-labelledby="cy-t2">
+        <title id="cy-t2">Diagrama p-V del cicle de Carnot amb l'etapa actual destacada</title>
+        <path id="cy-area" fill="var(--work-soft)" stroke="none"/>
+        <line x1="50" y1="280" x2="365" y2="280" stroke="var(--muted)"/>
+        <line x1="50" y1="280" x2="50" y2="18" stroke="var(--muted)"/>
+        <g id="cy-ticks"></g>
+        <text class="sv-s" x="360" y="312" text-anchor="end">V (L)</text>
+        <text class="sv-s" x="56" y="16">p (kPa)</text>
+        <path id="cy-s0" fill="none" stroke="var(--hot)" stroke-width="2"/>
+        <path id="cy-s1" fill="none" stroke="var(--muted)" stroke-width="2"/>
+        <path id="cy-s2" fill="none" stroke="var(--cold)" stroke-width="2"/>
+        <path id="cy-s3" fill="none" stroke="var(--muted)" stroke-width="2"/>
+        <g id="cy-pts"></g>
+        <circle id="cy-dot" r="6" fill="var(--fg)"/>
+      </svg>
+    </div>
+    <div class="stagecard" id="cy-card"></div>
+  </div>
+
+  <h3>Resum del cicle</h3>
+  <div class="tbl"><table>
+    <thead><tr><th>Etapa</th><th>Base</th><th>Volum</th><th>Temperatura</th><th>Calor</th><th>ΔU</th><th>Com es llegeix</th></tr></thead>
+    <tbody>
+      <tr><td><b>1 → 2</b><br>Expansió isotèrmica</td><td class="h">Font calenta</td><td>Augmenta</td><td>Constant (Th)</td><td class="h">Entra Qh</td><td>0</td><td><span class="mono">Qh = W</span><br>La calor que entra surt tota com a treball del gas.</td></tr>
+      <tr><td><b>2 → 3</b><br>Expansió adiabàtica</td><td>Aïllant</td><td>Augmenta</td><td>Baixa (Th → Tc)</td><td>No n'hi ha</td><td>Negativa</td><td><span class="mono">W = −ΔU</span><br>El gas fa treball amb la seva energia interna i es refreda.</td></tr>
+      <tr><td><b>3 → 4</b><br>Compressió isotèrmica</td><td class="c">Font freda</td><td>Disminueix</td><td>Constant (Tc)</td><td class="c">Surt |Qc|</td><td>0</td><td><span class="mono">−W = |Qc|</span><br>El treball que fem sobre el gas surt tot com a calor cap a la font freda.</td></tr>
+      <tr><td><b>4 → 1</b><br>Compressió adiabàtica</td><td>Aïllant</td><td>Disminueix</td><td>Puja (Tc → Th)</td><td>No n'hi ha</td><td>Positiva</td><td><span class="mono">−W = ΔU</span><br>El treball que fem es queda com a energia interna: el gas s'escalfa.</td></tr>
+    </tbody>
+  </table></div>
+  <p>Les etapes isotèrmiques tenen ΔU = 0: el gas només fa d'intermediari entre la calor i el treball. Les adiabàtiques tenen Q = 0: el treball canvia l'energia interna i, per tant, la temperatura. El treball net és <b>l'àrea groga</b> tancada pel cicle.</p>
+
+  <div class="est">
+    <h3>Per què aquesta màquina?</h3>
+    <p>La hipòtesi de Carnot ens diu que cap màquina supera la reversible, però no quant val aquest màxim. Com que no se'n pot construir cap, n'imaginem una i la calculem sobre el paper. Fem servir un gas ideal perquè en coneixem bé el comportament, i etapes isotèrmiques i adiabàtiques perquè són les úniques que permeten treballar de manera reversible amb dues fonts: el gas intercanvia calor només quan està a la mateixa temperatura que la font, i canvia de temperatura aïllat.</p>
+    <h3>Qui fa el treball?</h3>
+    <p>Qui empeny, fa el treball. A les expansions (1 → 2 → 3) el gas empeny el pistó cap a fora: el gas fa treball. A les compressions (3 → 4 → 1) empenyem nosaltres: fem treball sobre el gas. Com que el gas s'expandeix calent (pressió alta) i es comprimeix fred (pressió baixa), costa menys tornar-lo enrere del que ens ha donat expandir-se. La diferència és el treball net.</p>
+    <h3>Les adiabàtiques es compensen</h3>
+    <p>Les dues etapes adiabàtiques treballen entre Th i Tc en sentits oposats. En un gas ideal l'energia interna només depèn de la temperatura, així que el que el gas perd a 2 → 3 ho recupera a 4 → 1. Per això el treball net només depèn de les isotèrmiques: W = Qh − |Qc|.</p>
+    <h3>D'on surt η = 1 − Tc/Th</h3>
+    <p class="eq">η = 1 − |Qc|/Qh = 1 − (nR·Tc·ln(V3/V4)) / (nR·Th·ln(V2/V1))</p>
+    <p>Les adiabàtiques fan que V2/V1 = V3/V4. Els logaritmes i nR es simplifiquen i només queden les temperatures. Per això el rendiment no depèn del gas, ni de la mida, ni de quant s'expandeixi.</p>
+    <div class="note"><strong>Un detall de la fórmula de |Qc|.</strong> El treball real de l'etapa 3 → 4 és nR·Tc·ln(V4/V3), que és negatiu perquè V4 &lt; V3. El llibre escriu |Qc| = W₄₋₃ = nR·Tc·ln(V3/V4): el treball del procés invers, que té el mateix valor però positiu. Cal girar les dues coses alhora (l'etapa i els volums) o cap.</div>
+    <div class="note"><strong>Pregunta típica:</strong> si a 1 → 2 tota la calor es converteix en treball, per què no és el 100 %? Perquè una sola etapa no és una màquina. Per repetir cal tornar el gas a l'estat inicial, i fer-ho amb poc treball obliga a refredar-lo i cedir |Qc|.</div>
+  </div>
+  <p class="key">Com que no podem construir una màquina perfecta, n'imaginem una de fàcil de calcular. El seu rendiment ens diu el màxim que podrà aconseguir mai qualsevol màquina real que treballi entre les mateixes temperatures.</p>
+  <div class="pager"><button class="btn" type="button" data-go="carnot">← Segon principi i Carnot</button><button class="btn primary" type="button" data-go="eficiencies">Següent: Eficiències →</button></div>
+</section>
+
+<!-- ============ 4 EFICIÈNCIES ============ -->
+<section class="mod" data-key="eficiencies" hidden>
+  <p class="eyebrow">Mòdul 4 · Com de bona és una màquina</p>
+  <h2>Tres eficiències</h2>
+  <div class="cards">
+    <div class="card"><h4>ηt = W / Qh</h4><p>Eficiència tèrmica: el que <b>fa</b> la màquina. Es calcula amb energies.</p></div>
+    <div class="card"><h4>ηc = 1 − Tc / Th</h4><p>Eficiència de Carnot: el <b>màxim possible</b> entre aquelles temperatures.</p></div>
+    <div class="card"><h4>ηs = ηt / ηc</h4><p>Quina fracció del màxim aconsegueix. Mesura com de ben dissenyada està.</p></div>
+  </div>
+
+  <div class="fig">
+    <h3 style="margin-top:0">És possible aquesta màquina?</h3>
+    <div class="row" style="margin-bottom:12px">
+      <button class="btn" type="button" data-preset="300,180,600,300">Llibre: entre 600 K i 300 K</button>
+      <button class="btn" type="button" data-preset="300,180,400,300">Llibre: entre 400 K i 300 K</button>
+      <button class="btn" type="button" data-preset="100,50,600,300">Màquina ideal</button>
+    </div>
+    <div class="two">
+      <div class="field"><label for="e-qh">Calor absorbida, Qh (MJ)</label><input id="e-qh" type="number" min="0" step="any" value="300"><span class="err" id="e-qh-e"></span></div>
+      <div class="field"><label for="e-qc">Calor cedida, |Qc| (MJ)</label><input id="e-qc" type="number" min="0" step="any" value="180"><span class="err" id="e-qc-e"></span></div>
+      <div class="field"><label for="e-th">Font calenta, Th (K)</label><input id="e-th" type="number" min="1" step="any" value="600"><span class="err" id="e-th-e"></span></div>
+      <div class="field"><label for="e-tc">Font freda, Tc (K)</label><input id="e-tc" type="number" min="1" step="any" value="300"><span class="err" id="e-tc-e"></span></div>
+    </div>
+    <div class="gauge" aria-hidden="true"><div class="fill" id="e-fill"></div><div class="mark" id="e-mark"></div><div class="mlabel" id="e-mlabel">ηc</div></div>
+    <div class="stats">
+      <div class="stat work"><div class="k">ηt (real)</div><div class="v" id="e-t">40 %</div></div>
+      <div class="stat hot"><div class="k">ηc (màxim)</div><div class="v" id="e-c">50 %</div></div>
+      <div class="stat"><div class="k">ηs = ηt / ηc</div><div class="v" id="e-s">80 %</div></div>
+    </div>
+    <div class="msg" id="e-msg"></div>
+  </div>
+
+  <h3>L'analogia de l'examen</h3>
+  <p>L'Anna treu un 8 sobre 10; en Pau, un 7 sobre 7,5. L'Anna té la nota més alta, però en Pau ha tret el 93 % del màxim possible i l'Anna el 80 %. <b>ηt</b> és la nota, <b>ηc</b> és la nota màxima de l'examen i <b>ηs</b> és el percentatge sobre el màxim.</p>
+  <div class="tbl"><table>
+    <thead><tr><th></th><th>Màquina A</th><th>Màquina B</th></tr></thead>
+    <tbody>
+      <tr><td>Eficiència real, ηt</td><td class="num">40 %</td><td class="num">30 %</td></tr>
+      <tr><td>Eficiència de Carnot, ηc</td><td class="num">50 %</td><td class="num">35 %</td></tr>
+      <tr><td><b>ηs = ηt / ηc</b></td><td class="num"><b>80 %</b></td><td class="num"><b>86 %</b></td></tr>
+    </tbody>
+  </table></div>
+  <div class="est">
+    <p>La màquina A converteix més calor en treball, però perquè treballa amb un salt de temperatura més gran. La màquina B està millor dissenyada: s'acosta més al seu límit teòric.</p>
+    <p>Per millorar <b>ηc</b> cal canviar les temperatures (escalfar més o refredar més). Per millorar <b>ηs</b> cal millorar la màquina: reduir fregaments, millorar aïllaments. Sempre es compleix ηt ≤ ηc; només a la màquina reversible són iguals.</p>
+  </div>
+  <p class="key">L'eficiència tèrmica diu quanta calor converteix la màquina en treball; la de Carnot, quanta en podria convertir com a màxim. Dividint-les sabem quin percentatge del màxim possible aconsegueix.</p>
+  <div class="pager"><button class="btn" type="button" data-go="cicle">← El cicle de Carnot</button><button class="btn primary" type="button" data-go="frigorific">Següent: El frigorífic →</button></div>
+</section>
+
+<!-- ============ 5 FRIGORÍFIC ============ -->
+<section class="mod" data-key="frigorific" hidden>
+  <p class="eyebrow">Mòdul 5 · La màquina tèrmica al revés</p>
+  <h2>El frigorífic</h2>
+  <p class="lead">Un frigorífic fa servir treball per fer "pujar" la calor del fred al calent. Dins del circuit, el refrigerant fa voltes i torna sempre al mateix estat: ΔU = 0, igual que a la central de vapor.</p>
+
+  <div class="fig">
+    <div class="svgwrap">
+    <svg viewBox="0 0 680 460" role="img" aria-labelledby="f-title">
+      <title id="f-title">Circuit intern d'un frigorífic amb els fluxos d'energia</title>
+      <defs><marker id="pa2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1L9 5L1 9z" fill="var(--muted)"/></marker></defs>
+      <rect class="sv-front" x="110" y="80" width="460" height="300" rx="8"/>
+      <text class="sv-s" x="122" y="368">Sistema: el refrigerant</text>
+      <path class="sv-pipe" d="M432 328 H490 V265" marker-end="url(#pa2)"/>
+      <path class="sv-pipe" d="M490 203 V138 H434" marker-end="url(#pa2)"/>
+      <path class="sv-pipe" d="M248 138 H190 V201" marker-end="url(#pa2)"/>
+      <path class="sv-pipe" d="M190 263 V328 H246" marker-end="url(#pa2)"/>
+      <rect class="sv-hot" x="250" y="110" width="180" height="56" rx="8"/>
+      <text class="sv-t" x="340" y="134" text-anchor="middle">Condensador</text>
+      <text class="sv-s" x="340" y="154" text-anchor="middle">Reixa de darrere, 40 °C</text>
+      <rect class="sv-cold" x="250" y="300" width="180" height="56" rx="8"/>
+      <text class="sv-t" x="340" y="324" text-anchor="middle">Evaporador</text>
+      <text class="sv-s" x="340" y="344" text-anchor="middle">Dins la nevera, −10 °C</text>
+      <rect class="sv-neu" x="430" y="205" width="120" height="56" rx="8"/>
+      <text class="sv-t" x="490" y="229" text-anchor="middle">Compressor</text>
+      <text class="sv-s" x="490" y="249" text-anchor="middle">Motor elèctric</text>
+      <rect class="sv-neu" x="130" y="205" width="120" height="56" rx="8"/>
+      <text class="sv-t" x="190" y="229" text-anchor="middle">Vàlvula</text>
+      <text class="sv-s" x="190" y="249" text-anchor="middle">d'expansió</text>
+      <polygon id="f-a-qh" class="fl-hot"/>
+      <text class="sv-m tx-hot" x="352" y="40" id="f-qh-l">|Qh| = 400 J → cuina</text>
+      <polygon id="f-a-qc" class="fl-cold"/>
+      <text class="sv-m tx-cold" x="352" y="440" id="f-qc-l">Qc = 300 J ← interior</text>
+      <polygon id="f-a-w" class="fl-work"/>
+      <text class="sv-m tx-work" x="600" y="200" text-anchor="middle" id="f-w-l">W = 100 J</text>
+    </svg>
+    </div>
+    <div class="controls">
+      <label class="ctl" for="f-w">Electricitat, W <input id="f-w" type="range" min="20" max="200" step="5" value="100"><output id="f-w-o">100 J</output></label>
+      <label class="ctl" for="f-qc">Calor de l'interior, Qc <input id="f-qc" type="range" min="0" max="500" step="10" value="300"><output id="f-qc-o">300 J</output></label>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="k">Entra (W + Qc)</div><div class="v" id="f-in">400 J</div></div>
+      <div class="stat hot"><div class="k">Surt, |Qh|</div><div class="v" id="f-out">400 J</div></div>
+      <div class="stat work"><div class="k">COP = Qc / W</div><div class="v" id="f-cop">3,0</div></div>
+    </div>
+  </div>
+
+  <h3>El recorregut del refrigerant</h3>
+  <div class="cards">
+    <div class="card"><h4 style="color:var(--cold)">Evaporador</h4><p>Arriba a −10 °C, més fred que l'interior: <b>absorbeix Qc</b> i es fa gas. La nevera es refreda.</p></div>
+    <div class="card"><h4>Compressor</h4><p><b>Entra W</b> de l'endoll. Comprimeix el gas, que s'escalfa fins a uns 40 °C.</p></div>
+    <div class="card"><h4 style="color:var(--hot)">Condensador</h4><p>Més calent que la cuina: <b>cedeix |Qh|</b> per la reixa i es torna líquid.</p></div>
+    <div class="card"><h4>Vàlvula</h4><p>La pressió baixa de cop i el líquid es refreda a −10 °C. Torna a començar.</p></div>
+  </div>
+
+  <h3>Comparat amb la màquina de vapor</h3>
+  <div class="tbl"><table>
+    <thead><tr><th></th><th>Màquina de vapor</th><th>Frigorífic</th></tr></thead>
+    <tbody>
+      <tr><td>On s'absorbeix calor</td><td>Caldera, a temperatura <b>alta</b></td><td>Evaporador, a temperatura <b>baixa</b></td></tr>
+      <tr><td>On es cedeix calor</td><td>Condensador, a temperatura <b>baixa</b></td><td>Condensador, a temperatura <b>alta</b></td></tr>
+      <tr><td>Treball principal</td><td>Turbina: <b>en surt</b> W</td><td>Compressor: <b>n'entra</b> W</td></tr>
+      <tr><td>Per tornar enrere</td><td>Bomba (poc treball)</td><td>Vàlvula (sense treball)</td></tr>
+      <tr><td>Balanç (ΔU = 0)</td><td class="mono">Qh = W + |Qc|</td><td class="mono">Qc + W = |Qh|</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="note">
+    <strong>Pregunta per a classe: un dia de calor, si deixem la porta de la nevera oberta, refredarem la cuina?</strong>
+    <div class="reveal"><button class="btn" type="button" id="f-rev" aria-expanded="false" aria-controls="f-ans">Mostra la resposta</button></div>
+    <p id="f-ans" hidden>No, l'escalfarem. La calor que el circuit treu pel davant torna a la cuina per darrere, i a més s'hi afegeix l'electricitat. En conjunt, la cuina guanya W. Per refredar una habitació cal treure la calor fora, com fa un aire condicionat amb la part calenta a l'exterior de l'edifici.</p>
+  </div>
+
+  <div class="est">
+    <h3>Què passa amb l'energia de l'endoll?</h3>
+    <p>Els 100 J fan funcionar el compressor. Sense aquest treball, la calor mai pujaria sola del fred al calent. El camí és: electricitat → treball del compressor → energia interna del refrigerant (s'escalfa) → calor a la cuina per la reixa, juntament amb la calor treta de la nevera.</p>
+    <p>L'aïllament de la nevera no és perfecte: la calor de la cuina va entrant a poc a poc per les parets i la porta. Quan funciona de manera estable, el que entra per les parets és just el que el circuit en treu. Per tant, la cuina rep W + Qc per la reixa i en perd Qc per les parets: guanya W. Tota l'electricitat acaba com a calor a la cuina.</p>
+    <div class="note"><strong>Compte amb el nom "condensador".</strong> Tots dos circuits en tenen un, però a la central és el costat fred i al frigorífic és el costat calent. En tots dos el gas s'hi torna líquid.</div>
+    <div class="note"><strong>Entra o surt Qc?</strong> Depèn del sistema. Per a l'interior de la nevera, la calor surt. Per al refrigerant, que és el sistema del balanç, entra. És una sola transferència vista des de dos costats.</div>
+    <p>El COP pot ser més gran que 1 sense contradir res: el frigorífic no crea energia, només la transporta, i transportar calor costa menys que produir-la.</p>
+  </div>
+  <p class="key">El frigorífic no crea fred: treu calor de dins i la llença a la cuina per darrere. L'electricitat que consumeix també acaba com a calor a la cuina.</p>
+  <div class="pager"><button class="btn" type="button" data-go="eficiencies">← Eficiències</button><button class="btn primary" type="button" data-go="entropia">Següent: Entropia →</button></div>
+</section>
+
+<!-- ============ 6 ENTROPIA ============ -->
+<section class="mod" data-key="entropia" hidden>
+  <p class="eyebrow">Mòdul 6 · Qualitat de l'energia</p>
+  <h2>Entropia i treball perdut</h2>
+  <p class="lead">Torna a la cascada. A la màquina ideal, tota l'aigua passa per la roda. A la màquina real, una part <b>vessa pel costat</b> i cau sense moure-la. Arriba igualment a baix, però ja no en traurem treball. L'entropia mesura el que ha vessat.</p>
+
+  <div class="fig">
+    <p style="margin-top:0">Font calenta a <b class="mono">600 K</b>, font freda a <b class="mono">300 K</b>, i surten <b class="mono">600 J</b> de la font calenta. Mou el treball que obté la màquina:</p>
+    <div class="row" style="margin-bottom:10px">
+      <button class="btn" type="button" data-sw="300">Màquina ideal</button>
+      <button class="btn" type="button" data-sw="240">Màquina real</button>
+      <button class="btn" type="button" data-sw="0">Barra de metall</button>
+    </div>
+    <div class="controls"><label class="ctl" for="s-w">Treball obtingut, W <input id="s-w" type="range" min="0" max="300" step="10" value="240"><output id="s-w-o">240 J</output></label></div>
+    <div class="bar" aria-hidden="true"><div class="seg-w" id="s-bw">W</div><div class="seg-p" id="s-bp">perdut</div><div class="seg-c" id="s-bc">calor mínima</div></div>
+    <div class="legend"><span><i style="background:var(--work)"></i>Treball obtingut</span><span><i style="background:var(--bad)"></i>Calor de més a la font freda = treball perdut</span><span><i style="background:var(--cold)"></i>Calor que la font freda ha de rebre sí o sí</span></div>
+    <div class="stats">
+      <div class="stat cold"><div class="k">Calor a la font freda</div><div class="v" id="s-qc">360 J</div></div>
+      <div class="stat"><div class="k">ΔS font calenta</div><div class="v" id="s-sh">−2,00 J/K</div></div>
+      <div class="stat"><div class="k">ΔS font freda</div><div class="v" id="s-sc">+1,20 J/K</div></div>
+      <div class="stat hot"><div class="k">ΔS total</div><div class="v" id="s-st">+0,20 J/K</div></div>
+      <div class="stat work"><div class="k">Wp = Tc · ΔS</div><div class="v" id="s-wp">60 J</div></div>
+    </div>
+  </div>
+
+  <h3>Tres casos, la mateixa calor</h3>
+  <div class="tbl"><table>
+    <thead><tr><th></th><th>Treball obtingut</th><th>Calor a la font freda</th><th>Augment d'entropia</th><th>Treball perdut</th></tr></thead>
+    <tbody>
+      <tr><td>Màquina ideal</td><td class="num">300 J</td><td class="num">300 J</td><td class="num">0</td><td class="num">0</td></tr>
+      <tr><td>Màquina real</td><td class="num">240 J</td><td class="num">360 J</td><td class="num">0,2 J/K</td><td class="num">60 J</td></tr>
+      <tr><td>Barra de metall</td><td class="num">0 J</td><td class="num">600 J</td><td class="num">1 J/K</td><td class="num">300 J</td></tr>
+    </tbody>
+  </table></div>
+  <p>Com més calor arriba a la font freda, més augmenta l'entropia i menys treball s'obté. <b>No es perd calor</b>: tota arriba a la font freda. El que es perd és l'oportunitat de treure'n treball.</p>
+
+  <div class="est">
+    <h3>L'entropia viatja amb la calor</h3>
+    <p>Quan un cos rep o perd una calor Q a una temperatura T, la seva entropia canvia en Q/T. La mateixa calor, a temperatura més baixa, val més entropia. A la barra de metall: la font calenta perd 600/600 = 1 J/K i la freda en guanya 600/300 = 2 J/K. Total: +1 J/K, sense haver perdut ni un joule.</p>
+    <h3>Com es lliga amb el treball?</h3>
+    <p>La calor que arriba a la font freda i el treball surten de la mateixa calor Qh: si un creix, l'altre disminueix. L'entropia es calcula amb la calor, però la calor de més que arriba a la font freda és justament el treball que no hem obtingut. Per això l'augment d'entropia mesura el treball perdut:</p>
+    <p class="eq">ΔSt = ΔSh + ΔSc &nbsp;&nbsp; Wp = Tc · ΔSt</p>
+    <p>En un procés reversible, ΔSt = 0: la font calenta perd la mateixa entropia que guanya la freda (Qh/Th = |Qc|/Tc). D'aquí surt també ηc = 1 − Tc/Th. En un procés real, ΔSt &gt; 0.</p>
+    <div class="note"><strong>I el "desordre"?</strong> El llibre relaciona l'entropia amb el desordre molecular. És una imatge acceptable si es refereix al moviment de les molècules, però "energia repartida o degradada" encaixa millor amb tot el que hem vist.</div>
+  </div>
+  <p class="key">L'energia no es perd: la calor que no convertim en treball acaba a la font freda. Com més calor hi arriba, més augmenta l'entropia i menys treball hem obtingut.</p>
+  <div class="pager"><button class="btn" type="button" data-go="frigorific">← El frigorífic</button><button class="btn primary" type="button" data-go="quiz">Següent: Autoavaluació →</button></div>
+</section>
+
+<!-- ============ 7 QUIZ ============ -->
+<section class="mod" data-key="quiz" hidden>
+  <p class="eyebrow">Mòdul 7 · Comprova-ho</p>
+  <h2>Autoavaluació</h2>
+  <p class="lead">Vuit preguntes sobre tot el que hem vist. Tria una resposta i comprova-la.</p>
+  <div class="quiz" id="quiz"></div>
+  <div class="row" style="margin-top:16px"><span class="pill info" id="q-score">0 de 8 correctes</span><button class="btn" type="button" id="q-reset">Torna a començar</button></div>
+  <div class="pager"><button class="btn" type="button" data-go="entropia">← Entropia</button><span></span></div>
+</section>
+</main>
+</div>
+
+<script>
+(function(){
+"use strict";
+const $=id=>document.getElementById(id);
+const fmt=(n,d=0)=>Number(n).toLocaleString('ca-ES',{minimumFractionDigits:d,maximumFractionDigits:d});
+const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+function arrowPts(x1,y1,x2,y2,w){const dx=x2-x1,dy=y2-y1,L=Math.hypot(dx,dy)||1,ux=dx/L,uy=dy/L,nx=-uy,ny=ux,h=w/2,hh=h+6,hl=Math.min(w+8,L*.6),bx=x2-ux*hl,by=y2-uy*hl;
+  return [[x1+nx*h,y1+ny*h],[bx+nx*h,by+ny*h],[bx+nx*hh,by+ny*hh],[x2,y2],[bx-nx*hh,by-ny*hh],[bx-nx*h,by-ny*h],[x1-nx*h,y1-ny*h]].map(q=>q[0].toFixed(1)+','+q[1].toFixed(1)).join(' ');}
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+
+/* ---- navegació i mode ---- */
+const mods=[...document.querySelectorAll('.mod')];
+const keys=mods.map(m=>m.dataset.key);
+function show(key,scroll){if(!keys.includes(key))key='balanc';
+  mods.forEach(m=>m.hidden=m.dataset.key!==key);
+  document.querySelectorAll('.side button').forEach(b=>b.setAttribute('aria-current',b.dataset.go===key?'true':'false'));
+  try{history.replaceState(null,'','#'+key)}catch(e){}
+  if(scroll)window.scrollTo({top:0,behavior:reduce?'auto':'smooth'});
+  if(key!=='cicle')stopPlay();}
+document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>show(b.dataset.go,true)));
+function setMode(m){document.body.classList.toggle('classe',m==='classe');$('mode-classe').setAttribute('aria-pressed',m==='classe');$('mode-estudi').setAttribute('aria-pressed',m!=='classe');store.set('td-mode',m);}
+$('mode-classe').addEventListener('click',()=>setMode('classe'));
+$('mode-estudi').addEventListener('click',()=>setMode('estudi'));
+setMode(store.get('td-mode')==='classe'?'classe':'estudi');
+
+/* ---- 1 balanç ---- */
+const bqh=$('b-qh'),bqc=$('b-qc'),bwe=$('b-we');const sw=v=>Math.max(3,v*.11);
+let bView='central';
+function upB(){const Qh=+bqh.value;bqc.max=Qh;const Qc=Math.min(+bqc.value,Qh);const We=+bwe.value;const W=Qh-Qc,Ws=W+We,eta=W/Qh,cen=bView==='central';
+  $('b-qh-o').textContent=Qh+' kJ';$('b-qc-o').textContent=Qc+' kJ';$('b-we-o').textContent=We+' kJ';
+  const tin=cen?Qh:Qh+We,tout=cen?W+Qc:Ws+Qc;
+  $('b-in').textContent=cen?'Qh = '+Qh+' kJ':'Qh + We = '+tin+' kJ';
+  $('b-out').textContent=cen?'W + |Qc| = '+tout+' kJ':'Ws + |Qc| = '+tout+' kJ';
+  $('b-ws').textContent=Ws+' kJ';$('b-eta').textContent=fmt(eta*100,1)+' %';
+  $('b-qh-l').textContent='Qh = '+Qh+' kJ';$('b-qc-l').textContent='|Qc| = '+Qc+' kJ';$('b-we-l').textContent='We = '+We+' kJ (circula per dins)';
+  $('b-w-l').textContent=cen?'W = '+W+' kJ':'Ws = '+Ws+' kJ';
+  $('b-a-qh').setAttribute('points',arrowPts(320,4,320,77,sw(Qh)));
+  const wOut=cen?W:Ws;$('b-a-w').setAttribute('points',wOut>0?arrowPts(489,200,632,200,sw(wOut)):'');
+  $('b-a-qc').setAttribute('points',Qc>0?arrowPts(320,343,320,414,sw(Qc)):'');
+  $('b-we-int').setAttribute('opacity',cen?'1':'0');
+  $('b-a-we').setAttribute('points',We>0?arrowPts(14,217,133,217,sw(We)):'');$('b-a-we').setAttribute('opacity',cen?'0':'1');
+  $('b-we-ext').textContent='We = '+We+' kJ';$('b-we-ext').setAttribute('opacity',cen?'0':'1');
+  $('b-front-l').textContent=cen?'Sistema: tota la central':'Sistema: l’aigua';
+  $('b-view-note').innerHTML=cen?'<b>Tota la central és el sistema.</b> La turbina dona una part del seu treball (We) a la bomba per dins, sense creuar la frontera, i per això no compta al balanç. Entra Qh; surten W i |Qc|.'
+    :'<b>El sistema és l’aigua que circula.</b> La bomba li dona el treball We (entra) i la turbina en rep tot el treball Ws (surt). Balanç: Qh + We = Ws + |Qc|. El treball net és el mateix: W = Ws − We.';
+  const etaC=1-293/673;let m='<span class="pill ok">ΔU = 0 · Entra '+tin+' kJ = surt '+tout+' kJ</span> <span class="pill info">Treball net W = '+W+' kJ</span>';
+  if(Qc===0)m+=' <span class="pill bad">Impossible: cap màquina tèrmica pot tenir |Qc| = 0</span>';
+  else if(eta>etaC)m+=' <span class="pill bad">Impossible: supera el límit de Carnot ('+fmt(etaC*100,1)+' %) per a vapor a 400 °C i riu a 20 °C</span>';
+  $('b-msg').innerHTML=m;}
+function setBView(v){bView=v;$('b-v-cen').setAttribute('aria-pressed',v==='central');$('b-v-maq').setAttribute('aria-pressed',v!=='central');upB();}
+$('b-v-cen').addEventListener('click',()=>setBView('central'));$('b-v-maq').addEventListener('click',()=>setBView('maq'));
+[bqh,bqc,bwe].forEach(e=>e.addEventListener('input',upB));upB();
+
+/* ---- 2 cascada ---- */
+const cth=$('c-th'),ctc=$('c-tc');const yT=T=>330-T/1200*300;
+function setY(el,y){el.setAttribute('y1',y);el.setAttribute('y2',y)}
+function upC(){const thC=+cth.value;ctc.max=Math.min(100,thC-50);const tcC=Math.min(+ctc.value,+ctc.max);const Th=thC+273,Tc=tcC+273,eta=1-Tc/Th;
+  $('c-th-o').textContent=thC+' °C';$('c-tc-o').textContent=tcC+' °C';$('c-thk').textContent=Th+' K';$('c-tck').textContent=Tc+' K';$('c-eta').textContent=fmt(eta*100,1)+' %';
+  const yh=yT(Th),yc=yT(Tc);setY($('c-lh'),yh);setY($('c-lc'),yc);
+  const up=$('c-up'),dn=$('c-down');up.setAttribute('y',yh);up.setAttribute('height',Math.max(1,yc-yh));dn.setAttribute('y',yc);dn.setAttribute('height',330-yc);
+  $('c-th-t').setAttribute('y',yh+4);$('c-th-t').textContent='Th = '+Th+' K';$('c-tc-t').setAttribute('y',yc+4);$('c-tc-t').textContent='Tc = '+Tc+' K';
+  const mu=(yh+yc)/2,md=(yc+330)/2;$('c-up-t').setAttribute('y',mu-2);$('c-up-s').setAttribute('y',mu+16);$('c-up-s').textContent='Th − Tc = '+(Th-Tc)+' K → '+fmt(eta*100,1)+' % de Th';
+  $('c-dn-t').setAttribute('y',md-2);$('c-dn-s').setAttribute('y',md+16);$('c-up-s').style.display=(yc-yh)<44?'none':'';}
+[cth,ctc].forEach(e=>e.addEventListener('input',upC));upC();
+
+/* ---- 3 cicle ---- */
+const R=8.314,Th=600,Tc=300,V1=10,V2=20,g=5/3,k=1/(g-1),V3=V2*Math.pow(Th/Tc,k),V4=V1*Math.pow(Th/Tc,k);
+const Vmax=60,Pmax=550,px=V=>50+V/Vmax*310,py=p=>280-p/Pmax*260;
+function st(i,t){let V,T;
+  if(i===0){V=V1+(V2-V1)*t;T=Th}else if(i===1){V=V2+(V3-V2)*t;T=Th*Math.pow(V2/V,g-1)}
+  else if(i===2){V=V3+(V4-V3)*t;T=Tc}else{V=V4+(V1-V4)*t;T=Tc*Math.pow(V4/V,g-1)}
+  return {V,T,p:R*T/V};}
+function segPath(i,move){let d='';for(let s=0;s<=40;s++){const q=st(i,s/40);d+=(s===0&&move?'M':'L')+px(q.V).toFixed(1)+' '+py(q.p).toFixed(1)+' ';}return d;}
+for(let i=0;i<4;i++)$('cy-s'+i).setAttribute('d',segPath(i,true));
+$('cy-area').setAttribute('d',segPath(0,true)+segPath(1,false)+segPath(2,false)+segPath(3,false)+'Z');
+(function(){let h='';[0,20,40,60].forEach(v=>{h+=`<line x1="${px(v)}" y1="280" x2="${px(v)}" y2="285" stroke="var(--muted)"/><text class="sv-m" x="${px(v)}" y="299" text-anchor="middle">${v}</text>`});
+  [0,200,400].forEach(p=>{h+=`<line x1="45" y1="${py(p)}" x2="50" y2="${py(p)}" stroke="var(--muted)"/><text class="sv-m" x="41" y="${py(p)+4}" text-anchor="end">${p}</text>`});$('cy-ticks').innerHTML=h;
+  let q='';[[V1,Th,'1',-14,-6],[V2,Th,'2',6,-8],[V3,Tc,'3',4,-10],[V4,Tc,'4',-6,16]].forEach(a=>{const x=px(a[0]),y=py(R*a[1]/a[0]);q+=`<circle cx="${x}" cy="${y}" r="3.5" fill="var(--fg)"/><text class="sv-t" x="${x+a[3]}" y="${y+a[4]}">${a[2]}</text>`});$('cy-pts').innerHTML=q;})();
+const Qh=R*Th*Math.log(V2/V1),Qc=R*Tc*Math.log(V3/V4),Wad=k*R*(Th-Tc);
+const stages=[
+ {base:'Font calenta (Th)',cls:'sv-hot',q:'in',w:'up',name:'1 → 2 · Expansió isotèrmica a Th',
+  fem:'Posem el cilindre sobre la font calenta i deixem que el pistó pugi a poc a poc.',
+  gas:'S’expandeix: el volum augmenta i la pressió baixa. La temperatura es manté a Th perquè la font li va donant calor.',
+  en:'<span class="mono">ΔU = 0 ⇒ Qh = W</span>. Tota la calor que entra surt com a treball del gas.',
+  num:'Qh = W = '+fmt(Qh,0)+' J'},
+ {base:'Base aïllant',cls:'sv-neu',q:null,w:'up',name:'2 → 3 · Expansió adiabàtica',
+  fem:'Passem el cilindre a la base aïllant i deixem que el pistó continuï pujant.',
+  gas:'Continua expandint-se sense rebre calor. Gasta la seva energia interna per fer treball i es refreda de Th a Tc.',
+  en:'<span class="mono">Q = 0 ⇒ W = −ΔU</span>. El treball que fa el gas surt de la seva energia interna.',
+  num:'W = '+fmt(Wad,0)+' J, ΔU = −'+fmt(Wad,0)+' J'},
+ {base:'Font freda (Tc)',cls:'sv-cold',q:'out',w:'down',name:'3 → 4 · Compressió isotèrmica a Tc',
+  fem:'Posem el cilindre sobre la font freda i empenyem el pistó cap avall, molt a poc a poc.',
+  gas:'Es comprimeix, però la temperatura es manté a Tc: el treball que hi fem surt com a calor cap a la font freda a mesura que entra.',
+  en:'<span class="mono">ΔU = 0 ⇒ −W = |Qc|</span>. El treball que fem sobre el gas no es queda dins: surt tot com a calor.',
+  num:'|Qc| = '+fmt(Qc,0)+' J (menys que Qh perquè el gas és fred i té menys pressió)'},
+ {base:'Base aïllant',cls:'sv-neu',q:null,w:'down',name:'4 → 1 · Compressió adiabàtica',
+  fem:'Tornem el cilindre a la base aïllant i continuem empenyent el pistó.',
+  gas:'No pot cedir calor, així que el treball que hi fem augmenta la seva energia interna i s’escalfa de Tc a Th. Torna a l’estat 1.',
+  en:'<span class="mono">Q = 0 ⇒ −W = ΔU</span>. El treball que fem es queda com a energia interna del gas.',
+  num:'Fem '+fmt(Wad,0)+' J: compensa exactament l’etapa 2 → 3'}];
+let cur=0,raf=0,playing=false;
+function drawCyl(i,t){const s=st(i,t),gh=s.V/Vmax*200,top=250-gh;
+  $('cy-gas-c').setAttribute('y',top);$('cy-gas-c').setAttribute('height',gh);$('cy-gas-h').setAttribute('y',top);$('cy-gas-h').setAttribute('height',gh);
+  $('cy-gas-h').setAttribute('opacity',(.55*(s.T-Tc)/(Th-Tc)).toFixed(2));
+  $('cy-pis').setAttribute('y',top-14);$('cy-rod').setAttribute('height',Math.max(0,top-14));
+  $('cy-temp').textContent='T = '+fmt(s.T,0)+' K · V = '+fmt(s.V,1)+' L · p = '+fmt(s.p,0)+' kPa';
+  $('cy-dot').setAttribute('cx',px(s.V));$('cy-dot').setAttribute('cy',py(s.p));}
+function setStage(i){cur=i;const S=stages[i];
+  document.querySelectorAll('[data-stage]').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.stage===i?'true':'false'));
+  $('cy-base').setAttribute('class',S.cls);$('cy-base-t').textContent=S.base;
+  for(let j=0;j<4;j++)$('cy-s'+j).setAttribute('stroke-width',j===i?5:2);
+  const q=$('cy-q'),qt=$('cy-q-t');
+  if(S.q==='in'){q.setAttribute('class','fl-hot');q.setAttribute('points',arrowPts(262,250,262,170,10));qt.setAttribute('class','sv-m tx-hot');qt.textContent='Qh entra';qt.setAttribute('y',160)}
+  else if(S.q==='out'){q.setAttribute('class','fl-cold');q.setAttribute('points',arrowPts(262,170,262,250,10));qt.setAttribute('class','sv-m tx-cold');qt.textContent='|Qc| surt';qt.setAttribute('y',160)}
+  else{q.setAttribute('points','');qt.textContent='Q = 0';qt.setAttribute('class','sv-m');qt.setAttribute('y',210)}
+  const w=$('cy-w'),wt=$('cy-w-t');
+  if(S.w==='up'){w.setAttribute('points',arrowPts(40,170,40,90,10));wt.textContent='gas fa W';wt.setAttribute('y',190)}
+  else{w.setAttribute('points',arrowPts(40,90,40,170,10));wt.textContent='fem W';wt.setAttribute('y',190)}
+  $('cy-card').innerHTML='<h3 style="margin-top:0">'+S.name+'</h3><dl><dt>Què fem</dt><dd>'+S.fem+'</dd><dt>Què li passa al gas</dt><dd>'+S.gas+'</dd><dt>Energia</dt><dd>'+S.en+'</dd><dt class="est">Exemple</dt><dd class="est mono">'+S.num+'</dd></dl>';}
+function animate(i,onEnd){cancelAnimationFrame(raf);setStage(i);if(reduce){drawCyl(i,1);if(onEnd)onEnd();return}
+  const t0=performance.now(),dur=1900;const step=now=>{const t=Math.min(1,(now-t0)/dur);drawCyl(i,t);if(t<1)raf=requestAnimationFrame(step);else if(onEnd)onEnd();};raf=requestAnimationFrame(step);}
+function stopPlay(){playing=false;cancelAnimationFrame(raf);const b=$('cy-play');if(b)b.textContent='▶ Reprodueix el cicle';}
+function playFrom(i){if(!playing)return;animate(i,()=>{if(playing)setTimeout(()=>playFrom((i+1)%4),reduce?900:250)})}
+$('cy-play').addEventListener('click',()=>{if(playing){stopPlay();return}playing=true;$('cy-play').textContent='❚❚ Atura';playFrom(cur)});
+document.querySelectorAll('[data-stage]').forEach(b=>b.addEventListener('click',()=>{stopPlay();animate(+b.dataset.stage)}));
+setStage(0);drawCyl(0,1);
+
+/* ---- 4 eficiències ---- */
+const ef={qh:$('e-qh'),qc:$('e-qc'),th:$('e-th'),tc:$('e-tc')};
+function upE(){let ok=true;const v={};for(const n in ef){const x=ef[n].value.trim(),num=Number(x),e=$('e-'+n+'-e');
+    if(x===''||!isFinite(num)){e.textContent='Escriu un nombre';ok=false}else if(num<=0&&n!=='qc'){e.textContent='Ha de ser més gran que 0';ok=false}else if(num<0){e.textContent='No pot ser negatiu';ok=false}else e.textContent='';v[n]=num;}
+  if(!ok){$('e-msg').innerHTML='';return}
+  if(v.qc>=v.qh){$('e-qc-e').textContent='Ha de ser més petita que Qh';$('e-msg').innerHTML='';return}
+  if(v.tc>=v.th){$('e-tc-e').textContent='Ha de ser més freda que Th';$('e-msg').innerHTML='';return}
+  const et=1-v.qc/v.qh,ec=1-v.tc/v.th,es=et/ec;
+  $('e-t').textContent=fmt(et*100,1)+' %';$('e-c').textContent=fmt(ec*100,1)+' %';$('e-s').textContent=fmt(es*100,1)+' %';
+  $('e-fill').style.width=Math.min(100,et*100)+'%';$('e-mark').style.left=(ec*100)+'%';$('e-mlabel').style.left=(ec*100)+'%';$('e-mlabel').textContent='ηc = '+fmt(ec*100,1)+' %';
+  let m;if(Math.abs(et-ec)<1e-9)m='<span class="pill info">Màquina ideal (reversible): ηt = ηc</span>';
+  else if(et>ec)m='<span class="pill bad">Impossible: ηt = '+fmt(et*100,1)+' % supera el màxim de Carnot ('+fmt(ec*100,1)+' %)</span>';
+  else m='<span class="pill ok">Possible: aprofita el '+fmt(es*100,1)+' % del que permet la natura</span>';
+  $('e-msg').innerHTML=m;}
+Object.values(ef).forEach(i=>i.addEventListener('input',upE));
+document.querySelectorAll('[data-preset]').forEach(b=>b.addEventListener('click',()=>{const p=b.dataset.preset.split(',');ef.qh.value=p[0];ef.qc.value=p[1];ef.th.value=p[2];ef.tc.value=p[3];upE()}));
+upE();
+
+/* ---- 5 frigorífic ---- */
+const fw=$('f-w'),fqc=$('f-qc');
+function upF(){const W=+fw.value,Q=+fqc.value,H=W+Q;
+  $('f-w-o').textContent=W+' J';$('f-qc-o').textContent=Q+' J';$('f-in').textContent=W+' + '+Q+' = '+H+' J';$('f-out').textContent=H+' J';$('f-cop').textContent=fmt(Q/W,1);
+  $('f-qh-l').textContent='|Qh| = '+H+' J → cuina';$('f-qc-l').textContent='Qc = '+Q+' J ← interior';$('f-w-l').textContent='W = '+W+' J';
+  const s=v=>Math.max(3,v*.045);
+  $('f-a-qh').setAttribute('points',arrowPts(340,108,340,52,s(H)));
+  $('f-a-qc').setAttribute('points',Q>0?arrowPts(340,422,340,360,s(Q)):'');
+  $('f-a-w').setAttribute('points',arrowPts(636,233,554,233,s(W)));}
+[fw,fqc].forEach(e=>e.addEventListener('input',upF));upF();
+$('f-rev').addEventListener('click',()=>{const a=$('f-ans');a.hidden=!a.hidden;$('f-rev').setAttribute('aria-expanded',String(!a.hidden));$('f-rev').textContent=a.hidden?'Mostra la resposta':'Amaga la resposta'});
+
+/* ---- 6 entropia ---- */
+const swr=$('s-w');
+function upS(){const W=+swr.value,Qc=600-W,Sh=-600/600,Sc=Qc/300,St=Sh+Sc,Wp=300*St;
+  $('s-w-o').textContent=W+' J';$('s-qc').textContent=Qc+' J';$('s-sh').textContent=fmt(Sh,2)+' J/K';$('s-sc').textContent='+'+fmt(Sc,2)+' J/K';
+  $('s-st').textContent=(St>0?'+':'')+fmt(St,2)+' J/K';$('s-wp').textContent=fmt(Wp,0)+' J';
+  const bw=$('s-bw'),bp=$('s-bp'),bc=$('s-bc');bw.style.flexBasis=(W/6)+'%';bp.style.flexBasis=((300-W)/6)+'%';bc.style.flexBasis='50%';
+  bw.textContent=W>=40?'W '+W+' J':'';bp.textContent=(300-W)>=40?'perdut '+(300-W)+' J':'';bc.textContent='300 J';
+  document.querySelectorAll('[data-sw]').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.sw===W?'true':'false'));}
+swr.addEventListener('input',upS);document.querySelectorAll('[data-sw]').forEach(b=>b.addEventListener('click',()=>{swr.value=b.dataset.sw;upS()}));upS();
+
+/* ---- 7 quiz ---- */
+const Q=[
+ ['En una central tèrmica que funciona de manera estable, quant val ΔU del fluid en un cicle complet?',['Positiu, perquè entra calor','Zero','Negatiu, perquè surt treball','Depèn de Qh'],1,'El fluid torna sempre al mateix estat: tot el que entra, surt.'],
+ ['Si prenem tota la central com a sistema, el treball de la bomba We…',['entra des de fora','circula per dins i no creua la frontera','es perd com a calor','és la calor cedida al riu'],1,'Va de la turbina a la bomba sense sortir del sistema. Per això el treball que surt és W = Ws − We.'],
+ ['Una màquina treballa entre 500 K i 300 K. Quin és el rendiment màxim possible?',['40 %','60 %','100 %','66 %'],0,'ηc = 1 − 300/500 = 0,4.'],
+ ['Per què ni la màquina de Carnot arriba al 100 %?',['Pels fregaments','Perquè ha de cedir calor a la font freda per tancar el cicle','Perquè el gas ideal no existeix','Perquè les etapes són massa lentes'],1,'La màquina ideal no té fregaments, però cedir |Qc| és obligatori per tornar a l’estat inicial.'],
+ ['A l’etapa 3 → 4 (compressió isotèrmica), el treball que fem sobre el gas…',['augmenta la seva energia interna','surt tot com a calor cap a la font freda','desapareix','l’escalfa fins a Th'],1,'La temperatura no canvia (ΔU = 0), així que −W = |Qc|.'],
+ ['Una màquina absorbeix 300 MJ i en cedeix 180 MJ treballant entre 400 K i 300 K. És possible?',['Sí, és una màquina real','Sí, és una màquina ideal','No: el seu 40 % supera el màxim del 25 %','Falten dades'],2,'ηt = 40 % i ηc = 1 − 300/400 = 25 %. Cap màquina supera Carnot.'],
+ ['Un dia de calor deixem la porta de la nevera oberta. Què passa amb la cuina?',['Es refreda','S’escalfa','Es queda igual','Depèn del COP'],1,'La calor torna a la cuina per la reixa i a més s’hi afegeix l’electricitat consumida.'],
+ ['Una màquina real crea ΔSt = 0,2 kJ/K i la font freda és a 300 K. Quant treball s’ha perdut?',['0,2 kJ','60 kJ','1.500 kJ','Cap: l’energia es conserva'],1,'Wp = Tc · ΔSt = 300 · 0,2 = 60 kJ. L’energia es conserva, però el treball no s’ha obtingut.']];
+const ans=new Array(Q.length).fill(null);
+function renderQ(){$('quiz').innerHTML=Q.map((q,i)=>'<div class="q" id="q'+i+'"><h4>'+(i+1)+'. '+q[0]+'</h4>'+q[1].map((o,j)=>'<label for="q'+i+'o'+j+'"><input type="radio" name="q'+i+'" id="q'+i+'o'+j+'" value="'+j+'"> <span>'+o+'</span></label>').join('')+
+  '<div class="row" style="margin-top:8px"><button class="btn" type="button" data-check="'+i+'">Comprova</button><span class="err" id="q'+i+'e"></span></div><div class="fb" id="q'+i+'f"></div></div>').join('');
+  document.querySelectorAll('[data-check]').forEach(b=>b.addEventListener('click',()=>check(+b.dataset.check)));
+  document.querySelectorAll('.q input').forEach(r=>r.addEventListener('change',()=>{const i=+r.name.slice(1);$('q'+i+'e').textContent=''}));
+  ans.fill(null);score();}
+function check(i){const sel=document.querySelector('input[name="q'+i+'"]:checked');if(!sel){$('q'+i+'e').textContent='Tria una resposta primer';return}
+  const v=+sel.value,ok=v===Q[i][2];ans[i]=ok;
+  document.querySelectorAll('#q'+i+' label').forEach((l,j)=>{l.classList.remove('right','wrong');if(j===Q[i][2])l.classList.add('right');else if(j===v)l.classList.add('wrong')});
+  $('q'+i+'f').innerHTML=(ok?'<span class="pill ok">Correcte</span> ':'<span class="pill bad">No és aquesta</span> ')+Q[i][3];score();}
+function score(){const n=ans.filter(a=>a===true).length;$('q-score').textContent=n+' de '+Q.length+' correctes'}
+$('q-reset').addEventListener('click',renderQ);renderQ();
+
+show((location.hash||'').slice(1),false);
+})();
+</script>
+<script>
+(function(){
+  var emb=false;try{emb=window.self!==window.top}catch(e){emb=true}
+  if(emb)document.body.classList.add('embed');
+  var d=document,root=d.documentElement;
+  if(d.fullscreenEnabled&&root.requestFullscreen){
+    var b=d.createElement('button');b.type='button';b.className='btn';b.id='fs-btn';b.textContent='⛶ Pantalla completa';
+    b.addEventListener('click',function(){if(d.fullscreenElement){d.exitFullscreen().catch(function(){})}else{root.requestFullscreen().catch(function(){})}});
+    d.addEventListener('fullscreenchange',function(){b.textContent=d.fullscreenElement?'✕ Surt de pantalla completa':'⛶ Pantalla completa'});
+    var seg=d.querySelector('.top .seg');if(seg)seg.parentNode.insertBefore(b,seg);
+  }else if(emb){
+    var a=d.createElement('a');a.className='btn';a.href='https://tecnolyd.github.io/artefactes/fonaments-termodinamica.html';a.target='_blank';a.rel='noopener';a.textContent='⛶ Obre a pantalla completa';
+    var seg2=d.querySelector('.top .seg');if(seg2)seg2.parentNode.insertBefore(a,seg2);
+  }
+  var br=d.querySelector('.brand');if(br){var v=d.createElement('span');v.className='ver';v.textContent='v4';br.appendChild(v);}
+})();
+</script>
+
+</html>
