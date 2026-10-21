@@ -1,0 +1,362 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Forces i moments</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=STIX+Two+Text:ital@1&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#FBFAF6; --grid:#E4E8EE; --ink:#1E2A3A; --ink-soft:#5B6778; --panel:#FFFFFF; --line:#D5DAE1;
+  --fx:#12805C; --fy:#C8511F; --arm:#6A55C9; --bar:#AEB6C2;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#141A22; --grid:#222B36; --ink:#E6EAF0; --ink-soft:#9AA6B6; --panel:#1B232D; --line:#2E3946;
+    --fx:#3FC495; --fy:#F08A5A; --arm:#A796F2; --bar:#4A5666; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#141A22; --grid:#222B36; --ink:#E6EAF0; --ink-soft:#9AA6B6; --panel:#1B232D; --line:#2E3946;
+  --fx:#3FC495; --fy:#F08A5A; --arm:#A796F2; --bar:#4A5666; color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0; background:var(--paper); color:var(--ink); font-family:"Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", sans-serif; font-size:17px; line-height:1.55}
+.math{font-family:"STIX Two Text", "Cambria Math", Georgia, serif; font-style:italic}
+main{max-width:1080px; margin:0 auto; padding-block:28px 48px; padding-left:max(16px, env(safe-area-inset-left, 0px)); padding-right:max(16px, env(safe-area-inset-right, 0px))}
+h1{font-size:clamp(1.6rem,4vw,2.3rem); line-height:1.15; margin:0 0 6px; font-weight:700; letter-spacing:-0.01em}
+h2{font-size:clamp(1.3rem,3vw,1.7rem); margin:0 0 4px; font-weight:700}
+.lead{color:var(--ink-soft); margin:0 0 14px; max-width:64ch}
+nav{display:flex; gap:10px; flex-wrap:wrap; margin:0 0 28px}
+nav a{color:var(--ink); text-decoration:none; border:1px solid var(--line); border-radius:999px; padding:6px 14px; font-size:15px}
+nav a:hover{border-color:var(--ink-soft)}
+section{margin:0 0 48px}
+.stage{display:grid; grid-template-columns:minmax(0,1.3fr) minmax(0,1fr); gap:22px; align-items:start; margin-top:14px}
+@media (max-width:860px){.stage{grid-template-columns:minmax(0,1fr)}}
+.board{background-color:var(--panel); background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px); background-size:24px 24px; border:1px solid var(--line); border-radius:14px; padding:8px; touch-action:none}
+svg{display:block; width:100%; height:auto; max-width:100%; overflow:hidden; user-select:none; -webkit-user-select:none}
+.hint{font-size:14px; color:var(--ink-soft); margin:8px 4px 0}
+.side{display:flex; flex-direction:column; gap:14px}
+.card{background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:14px 18px}
+.ctl{margin:0 0 6px}
+.ctl label{display:flex; justify-content:space-between; align-items:baseline; font-weight:700; font-size:15px}
+.ctl output{font-variant-numeric:tabular-nums; font-weight:700}
+input[type=range]{width:100%; margin:6px 0 8px; accent-color:var(--ink)}
+.seg{display:flex; gap:6px; flex-wrap:wrap; margin-top:4px}
+button{font:inherit; font-size:14px; color:var(--ink); background:transparent; border:1px solid var(--line); border-radius:999px; padding:6px 14px; cursor:pointer}
+button:hover{border-color:var(--ink-soft)}
+button[aria-pressed="true"]{background:var(--ink); color:var(--paper); border-color:var(--ink)}
+button:focus-visible,input:focus-visible,a:focus-visible{outline:2px solid var(--arm); outline-offset:2px}
+.calc{font-variant-numeric:tabular-nums}
+.calc .ln{padding:8px 0; border-bottom:1px solid var(--line); display:flex; gap:10px; align-items:baseline}
+.calc .ln > span:last-child{flex:1; min-width:0}
+.calc .ln:last-child{border-bottom:0}
+.sw{width:16px; height:5px; border-radius:3px; display:inline-block; flex:none; transform:translateY(-3px)}
+.big{font-size:1.25rem; font-weight:700}
+.sense{font-weight:700}
+.note{font-size:14px; color:var(--ink-soft); margin:6px 0 2px}
+.explain{margin-top:22px; display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:14px 28px}
+.explain h3{font-size:1.05rem; margin:0 0 4px}
+.explain p{margin:0; color:var(--ink-soft)}
+.explain p .math{color:var(--ink)}
+</style>
+
+
+<main>
+  <h1>Forces i moments</h1>
+  <p class="lead">Arrossega la punta de la força o fes servir els controls. Tots els números es recalculen al moment.</p>
+  <nav><a href="#descomposicio">Descomposició d'una força</a><a href="#moments">Moment d'una força</a></nav>
+
+  <!-- ============ DESCOMPOSICIÓ ============ -->
+  <section id="descomposicio">
+    <h2>Descomposició d'una força</h2>
+    <p class="lead">Qualsevol força es pot substituir per dues forces perpendiculars, una horitzontal i una vertical, que fan exactament el mateix efecte.</p>
+    <div class="stage">
+      <div>
+        <div class="board">
+          <svg id="s1" viewBox="0 0 520 420" role="img" aria-label="Força descomposta en components horitzontal i vertical">
+            <defs>
+              <marker id="m-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="11" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--ink)"/></marker>
+              <marker id="m-fx" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="11" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--fx)"/></marker>
+              <marker id="m-fy" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="11" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--fy)"/></marker>
+            </defs>
+            <line x1="30" y1="210" x2="490" y2="210" stroke="var(--ink-soft)" stroke-width="1.2"/>
+            <line x1="260" y1="20" x2="260" y2="400" stroke="var(--ink-soft)" stroke-width="1.2"/>
+            <text x="494" y="226" font-size="13" fill="var(--ink-soft)" text-anchor="end">x</text>
+            <text x="268" y="32" font-size="13" fill="var(--ink-soft)">y</text>
+            <line id="d1a" stroke="var(--ink-soft)" stroke-width="1.2" stroke-dasharray="5 5"/>
+            <line id="d1b" stroke="var(--ink-soft)" stroke-width="1.2" stroke-dasharray="5 5"/>
+            <line id="fxA" stroke="var(--fx)" stroke-width="5" marker-end="url(#m-fx)"/>
+            <line id="fyA" stroke="var(--fy)" stroke-width="5" marker-end="url(#m-fy)"/>
+            <path id="arc1" fill="none" stroke="var(--ink)" stroke-width="1.4"/>
+            <line id="fA" stroke="var(--ink)" stroke-width="3.5" marker-end="url(#m-ink)"/>
+            <circle cx="260" cy="210" r="5" fill="var(--ink)"/>
+            <circle id="tip1" r="15" fill="var(--ink)" opacity="0.08" style="cursor:grab"/>
+            <text id="fL" class="math" font-size="19" fill="var(--ink)">F</text>
+            <text id="fxL" class="math" font-size="17" fill="var(--fx)">Fx</text>
+            <text id="fyL" class="math" font-size="17" fill="var(--fy)">Fy</text>
+            <text id="thL" class="math" font-size="16" fill="var(--ink)">θ</text>
+          </svg>
+        </div>
+        <p class="hint">Arrossega la punta de la fletxa per canviar la força.</p>
+      </div>
+      <div class="side">
+        <div class="card">
+          <div class="ctl"><label for="F1">Mòdul de la força <output id="F1o"></output></label><input type="range" id="F1" min="10" max="100" step="1" value="60"></div>
+          <div class="ctl"><label for="p1">Direcció <output id="p1o"></output></label><input type="range" id="p1" min="0" max="359" step="1" value="35"></div>
+          <div class="ctl"><label>L'angle θ es mesura des de…</label>
+            <div class="seg"><button id="refH" aria-pressed="true">l'horitzontal</button><button id="refV" aria-pressed="false">la vertical</button></div>
+          </div>
+        </div>
+        <div class="card calc" aria-live="polite">
+          <div class="ln"><span class="sw" style="background:var(--fx)"></span><span id="c1x"></span></div>
+          <div class="ln"><span class="sw" style="background:var(--fy)"></span><span id="c1y"></span></div>
+          <div class="ln"><span class="sw" style="background:var(--ink)"></span><span id="c1f"></span></div>
+          <p class="note" id="n1"></p>
+        </div>
+      </div>
+    </div>
+    <div class="explain">
+      <div><h3>El costat que toca l'angle va amb el cosinus</h3><p>La component que forma part de l'angle θ és <span class="math">F · cos θ</span>; l'altra és <span class="math">F · sin θ</span>. Canvia la referència a "la vertical" i veuràs com s'intercanvien.</p></div>
+      <div><h3>El signe el dona el dibuix</h3><p>Els càlculs donen la mida de cada component. Si apunta cap a l'esquerra o cap avall, se li posa signe negatiu.</p></div>
+      <div><h3>Comprovació</h3><p>Les components formen un triangle rectangle amb la força com a hipotenusa: <span class="math">Fx² + Fy² = F²</span>.</p></div>
+    </div>
+  </section>
+
+  <!-- ============ MOMENTS ============ -->
+  <section id="moments">
+    <h2>Moment d'una força</h2>
+    <p class="lead">Una barra pot girar al voltant del punt O. El moment mesura com de fort la fa girar la força, i depèn de la distància entre O i la línia d'acció de la força.</p>
+    <div class="stage">
+      <div>
+        <div class="board">
+          <svg id="s2" viewBox="0 0 560 460" role="img" aria-label="Barra amb pivot, força aplicada, línia d'acció i braç del moment">
+            <defs>
+              <marker id="m2-ink" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="11" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--ink)"/></marker>
+              <marker id="m2-fx" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="11" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--fx)"/></marker>
+              <marker id="m2-fy" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="11" markerHeight="11" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--fy)"/></marker>
+              <marker id="m2-arm" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--arm)"/></marker>
+            </defs>
+            <line x1="20" y1="230" x2="540" y2="230" stroke="var(--ink-soft)" stroke-width="1" opacity="0.5"/>
+            <line id="bar" stroke="var(--bar)" stroke-width="14" stroke-linecap="round"/>
+            <path d="M180 230 L166 256 L194 256 Z" fill="none" stroke="var(--ink-soft)" stroke-width="1.5"/>
+            <line x1="156" y1="258" x2="204" y2="258" stroke="var(--ink-soft)" stroke-width="1.5"/>
+            <line id="loa" stroke="var(--ink-soft)" stroke-width="1.3" stroke-dasharray="7 6"/>
+            <g id="gPerp">
+              <line id="perp" stroke="var(--arm)" stroke-width="3.5"/>
+              <path id="rt" fill="none" stroke="var(--arm)" stroke-width="1.5"/>
+              <text id="dL" class="math" font-size="17" fill="var(--arm)">d</text>
+              <path id="arcG" fill="none" stroke="var(--ink)" stroke-width="1.3"/>
+              <text id="gL" class="math" font-size="16" fill="var(--ink)">γ</text>
+            </g>
+            <g id="gComp">
+              <line id="lx" stroke="var(--fx)" stroke-width="1.2" stroke-dasharray="4 5"/>
+              <line id="ly" stroke="var(--fy)" stroke-width="1.2" stroke-dasharray="4 5"/>
+              <line id="armX" stroke="var(--fy)" stroke-width="3"/>
+              <line id="armY" stroke="var(--fx)" stroke-width="3"/>
+              <line id="cFx" stroke="var(--fx)" stroke-width="4.5" marker-end="url(#m2-fx)"/>
+              <line id="cFy" stroke="var(--fy)" stroke-width="4.5" marker-end="url(#m2-fy)"/>
+              <text id="xL" class="math" font-size="16" fill="var(--fy)">x</text>
+              <text id="yL" class="math" font-size="16" fill="var(--fx)">y</text>
+            </g>
+            <path id="rot" fill="none" stroke="var(--arm)" stroke-width="2.5" marker-end="url(#m2-arm)"/>
+            <line id="f2" stroke="var(--ink)" stroke-width="3.5" marker-end="url(#m2-ink)"/>
+            <circle cx="180" cy="230" r="6" fill="var(--panel)" stroke="var(--ink)" stroke-width="2"/>
+            <circle id="P" r="5" fill="var(--ink)"/>
+            <circle id="tip2" r="15" fill="var(--ink)" opacity="0.08" style="cursor:grab"/>
+            <text x="166" y="220" font-size="15" font-weight="700" fill="var(--ink)" text-anchor="end">O</text>
+            <text id="PL" font-size="15" font-weight="700" fill="var(--ink)">P</text>
+            <text id="f2L" class="math" font-size="19" fill="var(--ink)">F</text>
+          </svg>
+        </div>
+        <p class="hint">Arrossega la punta de la força. La línia discontínua és la seva línia d'acció.</p>
+      </div>
+      <div class="side">
+        <div class="card">
+          <div class="ctl"><label for="b2">Inclinació de la barra <output id="b2o"></output></label><input type="range" id="b2" min="-60" max="60" step="1" value="20"></div>
+          <div class="ctl"><label for="r2">Distància OP <output id="r2o"></output></label><input type="range" id="r2" min="0.2" max="2" step="0.05" value="1.5"></div>
+          <div class="ctl"><label for="F2">Mòdul de la força <output id="F2o"></output></label><input type="range" id="F2" min="10" max="100" step="1" value="60"></div>
+          <div class="ctl"><label for="p2">Direcció de la força <output id="p2o"></output></label><input type="range" id="p2" min="0" max="359" step="1" value="240"></div>
+          <div class="ctl"><label>Com calculem el moment?</label>
+            <div class="seg"><button id="mPerp" aria-pressed="true">Distància perpendicular</button><button id="mComp" aria-pressed="false">Per components</button></div>
+          </div>
+        </div>
+        <div class="card calc" aria-live="polite" id="calc2"></div>
+      </div>
+    </div>
+    <div class="explain">
+      <div><h3>Distància a la recta, no al punt</h3><p>El braç <span class="math">d</span> és la distància mínima de O a la línia d'acció. Només coincideix amb OP quan la força és perpendicular a la barra.</p></div>
+      <div><h3>Dos camins, el mateix resultat</h3><p>Pots fer <span class="math">F · d</span>, o bé descompondre la força i sumar el moment de cada component amb el seu propi braç. Canvia de mètode i compara.</p></div>
+      <div><h3>Conveni de signes</h3><p>Aquí el moment és positiu si fa girar en sentit antihorari i negatiu si fa girar en sentit horari. Si la línia d'acció passa per O, el moment és zero.</p></div>
+    </div>
+  </section>
+</main>
+
+<script>
+(function(){
+  function $(id){return document.getElementById(id);}
+  function set(el,a){for(var k in a) el.setAttribute(k,a[k]);}
+  function fmt(v,n){var s=v.toFixed(n); if(/^-0[.,]?0*$/.test(s)) s=s.slice(1); return s.replace('.',',').replace(/^-/,'−');}
+  function sgn(v,n){var s=fmt(Math.abs(v),n); return (v<-Math.pow(10,-n)/2?'−':'+')+s;}
+  function par(v,n){return v<-Math.pow(10,-n)/2 ? '('+fmt(v,n)+')' : fmt(v,n);}
+  var D=Math.PI/180;
+  function arcPath(cx,cy,rad,a1,a2){
+    var diff=((a2-a1)%360+540)%360-180, e=a1+diff;
+    var x1=cx+rad*Math.cos(a1*D), y1=cy-rad*Math.sin(a1*D), x2=cx+rad*Math.cos(e*D), y2=cy-rad*Math.sin(e*D);
+    return {d:'M'+x1+' '+y1+' A'+rad+' '+rad+' 0 0 '+(diff>0?0:1)+' '+x2+' '+y2, mid:a1+diff/2, size:Math.abs(diff)};
+  }
+  function arrow(el,x1,y1,x2,y2){
+    var len=Math.hypot(x2-x1,y2-y1);
+    if(len<4){el.style.opacity=0; return;} el.style.opacity=1;
+    set(el,{x1:x1,y1:y1,x2:x2,y2:y2});
+  }
+  function toSvg(svg,e){var pt=svg.createSVGPoint(); pt.x=e.clientX; pt.y=e.clientY; return pt.matrixTransform(svg.getScreenCTM().inverse());}
+  function drag(svg,onMove){
+    var on=false;
+    svg.addEventListener('pointerdown',function(e){on=true; try{svg.setPointerCapture(e.pointerId);}catch(_){} onMove(toSvg(svg,e));});
+    svg.addEventListener('pointermove',function(e){if(on) onMove(toSvg(svg,e));});
+    svg.addEventListener('pointerup',function(){on=false;});
+    svg.addEventListener('pointercancel',function(){on=false;});
+  }
+  function toggle(a,b,cb){
+    a.addEventListener('click',function(){a.setAttribute('aria-pressed','true'); b.setAttribute('aria-pressed','false'); cb();});
+    b.addEventListener('click',function(){b.setAttribute('aria-pressed','true'); a.setAttribute('aria-pressed','false'); cb();});
+  }
+
+  /* ---------- Part 1: descomposició ---------- */
+  var O1={x:260,y:210}, K1=2.0;
+  var F1=$('F1'), P1=$('p1');
+  function up1(){
+    var F=+F1.value, phi=+P1.value, fx=F*Math.cos(phi*D), fy=F*Math.sin(phi*D);
+    if(Math.abs(fx)<1e-9) fx=0; if(Math.abs(fy)<1e-9) fy=0;
+    var tx=O1.x+K1*fx, ty=O1.y-K1*fy;
+    $('F1o').textContent=F+' N'; $('p1o').textContent=phi+'°';
+    arrow($('fA'),O1.x,O1.y,tx,ty); set($('tip1'),{cx:tx,cy:ty});
+    arrow($('fxA'),O1.x,O1.y,tx,O1.y); arrow($('fyA'),O1.x,O1.y,O1.x,ty);
+    set($('d1a'),{x1:tx,y1:ty,x2:tx,y2:O1.y}); set($('d1b'),{x1:tx,y1:ty,x2:O1.x,y2:ty});
+    var ux=Math.cos(phi*D), uy=Math.sin(phi*D);
+    set($('fL'),{x:tx+ux*16-6, y:ty-uy*16+6});
+    set($('fxL'),{x:(O1.x+tx)/2-8, y: fy>=0 ? O1.y+24 : O1.y-12});
+    set($('fyL'),{x: fx>=0 ? O1.x-30 : O1.x+10, y:(O1.y+ty)/2+6});
+    var horiz=$('refH').getAttribute('aria-pressed')==='true';
+    var ref = horiz ? (fx>=0?0:180) : (fy>=0?90:270);
+    var a=arcPath(O1.x,O1.y,44,ref,phi);
+    var th=a.size;
+    if(th>0.5){ $('arc1').setAttribute('d',a.d); $('arc1').style.opacity=1; $('thL').style.opacity=1;
+      set($('thL'),{x:O1.x+62*Math.cos(a.mid*D)-5, y:O1.y-62*Math.sin(a.mid*D)+6}); }
+    else { $('arc1').style.opacity=0; $('thL').style.opacity=0; }
+    var cx = horiz ? 'cos' : 'sin', cy = horiz ? 'sin' : 'cos';
+    var ax=Math.abs(fx), ay=Math.abs(fy);
+    $('c1x').innerHTML='<span><span class="math">|Fx| = F · '+cx+' θ</span> = '+F+' · '+cx+' '+fmt(th,0)+'° = <b>'+fmt(ax,2)+' N</b><br>'+
+      '<span class="math">Fx</span> = <span class="big">'+sgn(fx,2)+' N</span> '+(ax<0.005?'':(fx>0?'(cap a la dreta)':'(cap a l\'esquerra)'))+'</span>';
+    $('c1y').innerHTML='<span><span class="math">|Fy| = F · '+cy+' θ</span> = '+F+' · '+cy+' '+fmt(th,0)+'° = <b>'+fmt(ay,2)+' N</b><br>'+
+      '<span class="math">Fy</span> = <span class="big">'+sgn(fy,2)+' N</span> '+(ay<0.005?'':(fy>0?'(cap amunt)':'(cap avall)'))+'</span>';
+    $('c1f').innerHTML='<span>Comprovació: <span class="math">√(Fx² + Fy²)</span> = √('+fmt(ax,2)+'² + '+fmt(ay,2)+'²) = <b>'+fmt(Math.hypot(fx,fy),2)+' N</b></span>';
+    $('n1').textContent = horiz ? "θ és l'angle entre la força i l'eix horitzontal: Fx toca l'angle, per això va amb el cosinus."
+                                : "θ és l'angle entre la força i l'eix vertical: ara és Fy la que toca l'angle i va amb el cosinus.";
+  }
+  [F1,P1].forEach(function(el){el.addEventListener('input',up1);});
+  toggle($('refH'),$('refV'),up1);
+  drag($('s1'),function(p){
+    var dx=(p.x-O1.x)/K1, dy=(O1.y-p.y)/K1, L=Math.hypot(dx,dy); if(L<2) return;
+    F1.value=Math.round(Math.max(10,Math.min(100,L)));
+    var a=Math.round(Math.atan2(dy,dx)/D); if(a<0) a+=360; if(a>=360) a-=360; P1.value=a; up1();
+  });
+  up1();
+
+  /* ---------- Part 2: moments ---------- */
+  var O2={x:180,y:230}, KR=120, KF=1.3, BARLEN=252;
+  var B2=$('b2'), R2=$('r2'), F2=$('F2'), P2=$('p2');
+  function up2(){
+    var beta=+B2.value, r=+R2.value, F=+F2.value, phi=+P2.value;
+    var bx=Math.cos(beta*D), by=Math.sin(beta*D);
+    var x=r*bx, y=r*by;
+    var fx=F*Math.cos(phi*D), fy=F*Math.sin(phi*D);
+    if(Math.abs(fx)<1e-9) fx=0; if(Math.abs(fy)<1e-9) fy=0;
+    var M=x*fy-y*fx, d=Math.abs(M)/F;
+    $('b2o').textContent=fmt(beta,0)+'°'; $('r2o').textContent=fmt(r,2)+' m'; $('F2o').textContent=F+' N'; $('p2o').textContent=phi+'°';
+
+    var px=O2.x+KR*x, py=O2.y-KR*y;
+    set($('bar'),{x1:O2.x,y1:O2.y,x2:O2.x+BARLEN*bx,y2:O2.y-BARLEN*by});
+    set($('P'),{cx:px,cy:py});
+    var nx=-by, ny=bx; var side = (Math.cos(phi*D)*nx+Math.sin(phi*D)*ny)>0 ? -1 : 1;
+    set($('PL'),{x:px+side*nx*20-5, y:py-side*ny*20+5});
+    var tx=px+KF*fx, ty=py-KF*fy;
+    arrow($('f2'),px,py,tx,ty); set($('tip2'),{cx:tx,cy:ty});
+    var ux=Math.cos(phi*D), uy=Math.sin(phi*D);
+    set($('f2L'),{x:tx+ux*16-6, y:ty-uy*16+6});
+    set($('loa'),{x1:px-ux*900,y1:py+uy*900,x2:px+ux*900,y2:py-uy*900});
+
+    var perpMode=$('mPerp').getAttribute('aria-pressed')==='true';
+    $('gPerp').style.display=perpMode?'':'none'; $('gComp').style.display=perpMode?'none':''; $('loa').style.display=perpMode?'':'none';
+
+    var t=-(x*ux+y*uy), hx=x+t*ux, hy=y+t*uy;
+    var Hx=O2.x+KR*hx, Hy=O2.y-KR*hy;
+    var gamma=Math.acos(Math.max(-1,Math.min(1,-(bx*ux+by*uy))))/D;
+    if(perpMode){
+      if(d*KR>6){
+        arrow($('perp'),O2.x,O2.y,Hx,Hy);
+        var wx=(O2.x-Hx), wy=(O2.y-Hy), wl=Math.hypot(wx,wy); wx/=wl; wy/=wl;
+        var lx=-ux*(t>0?-1:1), ly=uy*(t>0?-1:1);
+        var q=10;
+        $('rt').setAttribute('d','M'+(Hx+q*wx)+' '+(Hy+q*wy)+' L'+(Hx+q*wx+q*lx)+' '+(Hy+q*wy+q*ly)+' L'+(Hx+q*lx)+' '+(Hy+q*ly));
+        $('rt').style.opacity=1; $('dL').style.opacity=1;
+        var mx=(O2.x+Hx)/2, my=(O2.y+Hy)/2, ox=-wy, oy=wx; if(ox*(px-mx)+oy*(py-my)>0){ox=-ox; oy=-oy;} set($('dL'),{x:mx+ox*16-5, y:my+oy*16+6});
+      } else { $('perp').style.opacity=0; $('rt').style.opacity=0; $('dL').style.opacity=0; }
+      var a=arcPath(px,py,38,beta+180,phi);
+      if(a.size>2 && a.size<178){ $('arcG').setAttribute('d',a.d); $('arcG').style.opacity=1; $('gL').style.opacity=1;
+        set($('gL'),{x:px+54*Math.cos(a.mid*D)-5, y:py-54*Math.sin(a.mid*D)+6}); }
+      else { $('arcG').style.opacity=0; $('gL').style.opacity=0; }
+    } else {
+      arrow($('cFx'),px,py,px+KF*fx,py); arrow($('cFy'),px,py,px,py-KF*fy);
+      set($('lx'),{x1:px-900,y1:py,x2:px+900,y2:py});
+      set($('ly'),{x1:px,y1:py-900,x2:px,y2:py+900});
+      set($('armX'),{x1:O2.x,y1:O2.y,x2:px,y2:O2.y}); $('armX').style.opacity=Math.abs(x)*KR>3?1:0;
+      set($('armY'),{x1:O2.x,y1:O2.y,x2:O2.x,y2:py}); $('armY').style.opacity=Math.abs(y)*KR>3?1:0;
+      set($('xL'),{x:(O2.x+px)/2-4, y: y>=0 ? O2.y+20 : O2.y-10});
+      set($('yL'),{x: x>=0 ? O2.x-18 : O2.x+8, y:(O2.y+py)/2+5});
+    }
+
+    var zero=Math.abs(M)<0.05;
+    if(zero){ $('rot').style.opacity=0; }
+    else {
+      $('rot').style.opacity=1;
+      var R=56, a1=M>0?150:210, a2=M>0?210:150;
+      var x1=O2.x+R*Math.cos(a1*D), y1=O2.y-R*Math.sin(a1*D), x2=O2.x+R*Math.cos(a2*D), y2=O2.y-R*Math.sin(a2*D);
+      $('rot').setAttribute('d','M'+x1+' '+y1+' A'+R+' '+R+' 0 0 '+(M>0?0:1)+' '+x2+' '+y2);
+    }
+    var sense = zero ? 'No gira: la línia d\'acció passa per O.' : (M>0 ? 'Gira en sentit antihorari (+)' : 'Gira en sentit horari (−)');
+
+    var h='';
+    if(perpMode){
+      h+='<div class="ln"><span>Angle entre la barra i la força: <span class="math">γ</span> = <b>'+fmt(gamma,1)+'°</b></span></div>';
+      h+='<div class="ln"><span class="sw" style="background:var(--arm)"></span><span>Braç: <span class="math">d = OP · sin γ</span> = '+fmt(r,2)+' · sin '+fmt(gamma,1)+'° = <b>'+fmt(d,3)+' m</b></span></div>';
+      h+='<div class="ln"><span>Moment: <span class="math">M = F · d</span> = '+F+' · '+fmt(d,3)+' = <span class="big">'+fmt(F*d,2)+' N·m</span></span></div>';
+      h+='<div class="ln"><span class="sense">'+sense+'</span></div>';
+      h+='<p class="note">'+(Math.abs(gamma-90)<0.5?'Força perpendicular a la barra: el braç és tota la distància OP.':'Fixa\'t que d és més petit que OP = '+fmt(r,2)+' m, perquè la força no és perpendicular a la barra.')+'</p>';
+    } else {
+      h+='<div class="ln"><span>Posició de P: <span class="math">x = OP · cos β</span> = '+fmt(x,3)+' m, <span class="math">y = OP · sin β</span> = '+fmt(y,3)+' m</span></div>';
+      h+='<div class="ln"><span class="sw" style="background:var(--fx)"></span><span><span class="math">Fx</span> = '+sgn(fx,2)+' N, el seu braç és la distància vertical <span class="math">y</span></span></div>';
+      h+='<div class="ln"><span class="sw" style="background:var(--fy)"></span><span><span class="math">Fy</span> = '+sgn(fy,2)+' N, el seu braç és la distància horitzontal <span class="math">x</span></span></div>';
+      h+='<div class="ln"><span><span class="math">M = Fy · x − Fx · y</span> = '+par(fy,2)+' · '+par(x,3)+' − '+par(fx,2)+' · '+par(y,3)+' = <span class="big">'+fmt(M,2)+' N·m</span></span></div>';
+      h+='<div class="ln"><span class="sense">'+sense+'</span></div>';
+      h+='<p class="note">Amb la distància perpendicular surt el mateix valor: F · d = '+fmt(F*d,2)+' N·m. El signe només indica el sentit de gir.</p>';
+    }
+    $('calc2').innerHTML=h;
+  }
+  [B2,R2,F2,P2].forEach(function(el){el.addEventListener('input',up2);});
+  toggle($('mPerp'),$('mComp'),up2);
+  drag($('s2'),function(p){
+    var beta=+B2.value, r=+R2.value;
+    var px=O2.x+KR*r*Math.cos(beta*D), py=O2.y-KR*r*Math.sin(beta*D);
+    var dx=(p.x-px)/KF, dy=(py-p.y)/KF, L=Math.hypot(dx,dy); if(L<3) return;
+    F2.value=Math.round(Math.max(10,Math.min(100,L)));
+    var a=Math.round(Math.atan2(dy,dx)/D); if(a<0) a+=360; if(a>=360) a-=360; P2.value=a; up2();
+  });
+  up2();
+})();
+</script>
+
+</body></html>
