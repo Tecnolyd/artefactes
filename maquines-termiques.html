@@ -1,0 +1,886 @@
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>[hidden]{display:none!important}body{margin:0}</style>
+<title>Màquines tèrmiques</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+<style>
+/* Layout: quadern d'enginyeria — barra lateral de mòduls + pàgina central; calent (Th) i fred (Tc) codificats en color a tot arreu */
+:root{
+  --bg:#f3f5f8; --surface:#ffffff; --fg:#18202b; --muted:#566273; --line:#d6dce4;
+  --accent:#23395d; --accent-soft:#e3e9f3;
+  --hot:#bf4329; --hot-soft:#f8e2db; --cold:#2a66a8; --cold-soft:#dde9f6;
+  --work:#a46f12; --work-soft:#f6ead0; --ok:#2c7a4b; --ok-soft:#dcefe3; --bad:#b0291c; --bad-soft:#f8dedb;
+  --f-display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --f-body:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#11151b; --surface:#191f27; --fg:#e5e9ef; --muted:#9aa5b4; --line:#2b3440;
+  --accent:#a9c1e6; --accent-soft:#1f2b3d;
+  --hot:#f08a6f; --hot-soft:#3b211b; --cold:#72a9e8; --cold-soft:#18283b;
+  --work:#e3b450; --work-soft:#382c13; --ok:#6cc690; --ok-soft:#17301f; --bad:#f08478; --bad-soft:#3a1c19;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#11151b; --surface:#191f27; --fg:#e5e9ef; --muted:#9aa5b4; --line:#2b3440;
+  --accent:#a9c1e6; --accent-soft:#1f2b3d;
+  --hot:#f08a6f; --hot-soft:#3b211b; --cold:#72a9e8; --cold-soft:#18283b;
+  --work:#e3b450; --work-soft:#382c13; --ok:#6cc690; --ok-soft:#17301f; --bad:#f08478; --bad-soft:#3a1c19;
+  color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:17px;line-height:1.6}
+body.classe{font-size:20px}
+body.classe .est{display:none!important}
+h1,h2,h3,.ui{font-family:var(--f-display)}
+h2{font-size:2.2em;line-height:1.05;margin:.1em 0 .35em;font-weight:700;text-wrap:balance;letter-spacing:.005em}
+h3{font-size:1.35em;margin:1.6em 0 .4em;font-weight:600;text-wrap:balance}
+p{margin:.6em 0}
+.mono,.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line);padding:10px 16px;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.brand{font-family:var(--f-display);font-weight:700;font-size:1.3rem;letter-spacing:.02em}
+.brand span{color:var(--hot)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.seg button{font-family:var(--f-display);font-size:1rem;font-weight:600;border:0;background:transparent;color:var(--muted);padding:6px 16px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--surface)}
+.shell{display:grid;grid-template-columns:230px minmax(0,1fr);gap:28px;max-width:1240px;margin:0 auto;padding-inline:16px;padding-block:24px 48px}
+.side{position:sticky;top:76px;align-self:start;display:flex;flex-direction:column;gap:2px}
+.side button{display:flex;gap:10px;align-items:baseline;text-align:left;font-family:var(--f-display);font-size:1.08rem;font-weight:500;color:var(--muted);background:none;border:0;border-radius:8px;padding:8px 10px;cursor:pointer}
+.side button b{font-family:var(--f-mono);font-size:.8rem;font-weight:500;color:var(--muted);min-width:1.4em}
+.side button:hover{background:var(--accent-soft);color:var(--fg)}
+.side button[aria-current="true"]{background:var(--accent-soft);color:var(--fg);font-weight:700}
+.side button[aria-current="true"] b{color:var(--hot)}
+main{min-width:0;max-width:900px}
+body.classe main{max-width:1180px}
+.eyebrow{font-family:var(--f-display);text-transform:uppercase;letter-spacing:.12em;font-size:.85rem;color:var(--hot);font-weight:600;margin:0}
+.lead{font-size:1.12em;color:var(--fg);max-width:65ch}
+.est p,.est li{max-width:68ch}
+.fig{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;margin:18px 0}
+.fig svg{display:block;width:100%;height:auto}
+.svgwrap{overflow-x:auto}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.controls{display:grid;gap:10px;margin-top:12px}
+.ctl{display:grid;grid-template-columns:minmax(120px,190px) minmax(0,1fr) 92px;gap:10px;align-items:center;font-family:var(--f-display);font-size:1.05rem}
+.ctl output{font-family:var(--f-mono);font-size:.95rem;text-align:right}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:14px}
+.stat{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg)}
+.stat .k{font-family:var(--f-display);font-size:.95rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.stat .v{font-family:var(--f-mono);font-size:1.35em;font-variant-numeric:tabular-nums}
+.stat.hot .v{color:var(--hot)} .stat.cold .v{color:var(--cold)} .stat.work .v{color:var(--work)}
+.pill{display:inline-block;font-family:var(--f-display);font-weight:600;font-size:.95rem;border-radius:999px;padding:3px 12px}
+.pill.ok{background:var(--ok-soft);color:var(--ok)} .pill.bad{background:var(--bad-soft);color:var(--bad)} .pill.info{background:var(--accent-soft);color:var(--accent)}
+.msg{margin-top:10px;min-height:1.6em}
+.key{border:1px solid var(--line);background:var(--accent-soft);border-radius:12px;padding:14px 18px;margin:24px 0;font-style:italic;font-size:1.06em}
+.key::before{content:"Frase resum";display:block;font-style:normal;font-family:var(--f-display);text-transform:uppercase;letter-spacing:.1em;font-size:.8rem;color:var(--accent);font-weight:700;margin-bottom:4px}
+.note{border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin:16px 0;background:var(--surface)}
+.note strong{font-family:var(--f-display);font-size:1.08em}
+.tbl{overflow-x:auto;margin:14px 0;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:.93em}
+th,td{padding:8px 12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{font-family:var(--f-display);font-size:1.02em;font-weight:600;background:var(--bg)}
+tr:last-child td{border-bottom:0}
+td.h{color:var(--hot);font-weight:600} td.c{color:var(--cold);font-weight:600}
+.eq{font-family:var(--f-mono);font-size:1.05em;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 14px;display:inline-block;margin:6px 0}
+.btn{font-family:var(--f-display);font-weight:600;font-size:1.02rem;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:8px;padding:7px 14px;cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--surface);border-color:var(--accent)}
+.btn[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent)}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.pager{display:flex;justify-content:space-between;gap:12px;margin-top:40px;padding-top:16px;border-top:1px solid var(--line);flex-wrap:wrap}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:12px 0}
+.card{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--surface)}
+.card h4{font-family:var(--f-display);font-size:1.15em;margin:0 0 4px}
+.tag{font-family:var(--f-display);font-weight:600;font-size:.9rem}
+.tag.ok{color:var(--ok)} .tag.bad{color:var(--bad)}
+.stepper{display:flex;flex-wrap:wrap;gap:6px}
+.stagecard{margin-top:14px}
+.stagecard dl{display:grid;grid-template-columns:minmax(110px,170px) minmax(0,1fr);gap:6px 14px;margin:8px 0}
+.stagecard dt{font-family:var(--f-display);font-weight:600;color:var(--muted)}
+.stagecard dd{margin:0}
+.bar{display:flex;height:44px;border-radius:8px;overflow:hidden;border:1px solid var(--line);margin-top:10px}
+.bar div{display:flex;align-items:center;justify-content:center;font-family:var(--f-mono);font-size:.85rem;white-space:nowrap;overflow:hidden;transition:flex-basis .25s}
+.seg-w{background:var(--work-soft);color:var(--work)} .seg-p{background:var(--bad-soft);color:var(--bad)} .seg-c{background:var(--cold-soft);color:var(--cold)}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:8px;font-family:var(--f-display);font-size:1rem}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.gauge{position:relative;height:28px;border-radius:999px;background:var(--bg);border:1px solid var(--line);margin:22px 0 30px}
+.gauge .fill{position:absolute;inset:0 auto 0 0;border-radius:999px;background:var(--work-soft);border-right:3px solid var(--work)}
+.gauge .mark{position:absolute;top:-8px;bottom:-8px;width:3px;background:var(--hot)}
+.gauge .mlabel{position:absolute;top:32px;transform:translateX(-50%);font-family:var(--f-display);font-size:.9rem;color:var(--hot);white-space:nowrap}
+.field{display:grid;gap:4px;font-family:var(--f-display);font-size:1rem}
+.field input{font-family:var(--f-mono);font-size:1rem;padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);width:100%}
+.err{color:var(--bad);font-size:13px;min-height:1.2em;font-family:var(--f-display)}
+.quiz{display:grid;gap:14px}
+.q{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:var(--surface)}
+.q h4{font-family:var(--f-display);font-size:1.2em;margin:0 0 8px;font-weight:600}
+.q label{display:flex;gap:10px;align-items:flex-start;padding:6px 8px;border-radius:8px;cursor:pointer}
+.q label:hover{background:var(--bg)}
+.q label.right{background:var(--ok-soft)} .q label.wrong{background:var(--bad-soft)}
+.q .fb{margin-top:8px}
+.reveal{margin-top:8px}
+/* svg */
+.sv-t{fill:var(--fg);font-family:var(--f-display);font-size:16px;font-weight:600}
+.sv-s{fill:var(--muted);font-family:var(--f-display);font-size:14px}
+.sv-m{fill:var(--fg);font-family:var(--f-mono);font-size:13px}
+.sv-hot{fill:var(--hot-soft);stroke:var(--hot);stroke-width:1.2}
+.sv-cold{fill:var(--cold-soft);stroke:var(--cold);stroke-width:1.2}
+.sv-neu{fill:var(--bg);stroke:var(--muted);stroke-width:1.2}
+.sv-pipe{fill:none;stroke:var(--muted);stroke-width:2}
+.sv-front{fill:none;stroke:var(--muted);stroke-width:1;stroke-dasharray:6 5}
+.fl-hot{fill:var(--hot)} .fl-cold{fill:var(--cold)} .fl-work{fill:var(--work)} .fl-neu{fill:var(--muted)}
+.tx-hot{fill:var(--hot)} .tx-cold{fill:var(--cold)} .tx-work{fill:var(--work)}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+@media (max-width:820px){
+  .shell{grid-template-columns:minmax(0,1fr);gap:12px;padding-block:12px 40px}
+  .side{position:static;flex-direction:row;overflow-x:auto;gap:4px;padding-bottom:6px}
+  .side button{white-space:nowrap}
+  .ctl{grid-template-columns:minmax(0,1fr) 84px}
+  .ctl input{grid-column:1 / -1;grid-row:2}
+  h2{font-size:1.9em}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+.soon{display:flex;gap:10px;align-items:baseline;font-family:var(--f-display);font-size:1.08rem;color:var(--muted);opacity:.6;padding:8px 10px}
+.soon b{font-family:var(--f-mono);font-size:.8rem;min-width:1.4em}
+.soon i{font-style:normal;font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;margin-left:auto}
+a.btn{text-decoration:none;display:inline-block}
+.info4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:16px 0}
+.i4{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:12px;text-align:center}
+.i4 h4{font-family:var(--f-display);font-size:1.3em;margin:0}
+.i4n{font-family:var(--f-display);font-weight:700;font-size:2.2em;line-height:1}
+.i4 svg{width:100%;max-width:150px;height:auto;margin:6px auto;display:block}
+.i4v{font-family:var(--f-display);font-weight:700;font-size:1.2em;margin:4px 0}
+.i4s{font-size:.9em;color:var(--muted);margin:0}
+@media (max-width:820px){.info4{grid-template-columns:repeat(2,minmax(0,1fr))}.soon{white-space:nowrap}}
+
+@media (max-width:1040px){.shell{grid-template-columns:minmax(0,1fr);gap:12px}.side{position:static;flex-direction:row;overflow-x:auto;gap:4px;padding-bottom:6px}.side button,.soon{white-space:nowrap}main{max-width:none}}
+body.embed{font-size:16px}
+body.embed.classe{font-size:19px}
+body.embed .top{padding:6px 12px}
+body.embed .shell{max-width:none;padding-block:12px 32px}
+body.embed main,body.embed.classe main{max-width:none}
+body.embed h2{font-size:1.9em}
+body.embed .lead,body.embed .est p,body.embed .est li{max-width:none}
+:fullscreen body,body:fullscreen{overflow:auto}
+body.embed .shell{grid-template-columns:minmax(0,1fr);gap:12px}body.embed .side{position:static;flex-direction:row;overflow-x:auto;gap:4px;padding-bottom:6px}body.embed .side button,body.embed .soon{white-space:nowrap}
+.ver{font-family:var(--f-mono);font-size:.75rem;color:var(--muted);margin-left:8px}
+.chip{display:inline-block;padding:3px 10px;border-radius:999px;font-family:var(--f-display);font-weight:600;font-size:.95rem;border:1px solid var(--line);color:var(--muted)}.chip.on{background:var(--ok-soft);color:var(--ok);border-color:transparent}
+</style>
+<header class="top">
+  <div class="brand">Màquines <span>tèrmiques</span></div>
+  <div class="row">
+    <div class="seg" role="group" aria-label="Mode de visualització">
+      <button id="mode-estudi" type="button" aria-pressed="true">Mode estudi</button>
+      <button id="mode-classe" type="button" aria-pressed="false">Mode classe</button>
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+<nav class="side" aria-label="Mòduls">
+  <button type="button" data-go="intern"><b>1</b>Combustió interna</button>
+  <button type="button" data-go="otto"><b>2</b>Motor de 4 temps</button>
+  <button type="button" data-go="resum"><b>3</b>Infografia 4T</button>
+  <button type="button" data-go="pv"><b>4</b>Diagrama p-V</button>
+  <button type="button" data-go="dostemps"><b>5</b>Motor de 2 temps</button>
+  <button type="button" data-go="diesel"><b>6</b>Motor Dièsel</button>
+  <button type="button" data-go="caract"><b>7</b>Característiques</button>
+  <button type="button" data-go="quiz"><b>8</b>Autoavaluació</button>
+</nav>
+
+<main>
+<!-- ===== 1 COMBUSTIÓ INTERNA ===== -->
+<section class="mod" data-key="intern">
+  <p class="eyebrow">Mòdul 1 · Classificació</p>
+  <h2>Màquines de combustió interna alternativa</h2>
+  <p class="lead">A la central de vapor, el combustible crema fora (al forn) i escalfa un altre fluid (l'aigua). En un motor de cotxe, la combustió es produeix <b>dins del cilindre</b>, i els mateixos gasos de la combustió empenyen el pistó.</p>
+  <div class="tbl"><table>
+    <thead><tr><th></th><th>Combustió externa</th><th>Combustió interna</th></tr></thead>
+    <tbody>
+      <tr><td>On crema el combustible</td><td>Fora de la màquina (forn)</td><td>Dins del cilindre</td></tr>
+      <tr><td>Fluid que fa treball</td><td>Un altre fluid (aigua/vapor)</td><td>Els gasos de la combustió</td></tr>
+      <tr><td>Combustible</td><td>Qualsevol: carbó, gas, fuel…</td><td>Gasos o líquids vaporitzats</td></tr>
+      <tr><td>Exemple</td><td>Central tèrmica, turbina de vapor</td><td>Motor de cotxe, de moto</td></tr>
+    </tbody>
+  </table></div>
+  <h3>Per què "alternativa"?</h3>
+  <p>Perquè el pistó fa un moviment <b>alternatiu</b> (amunt i avall) i un mecanisme de <b>biela-maneta</b> el converteix en moviment de rotació.</p>
+  <div class="cards">
+    <div class="card"><h4 style="color:var(--hot)">Encesa per guspira</h4><p>Motor de <b>gasolina</b>. Una <b>bugia</b> fa saltar una guspira que encén la mescla. Segueix el <b>cicle Otto</b>.</p></div>
+    <div class="card"><h4 style="color:var(--cold)">Encesa per compressió</h4><p>Motor <b>Dièsel</b>. L'aire es comprimeix tant que s'escalfa i el combustible s'encén sol en injectar-lo.</p></div>
+  </div>
+  <h3>Elements del motor (Fig. 2.19)</h3>
+  <div class="tbl"><table>
+    <tbody>
+      <tr><td><b>Cilindre</b></td><td>Tub on es mou el pistó i on té lloc la combustió.</td></tr>
+      <tr><td><b>Pistó</b> (èmbol)</td><td>Peça que puja i baixa dins el cilindre.</td></tr>
+      <tr><td><b>PMS</b> · punt mort superior</td><td>Posició més alta del pistó. El volum és el mínim.</td></tr>
+      <tr><td><b>PMI</b> · punt mort inferior</td><td>Posició més baixa del pistó. El volum és el màxim.</td></tr>
+      <tr><td><b>Cursa</b></td><td>Distància entre el PMS i el PMI.</td></tr>
+      <tr><td><b>Biela</b> i <b>maneta</b></td><td>Converteixen el moviment alternatiu del pistó en rotació. La maneta forma part del cigonyal.</td></tr>
+      <tr><td><b>Vàlvules</b></td><td>D'admissió (deixen entrar l'aire) i d'escapament (deixen sortir els gasos).</td></tr>
+      <tr><td><b>Bugia</b></td><td>Fa saltar la guspira que encén la mescla.</td></tr>
+      <tr><td><b>Injector</b></td><td>Introdueix la gasolina, controlat electrònicament.</td></tr>
+    </tbody>
+  </table></div>
+  <div class="est note"><strong>Injecció directa i indirecta.</strong> En la injecció directa, la gasolina s'injecta dins la cambra de combustió. En la indirecta, al conducte d'admissió. La injecció electrònica ha substituït els antics carburadors.</div>
+  <p class="key">En un motor de combustió interna, el combustible crema dins del cilindre i els gasos calents empenyen directament el pistó.</p>
+  <div class="pager"><span></span><button class="btn primary" type="button" data-go="otto">Següent: Motor de 4 temps →</button></div>
+</section>
+
+<!-- ===== 2 OTTO ANIMAT ===== -->
+<section class="mod" data-key="otto" hidden>
+  <p class="eyebrow">Mòdul 2 · Cicle Otto</p>
+  <h2>El motor de quatre temps</h2>
+  <p class="lead">Cada cicle té quatre temps i el cigonyal fa <b>dues voltes</b>. Només un dels quatre temps produeix treball. Mira com es mouen junts el pistó, les vàlvules i el punt del diagrama p-V.</p>
+  <div class="row"><span class="tag">Tipus de motor:</span><div class="seg" role="group" aria-label="Tipus de motor"><button id="eng-otto" type="button" aria-pressed="true">Gasolina (Otto)</button><button id="eng-diesel" type="button" aria-pressed="false">Dièsel</button></div></div>
+
+  <div class="fig">
+    <div class="row" style="justify-content:space-between">
+      <div class="stepper" role="group" aria-label="Temps del motor">
+        <button class="btn" type="button" data-t="0" aria-pressed="true">1 · Admissió</button>
+        <button class="btn" type="button" data-t="1" aria-pressed="false">2 · Compressió</button>
+        <button class="btn" type="button" data-t="2" aria-pressed="false">3 · Explosió</button>
+        <button class="btn" type="button" data-t="3" aria-pressed="false">4 · Escapament</button>
+      </div>
+      <button class="btn primary" type="button" id="m-play">▶ Engega el motor</button>
+    </div>
+    <div class="two" style="margin-top:12px">
+      <svg viewBox="0 0 300 400" role="img" aria-labelledby="m-t1">
+        <title id="m-t1">Cilindre, pistó, vàlvules, bugia, biela i maneta del motor</title>
+        <path d="M8 34 H112" stroke="var(--cold)" stroke-width="14" fill="none" opacity=".35"/>
+        <path d="M168 34 H292" stroke="var(--muted)" stroke-width="14" fill="none" opacity=".3"/>
+        <text class="sv-s" x="10" y="20">Admissió</text>
+        <text class="sv-s" x="290" y="20" text-anchor="end">Escapament</text>
+        <rect x="70" y="22" width="140" height="38" rx="4" class="sv-neu"/>
+        <rect id="g-base" x="92" y="60" width="96" fill="var(--cold-soft)"/>
+        <rect id="g-hot" x="92" y="60" width="96" fill="var(--hot)" opacity="0"/>
+        <rect id="g-ex" x="92" y="60" width="96" fill="var(--muted)" opacity="0"/>
+        <line x1="90" y1="60" x2="90" y2="252" stroke="var(--muted)" stroke-width="3"/>
+        <line x1="190" y1="60" x2="190" y2="252" stroke="var(--muted)" stroke-width="3"/>
+        <g id="v-in"><line x1="112" y1="8" x2="112" y2="58" stroke="var(--fg)" stroke-width="3"/><path d="M100 60 L124 60 L116 54 L108 54 Z" fill="var(--fg)"/></g>
+        <g id="v-ex"><line x1="168" y1="8" x2="168" y2="58" stroke="var(--fg)" stroke-width="3"/><path d="M156 60 L180 60 L172 54 L164 54 Z" fill="var(--fg)"/></g>
+        <rect id="plug" x="136" y="2" width="8" height="54" rx="2" fill="var(--muted)"/>
+        <g id="inj" opacity="0"><rect x="132" y="0" width="16" height="48" rx="3" fill="var(--work-soft)" stroke="var(--work)"/><rect x="137" y="48" width="6" height="10" fill="var(--work)"/></g>
+        <polygon id="spray" points="140,60 120,96 160,96" fill="var(--work)" opacity="0"/>
+        <polygon id="spark" points="140,58 146,66 156,64 148,72 152,82 140,76 128,82 132,72 124,64 134,66" fill="var(--work)" opacity="0"/>
+        <polygon id="a-in" class="fl-cold" opacity="0"/>
+        <polygon id="a-ex" class="fl-neu" opacity="0"/>
+        <rect id="pis" x="92" width="96" height="50" rx="3" fill="var(--work-soft)" stroke="var(--work)" stroke-width="1.5"/>
+        <line id="r1" x1="92" x2="188" stroke="var(--work)" stroke-width="1"/>
+        <line id="r2" x1="92" x2="188" stroke="var(--work)" stroke-width="1"/>
+        <circle cx="140" cy="315" r="60" fill="none" stroke="var(--muted)" stroke-dasharray="4 4"/>
+        <line id="crank" x1="140" y1="315" stroke="var(--fg)" stroke-width="7" stroke-linecap="round"/>
+        <line id="rod" stroke="var(--fg)" stroke-width="6" stroke-linecap="round"/>
+        <circle cx="140" cy="315" r="9" fill="var(--fg)"/>
+        <circle id="pin" r="5" fill="var(--surface)" stroke="var(--fg)" stroke-width="2"/>
+        <circle id="cpin" r="5" fill="var(--surface)" stroke="var(--fg)" stroke-width="2"/>
+        <text class="sv-s" x="200" y="84">PMS</text>
+        <line x1="190" y1="80" x2="198" y2="80" stroke="var(--muted)"/>
+        <text class="sv-s" x="200" y="204">PMI</text>
+        <line x1="190" y1="200" x2="198" y2="200" stroke="var(--muted)"/>
+        <text id="m-ang" class="sv-m" x="140" y="396" text-anchor="middle">Cigonyal: 0°</text>
+      </svg>
+      <svg viewBox="0 0 380 320" role="img" aria-labelledby="m-t2">
+        <title id="m-t2">Diagrama p-V teòric del cicle Otto amb la posició actual</title>
+        <path id="o-area" fill="var(--work-soft)"/>
+        <line x1="50" y1="280" x2="365" y2="280" stroke="var(--muted)"/>
+        <line x1="50" y1="280" x2="50" y2="14" stroke="var(--muted)"/>
+        <text class="sv-s" x="360" y="312" text-anchor="end">V</text>
+        <text class="sv-s" x="56" y="14">p</text>
+        <g id="o-ticks"></g>
+        <path id="o-cyc" fill="none" stroke="var(--fg)" stroke-width="1.6"/>
+        <path id="o-hl" fill="none" stroke-width="5" stroke-linecap="round"/>
+        <g id="o-pts"></g>
+        <circle id="o-dot" r="6" fill="var(--fg)"/>
+      </svg>
+    </div>
+    <div class="stagecard" id="m-card"></div>
+  </div>
+
+  <div class="est">
+    <h3>Detalls dels temps reals</h3>
+    <p><b>Admissió.</b> La vàlvula d'admissió es tanca una mica <b>després</b> del PMI: l'aire que entra encara té velocitat per inèrcia i així el cilindre s'omple millor. Molts motors porten dues o tres vàlvules d'admissió per facilitar l'entrada d'aire.</p>
+    <p><b>Avanç a l'encesa.</b> La guspira salta una mica <b>abans</b> del PMS. La combustió no és instantània: un front de flama avança des de la bugia, i cal donar-li temps perquè la combustió sigui completa quan el pistó comença a baixar.</p>
+    <p><b>Escapament.</b> La vàlvula d'escapament s'obre una mica <b>abans</b> del PMI, perquè quan el pistó comenci a pujar ja estigui totalment oberta i no ofereixi resistència a la sortida dels gasos.</p>
+  </div>
+  <p class="key">Admissió, compressió, explosió i escapament: quatre temps, dues voltes de cigonyal i només un temps que fa treball. Els altres tres es fan gràcies a la inèrcia del motor.</p>
+  <div class="pager"><button class="btn" type="button" data-go="intern">← Combustió interna</button><button class="btn primary" type="button" data-go="resum">Següent: Infografia 4T →</button></div>
+</section>
+
+<!-- ===== 3 INFOGRAFIA ===== -->
+<section class="mod" data-key="resum" hidden>
+  <p class="eyebrow">Mòdul 3 · Resum visual</p>
+  <h2>Els quatre temps d'un cop d'ull</h2>
+  <div class="info4" id="info4"></div>
+  <div class="tbl"><table>
+    <thead><tr><th></th><th>Admissió</th><th>Compressió</th><th>Explosió</th><th>Escapament</th></tr></thead>
+    <tbody>
+      <tr><td>Pistó</td><td>Baixa ↓</td><td>Puja ↑</td><td>Baixa ↓</td><td>Puja ↑</td></tr>
+      <tr><td>Vàlvula d'admissió</td><td><b>Oberta</b></td><td>Tancada</td><td>Tancada</td><td>Tancada</td></tr>
+      <tr><td>Vàlvula d'escapament</td><td>Tancada</td><td>Tancada</td><td>Tancada</td><td><b>Oberta</b></td></tr>
+      <tr><td>Cigonyal</td><td>0° → 180°</td><td>180° → 360°</td><td>360° → 540°</td><td>540° → 720°</td></tr>
+      <tr><td>Diagrama p-V</td><td class="mono">0 → 1</td><td class="mono">1 → 2</td><td class="mono">2 → 3 → 4</td><td class="mono">4 → 1 → 0</td></tr>
+      <tr><td>Treball</td><td>—</td><td>Es consumeix</td><td class="h">Es produeix</td><td>—</td></tr>
+    </tbody>
+  </table></div>
+  <p class="key">Aspira, comprimeix, explota i expulsa. Només el tercer temps empeny el pistó.</p>
+  <div class="pager"><button class="btn" type="button" data-go="otto">← Motor de 4 temps</button><button class="btn primary" type="button" data-go="pv">Següent: Diagrama p-V →</button></div>
+</section>
+
+<!-- ===== 4 PV ===== -->
+<section class="mod" data-key="pv" hidden>
+  <p class="eyebrow">Mòdul 4 · Termodinàmica del cicle</p>
+  <h2>El diagrama p-V del cicle Otto</h2>
+  <p class="lead">Al motor no hi ha una font calenta exterior: la calor Qh la dona la combustió <b>dins</b> del cilindre. Per això les etapes són diferents de les del cicle de Carnot.</p>
+  <div class="fig">
+    <div class="row" style="margin-bottom:8px">
+      <button class="btn" type="button" id="pv-teo" aria-pressed="true">Diagrama teòric (Fig. 2.25)</button>
+      <button class="btn" type="button" id="pv-real" aria-pressed="false">Afegeix el diagrama real (Fig. 2.26)</button>
+    </div>
+    <div class="svgwrap">
+    <svg viewBox="0 0 640 340" role="img" aria-labelledby="pv-t">
+      <title id="pv-t">Diagrama p-V teòric del cicle Otto amb les etapes</title>
+      <path id="p-area" fill="var(--work-soft)"/>
+      <line x1="60" y1="300" x2="600" y2="300" stroke="var(--muted)"/>
+      <line x1="60" y1="300" x2="60" y2="16" stroke="var(--muted)"/>
+      <text class="sv-s" x="596" y="326" text-anchor="end">V</text>
+      <text class="sv-s" x="66" y="16">p</text>
+      <g id="p-ticks"></g>
+      <path id="p-real" fill="none" stroke="var(--cold)" stroke-width="2" stroke-dasharray="6 4" opacity="0"/>
+      <path id="p-cyc" fill="none" stroke="var(--fg)" stroke-width="2"/>
+      <g id="p-lab"></g>
+    </svg>
+    </div>
+    <p id="pv-note" class="msg" style="font-family:var(--f-display)"></p>
+  </div>
+  <div class="tbl"><table>
+    <thead><tr><th>Tram</th><th>Procés teòric</th><th>Què passa</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">0 → 1</td><td>Admissió a pressió constant</td><td>Entra aire. Treball teòricament nul (es compensa amb l'escapament).</td></tr>
+      <tr><td class="mono">1 → 2</td><td><b>Compressió adiabàtica</b></td><td>Fem treball sobre el gas: puja p i T.</td></tr>
+      <tr><td class="mono">2 → 3</td><td><b>Explosió a volum constant</b> (isocor)</td><td class="h">Entra Qh: la combustió fa pujar molt p i T.</td></tr>
+      <tr><td class="mono">3 → 4</td><td><b>Expansió adiabàtica</b></td><td>Els gasos empenyen el pistó: el gas fa treball.</td></tr>
+      <tr><td class="mono">4 → 1</td><td>Escapament a volum constant</td><td class="c">Surt Qc amb els gasos: la pressió baixa de cop.</td></tr>
+      <tr><td class="mono">1 → 0</td><td>Escapament a pressió constant</td><td>El pistó expulsa els gasos cremats.</td></tr>
+    </tbody>
+  </table></div>
+  <p>El treball net és l'<b>àrea groga</b>, igual que al cicle de Carnot. Ara bé, aquí les etapes en què entra i surt la calor són a <b>volum constant</b>, no a temperatura constant.</p>
+  <h3>Compte: un temps no és el mateix que un tram</h3>
+  <p>Els dos trams isocors passen en un instant, just quan el pistó és en un punt mort i gairebé no es mou. Després, dins del mateix temps, el pistó es mou i el volum canvia.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Temps</th><th>Tram isocor (instantani, al punt mort)</th><th>Tram amb moviment del pistó</th></tr></thead>
+    <tbody>
+      <tr><td>Explosió</td><td class="h">2 → 3: combustió al PMS</td><td>3 → 4: expansió adiabàtica</td></tr>
+      <tr><td>Escapament</td><td class="c">4 → 1: obertura de la vàlvula al PMI</td><td>1 → 0: expulsió a pressió constant</td></tr>
+    </tbody>
+  </table></div>
+  <p class="est">Al final de l'admissió (PMI, punt 1) i al final de l'escapament (PMS, punt 0) el pistó també passa per un punt mort, però no hi passa res que canviï la pressió de cop. Per això no hi ha cap tram vertical: el pistó simplement canvia de sentit.</p>
+  <div class="est">
+    <h3>Comparat amb el cicle de Carnot</h3>
+    <div class="tbl"><table>
+      <thead><tr><th></th><th>Carnot</th><th>Otto</th></tr></thead>
+      <tbody>
+        <tr><td>Entrada de calor</td><td>Isotèrmica (T constant)</td><td>Isocora (V constant), per combustió</td></tr>
+        <tr><td>Sortida de calor</td><td>Isotèrmica</td><td>Isocora, amb els gasos d'escapament</td></tr>
+        <tr><td>Expansió i compressió</td><td>Adiabàtiques</td><td>Adiabàtiques</td></tr>
+        <tr><td>Fluid</td><td>Sempre el mateix gas</td><td>Es renova a cada cicle (aire nou, gasos fora)</td></tr>
+      </tbody>
+    </table></div>
+    <h3>El diagrama real</h3>
+    <p>Les puntes del diagrama real són <b>arrodonides</b>, perquè l'explosió comença una mica abans del PMS i la vàlvula d'escapament s'obre una mica abans del PMI: res és exactament a volum constant. A més, a baix apareix un petit bucle de <b>treball negatiu</b>: aspirar l'aire i expulsar els gasos costa treball, per les forces que s'oposen al moviment. Els diagrames reals s'obtenen amb aparells anomenats <b>indicadors</b>, connectats al cilindre.</p>
+  </div>
+  <p class="key">El cicle Otto té dues adiabàtiques, com el de Carnot, però la calor entra i surt a volum constant. El treball net és l'àrea tancada pel cicle.</p>
+  <div class="pager"><button class="btn" type="button" data-go="resum">← Infografia 4T</button><button class="btn primary" type="button" data-go="dostemps">Següent: Motor de 2 temps →</button></div>
+</section>
+
+<!-- ===== 5 DOS TEMPS ===== -->
+<section class="mod" data-key="dostemps" hidden>
+  <p class="eyebrow">Mòdul 5 · Motor de dos temps</p>
+  <h2>El motor de dos temps (2T)</h2>
+  <p class="lead">Els processos termodinàmics són els mateixos que al motor de quatre temps. El que canvia és com es fan: l'admissió i la compressió passen alhora, i l'explosió i l'escapament també. Així, <b>cada volta del cigonyal és un cicle complet</b>.</p>
+
+  <div class="fig">
+    <div class="row" style="justify-content:space-between">
+      <div class="stepper" role="group" aria-label="Temps del motor de 2 temps">
+        <button class="btn" type="button" data-t2="0" aria-pressed="true">1r temps · Compressió-explosió</button>
+        <button class="btn" type="button" data-t2="1" aria-pressed="false">2n temps · Admissió-escapament</button>
+      </div>
+      <button class="btn primary" type="button" id="k-play">▶ Engega el motor</button>
+    </div>
+    <div class="two" style="margin-top:12px">
+      <svg viewBox="0 0 320 420" role="img" aria-labelledby="k-title">
+        <title id="k-title">Motor de dos temps amb espiralls d'escapament, de càrrega i d'admissió</title>
+        <rect x="62" y="248" width="156" height="150" rx="40" fill="var(--cold-soft)" stroke="var(--muted)" stroke-width="2"/>
+        <path d="M90 160 L68 160 L68 262 L84 262 L84 182 L90 182 Z" fill="var(--cold-soft)" stroke="var(--muted)" stroke-width="1.5"/>
+        <rect id="k-expipe" x="190" y="140" width="120" height="25" fill="var(--line)"/>
+        <rect id="k-inpipe" x="190" y="215" width="120" height="20" fill="var(--cold-soft)"/>
+        <text class="sv-s" x="310" y="132" text-anchor="end">Escapament</text>
+        <text class="sv-s" x="310" y="252" text-anchor="end">Admissió</text>
+        <text class="sv-s" x="4" y="214">Càrrega</text>
+        <rect id="k-gbase" x="92" y="60" width="96" fill="var(--cold-soft)"/>
+        <rect id="k-ghot" x="92" y="60" width="96" fill="var(--hot)" opacity="0"/>
+        <rect id="k-gex" x="92" y="60" width="96" fill="var(--muted)" opacity="0"/>
+        <rect id="k-under" x="92" width="96" fill="var(--cold-soft)"/>
+        <rect x="70" y="28" width="140" height="32" rx="4" class="sv-neu"/>
+        <rect x="136" y="4" width="8" height="52" rx="2" fill="var(--muted)"/>
+        <polygon id="k-spark" points="140,58 146,66 156,64 148,72 152,82 140,76 128,82 132,72 124,64 134,66" fill="var(--work)" opacity="0"/>
+        <line x1="90" y1="60" x2="90" y2="160" stroke="var(--muted)" stroke-width="3"/>
+        <line x1="90" y1="182" x2="90" y2="250" stroke="var(--muted)" stroke-width="3"/>
+        <line x1="190" y1="60" x2="190" y2="140" stroke="var(--muted)" stroke-width="3"/>
+        <line x1="190" y1="165" x2="190" y2="215" stroke="var(--muted)" stroke-width="3"/>
+        <line x1="190" y1="235" x2="190" y2="250" stroke="var(--muted)" stroke-width="3"/>
+        <rect id="k-pis" x="92" width="96" height="50" rx="3" fill="var(--work-soft)" stroke="var(--work)" stroke-width="1.5"/>
+        <line id="k-r1" x1="92" x2="188" stroke="var(--work)"/>
+        <line id="k-r2" x1="92" x2="188" stroke="var(--work)"/>
+        <circle cx="140" cy="315" r="60" fill="none" stroke="var(--muted)" stroke-dasharray="4 4"/>
+        <line id="k-crank" x1="140" y1="315" stroke="var(--fg)" stroke-width="7" stroke-linecap="round"/>
+        <line id="k-rod" stroke="var(--fg)" stroke-width="6" stroke-linecap="round"/>
+        <circle cx="140" cy="315" r="9" fill="var(--fg)"/>
+        <circle id="k-pin" r="5" fill="var(--surface)" stroke="var(--fg)" stroke-width="2"/>
+        <circle id="k-cpin" r="5" fill="var(--surface)" stroke="var(--fg)" stroke-width="2"/>
+        <polygon id="k-aex" class="fl-neu" opacity="0"/>
+        <polygon id="k-atr" class="fl-cold" opacity="0"/>
+        <polygon id="k-ain" class="fl-cold" opacity="0"/>
+        <text class="sv-s" x="140" y="414" text-anchor="middle">Càrter</text>
+      </svg>
+      <div>
+        <p class="mono" id="k-ang" style="margin-top:0">Cigonyal: 0°</p>
+        <div class="row" id="k-ports"></div>
+        <div class="stagecard" id="k-card"></div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Quatre temps i dos temps</h3>
+  <div class="tbl"><table>
+    <thead><tr><th></th><th>Motor de 4 temps</th><th>Motor de 2 temps</th></tr></thead>
+    <tbody>
+      <tr><td>Voltes de cigonyal per cicle</td><td>Dues</td><td><b>Una</b></td></tr>
+      <tr><td>Entrada i sortida de gasos</td><td>Vàlvules, obertes per l'arbre de lleves</td><td><b>Espiralls</b>, que el pistó tapa i destapa</td></tr>
+      <tr><td>Potència teòrica</td><td>—</td><td>El doble (un cicle a cada volta)</td></tr>
+      <tr><td>A la pràctica</td><td>Admissió i escapament ben separats</td><td>Part de la mescla nova s'escapa amb els gasos</td></tr>
+      <tr><td>Construcció</td><td>Més complexa</td><td>Senzilla, lleugera i econòmica</td></tr>
+      <tr><td>Usos</td><td>Cotxes, motos grans</td><td>Ciclomotors, serres mecàniques, grups electrògens petits</td></tr>
+    </tbody>
+  </table></div>
+  <div class="est">
+    <h3>Per què no dona el doble de potència?</h3>
+    <p>Els espiralls d'admissió i d'escapament no tenen vàlvules: estan sempre oberts i és el pistó qui els tapa o els destapa segons la seva posició. Durant un moment, la mescla nova entra al cilindre mentre encara en surten els gasos cremats. Es barregen una mica i, per inèrcia, una part de la mescla nova se'n va per l'escapament. Per això el motor de dos temps no arriba al doble de potència que tindria en teoria.</p>
+    <h3>El paper del càrter</h3>
+    <p>La part de sota del pistó també treballa. Quan el pistó puja, aspira mescla nova cap al càrter per l'espirall d'admissió. Quan baixa, la comprimeix i l'envia cap al cilindre pel conducte de càrrega.</p>
+  </div>
+  <p class="key">En el motor de dos temps, cada volta del cigonyal és un cicle complet. No té vàlvules: el mateix pistó obre i tanca els espiralls.</p>
+  <div class="pager"><button class="btn" type="button" data-go="pv">← Diagrama p-V</button><button class="btn primary" type="button" data-go="diesel">Següent: Motor Dièsel →</button></div>
+</section>
+
+<!-- ===== 6 DIÈSEL ===== -->
+<section class="mod" data-key="diesel" hidden>
+  <p class="eyebrow">Mòdul 6 · Encesa per compressió</p>
+  <h2>El motor Dièsel</h2>
+  <p class="lead">El motor Dièsel no té bugia. L'aire es comprimeix tant que s'escalfa per sobre de 600 °C, i el combustible <b>s'encén sol</b> en injectar-lo.</p>
+  <div class="cards">
+    <div class="card"><h4 style="color:var(--cold)">1 · Admissió</h4><p>Entra <b>només aire</b>.</p><p class="mono" style="color:var(--cold)">p-V: 0 → 1</p></div>
+    <div class="card"><h4>2 · Compressió</h4><p>Molt més forta que al motor Otto: més de 3.000 kPa i 600 °C.</p><p class="mono">p-V: 1 → 2</p></div>
+    <div class="card"><h4 style="color:var(--hot)">3 · Injecció-explosió</h4><p>L'injector introdueix el gasoil atomitzat a més de 15.000 kPa i s'encén sol a tota la cambra alhora.</p><p class="mono" style="color:var(--hot)">p-V: 2 → 2′ → 3 → 4</p></div>
+    <div class="card"><h4>4 · Escapament</h4><p>Igual que al motor Otto.</p><p class="mono">p-V: 4 → 1 → 0</p></div>
+  </div>
+  <div class="row"><button class="btn primary" type="button" data-go="otto" data-eng="diesel">Mira'l animat al mòdul 2 →</button></div>
+
+  <div class="fig">
+    <div class="row" style="margin-bottom:8px">
+      <button class="btn" type="button" id="dz-cmp" aria-pressed="false">Compara amb el cicle Otto</button>
+    </div>
+    <div class="svgwrap">
+    <svg viewBox="0 0 640 340" role="img" aria-labelledby="dz-t">
+      <title id="dz-t">Diagrama p-V teòric del cicle Dièsel (Fig. 2.30)</title>
+      <path id="dz-area" fill="var(--work-soft)"/>
+      <line x1="60" y1="300" x2="600" y2="300" stroke="var(--muted)"/>
+      <line x1="60" y1="300" x2="60" y2="16" stroke="var(--muted)"/>
+      <text class="sv-s" x="596" y="326" text-anchor="end">V</text>
+      <text class="sv-s" x="66" y="16">p</text>
+      <g id="dz-ticks"></g>
+      <path id="dz-o" fill="none" stroke="var(--muted)" stroke-width="2" stroke-dasharray="6 4" opacity="0"/>
+      <path id="dz-c" fill="none" stroke="var(--fg)" stroke-width="2"/>
+      <path id="dz-q" fill="none" stroke="var(--hot)" stroke-width="5" stroke-linecap="round"/>
+      <g id="dz-lab"></g>
+    </svg>
+    </div>
+    <p class="msg" style="font-family:var(--f-display)"><span class="pill bad">Línia vermella</span> combustió: entra Qh. <span id="dz-note"></span></p>
+  </div>
+  <div class="tbl"><table>
+    <thead><tr><th>Tram</th><th>Procés teòric</th><th>Per què</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">2 → 2'</td><td><b>Explosió a volum constant</b></td><td>La injecció comença una mica abans del PMS: el combustible que entra crema de cop.</td></tr>
+      <tr><td class="mono">2' → 3</td><td><b>Explosió a pressió constant</b></td><td>La injecció dura una estona: mentre el pistó comença a baixar, encara entra combustible i la combustió manté la pressió.</td></tr>
+      <tr><td class="mono">3 → 4</td><td>Expansió adiabàtica</td><td>Els gasos empenyen el pistó.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Motor Otto i motor Dièsel</h3>
+  <div class="tbl"><table>
+    <thead><tr><th></th><th>Otto (gasolina)</th><th>Dièsel</th></tr></thead>
+    <tbody>
+      <tr><td>Combustible</td><td>Gasolina</td><td>Gasoil, fuel o altres derivats pesants del petroli</td></tr>
+      <tr><td>Encesa</td><td>Guspira de la bugia</td><td>Espontània, per la temperatura</td></tr>
+      <tr><td>Relació de compressió</td><td class="num">7 – 10</td><td class="num">14 – 22</td></tr>
+      <tr><td>Combustió</td><td>Un front de flama avança des de la bugia</td><td>A tots els punts de la cambra alhora («picat»)</td></tr>
+      <tr><td>Al diagrama p-V</td><td>A volum constant</td><td>Part a volum constant i part a pressió constant</td></tr>
+      <tr><td>Rendiment i consum</td><td>—</td><td>Rendiment més alt i consum més baix</td></tr>
+    </tbody>
+  </table></div>
+  <div class="est">
+    <h3>Avantatges del motor Dièsel</h3>
+    <p>Té un rendiment més elevat i un consum més baix, és més robust i dura més. Treballa a pressions més altes, però les temperatures de combustió són més baixes, i el combustible és més econòmic. A més, no necessita sistema d'encesa (bugies, delco, ruptor, bobina), i per això té menys avaries.</p>
+    <p>Tradicionalment s'ha fet servir en camions, tractors, autocars, trens i vehicles pesants. Avui gairebé s'equipara al de gasolina en pes i prestacions, i s'utilitza molt en cotxes.</p>
+    <h3>La bomba d'injecció i l'injector</h3>
+    <p>La <b>bomba d'injecció</b>, accionada pel mateix motor, fa arribar el combustible als injectors a la pressió adequada. És una peça d'alta precisió. A la Fig. 2.29 es veu una <b>injecció indirecta</b>: el combustible s'injecta en una cambra de combustió petita a la culata, on l'aire entra amb un remolí que ajuda a barrejar-lo.</p>
+  </div>
+  <p class="key">Al motor Dièsel no hi ha guspira: l'aire, molt comprimit i molt calent, encén el gasoil tan bon punt s'injecta.</p>
+  <div class="pager"><button class="btn" type="button" data-go="dostemps">← Motor de 2 temps</button><button class="btn primary" type="button" data-go="caract">Següent: Característiques →</button></div>
+</section>
+
+<!-- ===== 7 CARACTERÍSTIQUES ===== -->
+<section class="mod" data-key="caract" hidden>
+  <p class="eyebrow">Mòdul 7 · Fitxa tècnica</p>
+  <h2>Característiques dels motors</h2>
+  <p class="lead">Les característiques més importants d'un motor d'explosió són el nombre de cilindres i la cilindrada, la relació de compressió, la potència i el parell motor, i el consum.</p>
+
+  <h3>Cilindrada i relació de compressió</h3>
+  <div class="fig">
+    <div class="two">
+      <svg viewBox="0 0 350 280" role="img" aria-labelledby="ch-t">
+        <title id="ch-t">Cilindre amb la cambra de compressió, el volum del cilindre, la cursa i el diàmetre</title>
+        <path d="M80 60 Q150 18 220 60 Z" fill="var(--hot-soft)" stroke="var(--hot)"/>
+        <rect x="80" y="60" width="140" height="120" fill="var(--cold-soft)" stroke="var(--cold)"/>
+        <rect x="80" y="180" width="140" height="56" rx="3" fill="var(--work-soft)" stroke="var(--work)"/>
+        <line x1="80" y1="60" x2="40" y2="60" stroke="var(--muted)" stroke-dasharray="4 3"/>
+        <line x1="80" y1="180" x2="40" y2="180" stroke="var(--muted)" stroke-dasharray="4 3"/>
+        <text class="sv-s" x="36" y="64" text-anchor="end">PMS</text>
+        <text class="sv-s" x="36" y="184" text-anchor="end">PMI</text>
+        <line x1="236" y1="60" x2="236" y2="180" stroke="var(--fg)"/>
+        <line x1="230" y1="60" x2="242" y2="60" stroke="var(--fg)"/>
+        <line x1="230" y1="180" x2="242" y2="180" stroke="var(--fg)"/>
+        <text class="sv-t" x="248" y="124">Cursa c</text>
+        <line x1="80" y1="252" x2="220" y2="252" stroke="var(--fg)"/>
+        <line x1="80" y1="246" x2="80" y2="258" stroke="var(--fg)"/>
+        <line x1="220" y1="246" x2="220" y2="258" stroke="var(--fg)"/>
+        <text class="sv-t" x="150" y="274" text-anchor="middle">Diàmetre D = 2r</text>
+        <text class="sv-t tx-hot" x="150" y="52" text-anchor="middle">Vmín</text>
+        <text class="sv-t tx-cold" x="150" y="126" text-anchor="middle">Vc</text>
+        <text class="sv-s" x="150" y="214" text-anchor="middle">Pistó</text>
+      </svg>
+      <div>
+        <div class="two" style="gap:10px">
+          <div class="field"><label for="ch-d">Diàmetre D (mm)</label><input id="ch-d" type="number" min="1" step="any" value="80"><span class="err" id="ch-d-e"></span></div>
+          <div class="field"><label for="ch-c">Cursa c (mm)</label><input id="ch-c" type="number" min="1" step="any" value="86"><span class="err" id="ch-c-e"></span></div>
+          <div class="field"><label for="ch-n">Nombre de cilindres</label><input id="ch-n" type="number" min="1" step="1" value="4"><span class="err" id="ch-n-e"></span></div>
+          <div class="field"><label for="ch-v">Cambra Vmín (cm³)</label><input id="ch-v" type="number" min="1" step="any" value="50"><span class="err" id="ch-v-e"></span></div>
+        </div>
+        <div class="stats">
+          <div class="stat cold"><div class="k">Volum d'un cilindre</div><div class="v" id="ch-vc">432 cm³</div></div>
+          <div class="stat"><div class="k">Cilindrada</div><div class="v" id="ch-vt">1.729 cm³</div></div>
+          <div class="stat hot"><div class="k">Relació de compressió</div><div class="v" id="ch-r">9,6</div></div>
+        </div>
+        <div class="msg" id="ch-msg"></div>
+      </div>
+    </div>
+  </div>
+  <p class="eq">Vc = π·r²·c &nbsp;&nbsp; Vt = Vc·nc &nbsp;&nbsp; r = Vmàx / Vmín = (Vc + Vmín) / Vmín</p>
+  <p class="est">Compte amb les unitats: amb el radi i la cursa en centímetres, el volum surt en cm³. 1.000 cm³ = 1 litre. La relació de compressió no té unitats.</p>
+
+  <h3>Potència i parell motor</h3>
+  <p class="eq">P = Γ · ω &nbsp;&nbsp; P = W / Δt = F · v</p>
+  <div class="fig">
+    <div class="row" style="margin-bottom:12px">
+      <button class="btn" type="button" data-pw="232.3,3270">Otto: parell màxim (Fig. 2.33)</button>
+      <button class="btn" type="button" data-pw="265.9,2190">Dièsel: parell màxim (Fig. 2.33)</button>
+    </div>
+    <div class="two">
+      <div class="field"><label for="ch-g">Parell motor Γ (N·m)</label><input id="ch-g" type="number" min="0" step="any" value="232.3"><span class="err" id="ch-g-e"></span></div>
+      <div class="field"><label for="ch-rpm">Règim (rpm)</label><input id="ch-rpm" type="number" min="0" step="any" value="3270"><span class="err" id="ch-rpm-e"></span></div>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="k">ω = 2π·n / 60</div><div class="v" id="ch-w">342 rad/s</div></div>
+      <div class="stat work"><div class="k">Potència</div><div class="v" id="ch-p">79,5 kW</div></div>
+      <div class="stat work"><div class="k">En CV (1 CV = 736 W)</div><div class="v" id="ch-cv">108 CV</div></div>
+    </div>
+  </div>
+  <div class="tbl"><table>
+    <thead><tr><th>Fig. 2.33</th><th>Potència màxima</th><th>Parell màxim</th></tr></thead>
+    <tbody>
+      <tr><td>Motor Otto</td><td class="num">159,5 CV a 5.640 rpm</td><td class="num">23,68 mkg (232 N·m) a 3.270 rpm</td></tr>
+      <tr><td>Motor Dièsel</td><td class="num">122,5 CV a 4.040 rpm</td><td class="num">27,1 mkg (266 N·m) a 2.190 rpm</td></tr>
+    </tbody>
+  </table></div>
+  <p>La potència màxima no coincideix amb el parell màxim: a més revolucions el parell baixa una mica, però ω augmenta més, i el producte Γ·ω continua creixent. <span class="est">Prova-ho a la calculadora amb els valors de la taula. Recorda que 1 mkg = 9,81 N·m.</span></p>
+  <h3>Elasticitat</h3>
+  <p>Un motor és <b>elàstic</b> quan dona el parell màxim a poques revolucions: respon bé en accelerar sense haver d'anar a un règim de voltes alt. Els motors Dièsel tenen un parell elevat i el donen a règims baixos.</p>
+  <p class="key">La cilindrada diu com de gran és el motor; la relació de compressió, quant es comprimeix el gas; el parell, amb quina força gira; i la potència, quina feina fa per segon.</p>
+  <div class="pager"><button class="btn" type="button" data-go="diesel">← Motor Dièsel</button><button class="btn primary" type="button" data-go="quiz">Següent: Autoavaluació →</button></div>
+</section>
+
+<!-- ===== 8 QUIZ ===== -->
+<section class="mod" data-key="quiz" hidden>
+  <p class="eyebrow">Mòdul 8 · Comprova-ho</p>
+  <h2>Autoavaluació</h2>
+  <p class="lead">Preguntes sobre tots els motors de combustió interna.</p>
+  <div class="quiz" id="quiz"></div>
+  <div class="row" style="margin-top:16px"><span class="pill info" id="q-score">0 correctes</span><button class="btn" type="button" id="q-reset">Torna a començar</button></div>
+  <div class="pager"><button class="btn" type="button" data-go="caract">← Característiques</button><span></span></div>
+</section>
+</main>
+</div>
+
+<script>
+(function(){
+"use strict";
+const $=id=>document.getElementById(id);
+const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+function arrowPts(x1,y1,x2,y2,w){const dx=x2-x1,dy=y2-y1,L=Math.hypot(dx,dy)||1,ux=dx/L,uy=dy/L,nx=-uy,ny=ux,h=w/2,hh=h+6,hl=Math.min(w+8,L*.6),bx=x2-ux*hl,by=y2-uy*hl;
+  return [[x1+nx*h,y1+ny*h],[bx+nx*h,by+ny*h],[bx+nx*hh,by+ny*hh],[x2,y2],[bx-nx*hh,by-ny*hh],[bx-nx*h,by-ny*h],[x1-nx*h,y1-ny*h]].map(q=>q[0].toFixed(1)+','+q[1].toFixed(1)).join(' ');}
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+
+/* navegació i mode */
+const mods=[...document.querySelectorAll('.mod')],keys=mods.map(m=>m.dataset.key);
+function show(key,scroll){if(!keys.includes(key))key='intern';mods.forEach(m=>m.hidden=m.dataset.key!==key);
+  document.querySelectorAll('.side button').forEach(b=>b.setAttribute('aria-current',b.dataset.go===key?'true':'false'));
+  try{history.replaceState(null,'','#'+key)}catch(e){}
+  if(scroll)window.scrollTo({top:0,behavior:reduce?'auto':'smooth'});if(key!=='otto')stop();if(key!=='dostemps')stop2();}
+document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>show(b.dataset.go,true)));
+function setMode(m){document.body.classList.toggle('classe',m==='classe');$('mode-classe').setAttribute('aria-pressed',m==='classe');$('mode-estudi').setAttribute('aria-pressed',m!=='classe');store.set('mt-mode',m);}
+$('mode-classe').addEventListener('click',()=>setMode('classe'));$('mode-estudi').addEventListener('click',()=>setMode('estudi'));
+setMode(store.get('mt-mode')==='classe'?'classe':'estudi');
+
+/* model dels cicles (r = 7, gamma = 1,4; valors qualitatius) */
+const G=1.4,RC=7,P2=Math.pow(RC,G),P3=3*P2,P4=P3/P2,VCO=1.6,PD2=1.4*P2,PD4=PD2*Math.pow(VCO/RC,G);
+let eng='otto';
+function pOf(ph,V,mode){if(ph===1)return Math.pow(RC/V,G);if(ph===2){if(mode==='diesel')return V<VCO?PD2:PD2*Math.pow(VCO/V,G);return P3*Math.pow(1/V,G)}return 1}
+function cyclePath(px,py,withLine,mode){let d='';
+  if(withLine)d+='M'+px(1)+' '+py(1)+' L'+px(RC)+' '+py(1)+' ';
+  d+=(withLine?'L':'M')+px(RC)+' '+py(1)+' ';
+  for(let i=0;i<=40;i++){const V=RC-(RC-1)*i/40;d+='L'+px(V).toFixed(1)+' '+py(pOf(1,V)).toFixed(1)+' '}
+  if(mode==='diesel'){d+='L'+px(1)+' '+py(PD2)+' L'+px(VCO)+' '+py(PD2)+' ';for(let i=0;i<=40;i++){const V=VCO+(RC-VCO)*i/40;d+='L'+px(V).toFixed(1)+' '+py(pOf(2,V,'diesel')).toFixed(1)+' '}}
+  else{d+='L'+px(1)+' '+py(P3)+' ';for(let i=0;i<=40;i++){const V=1+(RC-1)*i/40;d+='L'+px(V).toFixed(1)+' '+py(pOf(2,V)).toFixed(1)+' '}}
+  d+='L'+px(RC)+' '+py(1)+' ';return d;}
+function ptsSvg(px,py,mode,r){const L=mode==='diesel'?[[1,1,'0',-16,-8],[RC,1,'1',6,16],[1,P2,'2',-16,4],[1,PD2,"2'",-24,4],[VCO,PD2,'3',4,-8],[RC,PD4,'4',6,-6]]
+  :[[1,1,'0',-16,-8],[RC,1,'1',6,16],[1,P2,'2',-16,4],[1,P3,'3',-16,4],[RC,P4,'4',6,-6]];
+  return L.map(a=>{const x=px(a[0]),y=py(a[1]);return `<circle cx="${x}" cy="${y}" r="${r}" fill="var(--fg)"/><text class="sv-t" x="${x+a[3]}" y="${y+a[4]}">${a[2]}</text>`}).join('')}
+
+/* motor animat de 4 temps */
+const CX=140,CY=315,RCK=60,LR=150;
+const PXa=V=>50+V/8*310,PYa=p=>280-p/(P3*1.08)*262;
+$('o-ticks').innerHTML=`<line x1="${PXa(1)}" y1="280" x2="${PXa(1)}" y2="286" stroke="var(--muted)"/><text class="sv-s" x="${PXa(1)}" y="300" text-anchor="middle">PMS</text>`+
+ `<line x1="${PXa(RC)}" y1="280" x2="${PXa(RC)}" y2="286" stroke="var(--muted)"/><text class="sv-s" x="${PXa(RC)}" y="300" text-anchor="middle">PMI</text>`+
+ `<text class="sv-s" x="44" y="${PYa(1)+4}" text-anchor="end">pa</text>`;
+function drawCycle(){$('o-cyc').setAttribute('d',cyclePath(PXa,PYa,true,eng));$('o-area').setAttribute('d',cyclePath(PXa,PYa,false,eng)+'Z');$('o-pts').innerHTML=ptsSvg(PXa,PYa,eng,3.5)}
+const T=[
+ {n:'1 · Admissió',col:'var(--cold)',pis:'Baixa del PMS al PMI',val:'Admissió <b>oberta</b>, escapament tancada',que:'El pistó crea una depressió i entra aire filtrat de l’exterior.',pv:'0 → 1: pressió constant',w:'No en fa (teòricament)'},
+ {n:'2 · Compressió',col:'var(--muted)',pis:'Puja del PMI al PMS',val:'Totes dues <b>tancades</b>',que:'L’aire es comprimeix: pugen la pressió i la temperatura.',pv:'1 → 2: compressió adiabàtica',w:'Se’n <b>consumeix</b>: el pistó empeny el gas'},
+ {n:'3 · Explosió',col:'var(--hot)',pis:'Baixa del PMS al PMI',val:'Totes dues <b>tancades</b>',que:'S’injecta la gasolina i la bugia fa saltar la guspira una mica abans del PMS. La combustió fa pujar molt p i T, i els gasos empenyen el pistó amb força.',pv:'2 → 3: explosió a volum constant (entra Qh) · 3 → 4: expansió adiabàtica',w:'Se’n <b>produeix</b>: és l’únic temps motor'},
+ {n:'4 · Escapament',col:'var(--muted)',pis:'Puja del PMI al PMS',val:'Escapament <b>oberta</b>, admissió tancada',que:'La pressió baixa de cop i el pistó expulsa els gasos cremats cap a l’exterior.',pv:'4 → 1: volum constant (surt Qc) · 1 → 0: pressió constant',w:'No en fa (teòricament)'}];
+const TD=T.map(o=>Object.assign({},o));
+TD[0].que='Entra <b>només aire</b>, sense combustible.';
+TD[1].que='L’aire es comprimeix molt més que en un motor de gasolina: supera els 3.000 kPa i els 600 °C.';
+TD[2].n='3 · Injecció-explosió';
+TD[2].que='Una mica abans del PMS, l’injector introdueix el gasoil finament atomitzat. S’encén sol per l’alta temperatura de l’aire, sense guspira. La injecció dura una estona, i la combustió continua mentre el pistó comença a baixar.';
+TD[2].pv='2 → 2′: volum constant · 2′ → 3: pressió constant (entra Qh) · 3 → 4: expansió adiabàtica';
+let th=0,raf=0,running=false,target=null,last=0,curPh=-1;
+function draw(){const a=th*Math.PI/180,s=Math.sin(a),c=Math.cos(a),x=RCK*c+Math.sqrt(LR*LR-RCK*RCK*s*s),pinY=CY-x,top=pinY-25;
+  const cpx=CX+RCK*s,cpy=CY-RCK*c,m=((th%720)+720)%720,ph=Math.min(3,Math.floor(m/180)),t=(m%180)/180;
+  $('pis').setAttribute('y',top);$('r1').setAttribute('y1',top+8);$('r1').setAttribute('y2',top+8);$('r2').setAttribute('y1',top+14);$('r2').setAttribute('y2',top+14);
+  ['g-base','g-hot','g-ex'].forEach(id=>$(id).setAttribute('height',Math.max(0,top-60)));
+  $('g-hot').setAttribute('opacity',ph===1?(.18*t).toFixed(2):ph===2?(.85-.45*t).toFixed(2):'0');$('g-ex').setAttribute('opacity',ph===3?'.35':'0');
+  $('pin').setAttribute('cx',CX);$('pin').setAttribute('cy',pinY);$('rod').setAttribute('x1',CX);$('rod').setAttribute('y1',pinY);$('rod').setAttribute('x2',cpx);$('rod').setAttribute('y2',cpy);
+  $('crank').setAttribute('x2',cpx);$('crank').setAttribute('y2',cpy);$('cpin').setAttribute('cx',cpx);$('cpin').setAttribute('cy',cpy);
+  const inOpen=ph===0,exOpen=ph===3;$('v-in').setAttribute('transform',inOpen?'translate(0,10)':'');$('v-ex').setAttribute('transform',exOpen?'translate(0,10)':'');
+  $('a-in').setAttribute('points',arrowPts(20,34,96,34,8));$('a-in').setAttribute('opacity',inOpen?'.9':'0');
+  $('a-ex').setAttribute('points',arrowPts(184,34,280,34,8));$('a-ex').setAttribute('opacity',exOpen?'.9':'0');
+  const fire=m>345&&m<378;$('spark').setAttribute('opacity',(fire&&eng==='otto')?'1':'0');$('spray').setAttribute('opacity',(eng==='diesel'&&m>345&&m<395)?'.8':'0');
+  $('m-ang').textContent='Cigonyal: '+Math.round(m)+'° · volta '+(m<360?'1':'2')+' de 2';
+  const V=1+(top-80)/20;let p=pOf(ph,V,eng);if(ph===3||ph===0)p=1;$('o-dot').setAttribute('cx',PXa(V));$('o-dot').setAttribute('cy',PYa(p));
+  return ph;}
+function setCard(ph){const S=(eng==='diesel'?TD:T)[ph];document.querySelectorAll('[data-t]').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.t===ph?'true':'false'));
+  let d='';if(ph===0)d='M'+PXa(1)+' '+PYa(1)+' L'+PXa(RC)+' '+PYa(1);
+  else if(ph===3)d='M'+PXa(RC)+' '+PYa(eng==='diesel'?PD4:P4)+' L'+PXa(RC)+' '+PYa(1)+' L'+PXa(1)+' '+PYa(1);
+  else if(ph===1){for(let i=0;i<=30;i++){const V=RC-(RC-1)*i/30;d+=(i?'L':'M')+PXa(V).toFixed(1)+' '+PYa(pOf(1,V)).toFixed(1)+' '}}
+  else{const v0=eng==='diesel'?VCO:1;d='M'+PXa(1)+' '+PYa(P2)+' L'+PXa(1)+' '+PYa(eng==='diesel'?PD2:P3)+' ';if(eng==='diesel')d+='L'+PXa(VCO)+' '+PYa(PD2)+' ';
+    for(let i=0;i<=30;i++){const V=v0+(RC-v0)*i/30;d+='L'+PXa(V).toFixed(1)+' '+PYa(pOf(2,V,eng)).toFixed(1)+' '}}
+  $('o-hl').setAttribute('d',d);$('o-hl').setAttribute('stroke',S.col);
+  $('m-card').innerHTML='<h3 style="margin-top:0;color:'+S.col+'">'+S.n+'</h3><dl><dt>Pistó</dt><dd>'+S.pis+'</dd><dt>Vàlvules</dt><dd>'+S.val+'</dd><dt>Què passa</dt><dd>'+S.que+'</dd><dt>Diagrama p-V</dt><dd>'+S.pv+'</dd><dt>Treball</dt><dd>'+S.w+'</dd></dl>';}
+function frame(now){const dt=Math.min(50,now-last);last=now;th+=dt*0.12;
+  if(target!==null&&th>=target){th=target;target=null;running=false;$('m-play').textContent='▶ Engega el motor'}
+  const ph=draw();if(ph!==curPh){curPh=ph;setCard(ph)}
+  if(running)raf=requestAnimationFrame(frame);}
+function stop(){running=false;target=null;cancelAnimationFrame(raf);const b=$('m-play');if(b)b.textContent='▶ Engega el motor';}
+function goStroke(k){stop();th=k*180;curPh=k;setCard(k);draw();if(reduce){th=k*180+90;draw();return}
+  target=k*180+179.9;running=true;last=performance.now();raf=requestAnimationFrame(frame);}
+$('m-play').addEventListener('click',()=>{if(running&&target===null){stop();return}stop();if(reduce){goStroke(((Math.floor(th/180)+1)%4));return}
+  th=th%720;running=true;target=null;last=performance.now();$('m-play').textContent='❚❚ Atura';raf=requestAnimationFrame(frame)});
+document.querySelectorAll('[data-t]').forEach(b=>b.addEventListener('click',()=>goStroke(+b.dataset.t)));
+function setEng(e){eng=e;$('eng-otto').setAttribute('aria-pressed',e==='otto');$('eng-diesel').setAttribute('aria-pressed',e==='diesel');
+  $('plug').setAttribute('opacity',e==='otto'?'1':'0');$('inj').setAttribute('opacity',e==='diesel'?'1':'0');
+  drawCycle();curPh=Math.min(3,Math.floor((((th%720)+720)%720)/180));setCard(curPh);draw();}
+$('eng-otto').addEventListener('click',()=>setEng('otto'));$('eng-diesel').addEventListener('click',()=>setEng('diesel'));
+document.querySelectorAll('[data-eng]').forEach(b=>b.addEventListener('click',()=>setEng(b.dataset.eng)));
+drawCycle();setCard(0);curPh=0;th=40;draw();
+
+/* motor de 2 temps */
+const k2={th:0,raf:0,run:false,target:null,last:0,cur:-1};
+const S2=[
+ {n:'1r temps · Compressió-explosió',col:'var(--accent)',pis:'Puja del PMI al PMS',sobre:'Quan el pistó tapa els espiralls, comprimeix la mescla. Al PMS salta la guspira: explosió.',sota:'Al càrter es crea una depressió: s’obre l’espirall d’admissió i hi entra mescla nova.'},
+ {n:'2n temps · Admissió-escapament',col:'var(--hot)',pis:'Baixa del PMS al PMI',sobre:'Els gasos empenyen el pistó (expansió). Cap al final, el pistó destapa l’espirall d’escapament i surten els gasos; tot seguit destapa el de càrrega i entra la mescla nova, que empeny cap a fora els gasos que queden.',sota:'El pistó comprimeix la mescla del càrter, que puja pel conducte de càrrega cap al cilindre.'}];
+function d2(){const m=((k2.th%360)+360)%360,a=(m+180)*Math.PI/180,s=Math.sin(a),c=Math.cos(a),x=RCK*c+Math.sqrt(LR*LR-RCK*RCK*s*s),pinY=CY-x,top=pinY-25,cpx=CX+RCK*s,cpy=CY-RCK*c,rising=m<180;
+  const exO=top>145,trO=top>165,inO=top<165,f=Math.max(0,Math.min(1,(top-80)/65));
+  $('k-pis').setAttribute('y',top);$('k-r1').setAttribute('y1',top+8);$('k-r1').setAttribute('y2',top+8);$('k-r2').setAttribute('y1',top+14);$('k-r2').setAttribute('y2',top+14);
+  ['k-gbase','k-ghot','k-gex'].forEach(id=>$(id).setAttribute('height',Math.max(0,top-60)));
+  $('k-under').setAttribute('y',top+50);$('k-under').setAttribute('height',Math.max(0,200-top));
+  let hot=0,grey=0;if(!rising&&!exO)hot=.4+.45*(1-f);else if(rising&&!exO)hot=.18*(1-f);if(exO)grey=trO?.15:(rising?.15:.35);
+  $('k-ghot').setAttribute('opacity',hot.toFixed(2));$('k-gex').setAttribute('opacity',grey.toFixed(2));
+  $('k-pin').setAttribute('cx',CX);$('k-pin').setAttribute('cy',pinY);$('k-rod').setAttribute('x1',CX);$('k-rod').setAttribute('y1',pinY);$('k-rod').setAttribute('x2',cpx);$('k-rod').setAttribute('y2',cpy);
+  $('k-crank').setAttribute('x2',cpx);$('k-crank').setAttribute('y2',cpy);$('k-cpin').setAttribute('cx',cpx);$('k-cpin').setAttribute('cy',cpy);
+  $('k-spark').setAttribute('opacity',(m>168&&m<198)?'1':'0');
+  $('k-aex').setAttribute('points',arrowPts(194,152,300,152,8));$('k-aex').setAttribute('opacity',exO?'.9':'0');
+  $('k-atr').setAttribute('points',arrowPts(80,200,122,162,7));$('k-atr').setAttribute('opacity',trO?'.9':'0');
+  $('k-ain').setAttribute('points',arrowPts(304,225,196,225,7));$('k-ain').setAttribute('opacity',inO?'.9':'0');
+  $('k-expipe').setAttribute('opacity',exO?'1':'.45');$('k-inpipe').setAttribute('opacity',inO?'1':'.45');
+  $('k-ang').textContent='Cigonyal: '+Math.round(m)+'° · 1 volta = 1 cicle';
+  const chip=(t,o)=>'<span class="chip'+(o?' on':'')+'">'+t+': '+(o?'obert':'tancat')+'</span>';
+  $('k-ports').innerHTML=chip('Escapament',exO)+chip('Càrrega',trO)+chip('Admissió',inO);
+  return rising?0:1;}
+function card2(k){const S=S2[k];document.querySelectorAll('[data-t2]').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.t2===k?'true':'false'));
+  $('k-card').innerHTML='<h3 style="margin-top:12px;color:'+S.col+'">'+S.n+'</h3><dl><dt>Pistó</dt><dd>'+S.pis+'</dd><dt>A sobre del pistó</dt><dd>'+S.sobre+'</dd><dt>A sota (càrter)</dt><dd>'+S.sota+'</dd></dl>';}
+function f2(now){const dt=Math.min(50,now-k2.last);k2.last=now;k2.th+=dt*0.09;
+  if(k2.target!==null&&k2.th>=k2.target){k2.th=k2.target;k2.target=null;k2.run=false;$('k-play').textContent='▶ Engega el motor'}
+  const k=d2();if(k!==k2.cur){k2.cur=k;card2(k)}if(k2.run)k2.raf=requestAnimationFrame(f2);}
+function stop2(){k2.run=false;k2.target=null;cancelAnimationFrame(k2.raf);const b=$('k-play');if(b)b.textContent='▶ Engega el motor';}
+function go2(k){stop2();k2.th=k*180;k2.cur=k;card2(k);d2();if(reduce){k2.th=k*180+90;d2();return}
+  k2.target=k*180+179.9;k2.run=true;k2.last=performance.now();k2.raf=requestAnimationFrame(f2);}
+$('k-play').addEventListener('click',()=>{if(k2.run&&k2.target===null){stop2();return}stop2();if(reduce){go2((Math.floor(k2.th/180)+1)%2);return}
+  k2.th=k2.th%360;k2.run=true;k2.last=performance.now();$('k-play').textContent='❚❚ Atura';k2.raf=requestAnimationFrame(f2)});
+document.querySelectorAll('[data-t2]').forEach(b=>b.addEventListener('click',()=>go2(+b.dataset.t2)));
+k2.th=60;k2.cur=0;card2(0);d2();
+
+
+/* infografia */
+(function(){const ic=[
+  {s:'Pistó ↓ · admissió oberta',v:'Entra aire',c:'var(--cold)',g:'var(--cold-soft)',vin:1,vex:0,top:150,sp:0},
+  {s:'Pistó ↑ · vàlvules tancades',v:'Es comprimeix',c:'var(--accent)',g:'var(--accent-soft)',vin:0,vex:0,top:40,sp:0},
+  {s:'Guspira · pistó ↓',v:'Treball!',c:'var(--hot)',g:'var(--hot-soft)',vin:0,vex:0,top:110,sp:1},
+  {s:'Pistó ↑ · escapament oberta',v:'Surten els gasos',c:'var(--muted)',g:'var(--line)',vin:0,vex:1,top:60,sp:0}];
+  $('info4').innerHTML=ic.map((k,i)=>{const gas=k.top-30;return '<div class="i4"><div class="i4n" style="color:'+k.c+'">'+(i+1)+'</div><h4>'+T[i].n.split(' · ')[1]+'</h4>'+
+   '<svg viewBox="0 0 120 210" role="img" aria-label="'+T[i].n+'"><rect x="20" y="10" width="80" height="20" rx="3" fill="var(--bg)" stroke="var(--muted)"/>'+
+   '<rect x="26" y="30" width="68" height="'+gas+'" fill="'+k.g+'"/>'+(k.sp?'<polygon points="60,32 64,38 72,37 66,43 69,50 60,46 51,50 54,43 48,37 56,38" fill="var(--work)"/>':'')+
+   '<line x1="25" y1="30" x2="25" y2="200" stroke="var(--muted)" stroke-width="2"/><line x1="95" y1="30" x2="95" y2="200" stroke="var(--muted)" stroke-width="2"/>'+
+   '<rect x="40" y="'+(k.vin?38:24)+'" width="14" height="5" fill="'+(k.vin?'var(--cold)':'var(--fg)')+'"/><rect x="66" y="'+(k.vex?38:24)+'" width="14" height="5" fill="'+(k.vex?'var(--muted)':'var(--fg)')+'"/>'+
+   '<rect x="26" y="'+k.top+'" width="68" height="34" rx="3" fill="var(--work-soft)" stroke="var(--work)"/>'+
+   '<text x="60" y="'+(k.top+24)+'" text-anchor="middle" class="sv-t" style="font-size:22px">'+(i%2===0?'↓':'↑')+'</text></svg>'+
+   '<p class="i4v" style="color:'+k.c+'">'+k.v+'</p><p class="i4s">'+k.s+'</p></div>'}).join('');})();
+
+/* diagrama p-V gran */
+const PXb=V=>60+V/8*530,PYb=p=>300-p/(P3*1.08)*280;
+$('p-cyc').setAttribute('d',cyclePath(PXb,PYb,true));$('p-area').setAttribute('d',cyclePath(PXb,PYb,false)+'Z');
+$('p-ticks').innerHTML=`<line x1="${PXb(1)}" y1="300" x2="${PXb(1)}" y2="306" stroke="var(--muted)"/><text class="sv-s" x="${PXb(1)}" y="322" text-anchor="middle">V₂ (PMS)</text>`+
+ `<line x1="${PXb(RC)}" y1="300" x2="${PXb(RC)}" y2="306" stroke="var(--muted)"/><text class="sv-s" x="${PXb(RC)}" y="322" text-anchor="middle">V₁ (PMI)</text>`+
+ `<text class="sv-s" x="54" y="${PYb(1)+4}" text-anchor="end">pa</text>`;
+(function(){let q='';
+  [[1,1,'0',-18,-6],[RC,1,'1',8,16],[1,P2,'2',-18,4],[1,P3,'3',-18,6],[RC,P4,'4',8,-6]].forEach(a=>{const x=PXb(a[0]),y=PYb(a[1]);q+=`<circle cx="${x}" cy="${y}" r="4" fill="var(--fg)"/><text class="sv-t" x="${x+a[3]}" y="${y+a[4]}">${a[2]}</text>`});
+  q+=`<polygon class="fl-hot" points="${arrowPts(PXb(1)-70,PYb(P3*0.6),PXb(1)-8,PYb(P3*0.6),8)}"/><text class="sv-m tx-hot" x="${PXb(1)-74}" y="${PYb(P3*0.6)-10}">Qh</text>`;
+  q+=`<polygon class="fl-cold" points="${arrowPts(PXb(RC)+8,PYb(P4*0.6),PXb(RC)+70,PYb(P4*0.6),8)}"/><text class="sv-m tx-cold" x="${PXb(RC)+40}" y="${PYb(P4*0.6)-12}">Qc</text>`;
+  q+=`<text class="sv-s" x="${PXb(2.2)}" y="${PYb(P3*0.55)}">Expansió adiabàtica 3 → 4</text>`;
+  q+=`<text class="sv-s" x="72" y="${PYb(6.5)}">Compressió</text><text class="sv-s" x="72" y="${PYb(6.5)+17}">adiabàtica 1 → 2</text>`;
+  q+=`<text class="sv-t tx-work" x="${PXb(3.3)}" y="${PYb(5.2)}">W</text>`;
+  $('p-lab').innerHTML=q})();
+(function(){const pts=[];for(let i=0;i<=30;i++){const V=RC-(RC-1.25)*i/30;pts.push([V,Math.pow(RC/V,G)])}
+  let d='M'+PXb(RC)+' '+PYb(0.9)+' L'+PXb(RC)+' '+PYb(1)+' ';pts.forEach(p=>d+='L'+PXb(p[0]).toFixed(1)+' '+PYb(p[1]).toFixed(1)+' ');
+  const pk=P3*0.72;d+='Q'+PXb(1.02)+' '+PYb(pk*0.95)+' '+PXb(1.18)+' '+PYb(pk)+' ';
+  for(let i=1;i<=30;i++){const V=1.18+(6.2-1.18)*i/30;d+='L'+PXb(V).toFixed(1)+' '+PYb(pk*Math.pow(1.18/V,1.32)).toFixed(1)+' '}
+  d+='Q'+PXb(6.9)+' '+PYb(1.6)+' '+PXb(RC)+' '+PYb(1.2)+' L'+PXb(1)+' '+PYb(1.2)+' L'+PXb(1)+' '+PYb(0.85)+' L'+PXb(RC)+' '+PYb(0.85)+' Z';
+  $('p-real').setAttribute('d',d)})();
+function setPV(real){$('p-real').setAttribute('opacity',real?'1':'0');$('pv-real').setAttribute('aria-pressed',real);$('pv-teo').setAttribute('aria-pressed',!real);
+  $('pv-note').innerHTML=real?'<span class="pill info">Línia blava discontínua: cicle real</span> Puntes arrodonides i un petit bucle de treball negatiu a baix (admissió i escapament).':'';}
+$('pv-real').addEventListener('click',()=>setPV($('pv-real').getAttribute('aria-pressed')!=='true'));
+$('pv-teo').addEventListener('click',()=>setPV(false));setPV(false);
+
+/* diagrama Dièsel */
+$('dz-c').setAttribute('d',cyclePath(PXb,PYb,true,'diesel'));$('dz-area').setAttribute('d',cyclePath(PXb,PYb,false,'diesel')+'Z');
+$('dz-o').setAttribute('d',cyclePath(PXb,PYb,true,'otto'));
+$('dz-q').setAttribute('d','M'+PXb(1)+' '+PYb(P2)+' L'+PXb(1)+' '+PYb(PD2)+' L'+PXb(VCO)+' '+PYb(PD2));
+$('dz-ticks').innerHTML=$('p-ticks').innerHTML;
+$('dz-lab').innerHTML=ptsSvg(PXb,PYb,'diesel',4)+`<polygon class="fl-hot" points="${arrowPts(PXb(1)-60,PYb(PD2*0.8),PXb(1)-8,PYb(PD2*0.8),8)}"/><text class="sv-m tx-hot" x="${PXb(1)-64}" y="${PYb(PD2*0.8)-10}">Qh</text>`+
+ `<text class="sv-t tx-work" x="${PXb(3.3)}" y="${PYb(4.2)}">W</text>`;
+function setDz(on){$('dz-o').setAttribute('opacity',on?'1':'0');$('dz-cmp').setAttribute('aria-pressed',on);
+  $('dz-note').textContent=on?'Línia grisa discontínua: cicle Otto, amb la mateixa compressió (diagrames qualitatius).':'';}
+$('dz-cmp').addEventListener('click',()=>setDz($('dz-cmp').getAttribute('aria-pressed')!=='true'));setDz(false);
+
+/* característiques */
+const fmt=(n,d)=>Number(n).toLocaleString('ca-ES',{minimumFractionDigits:d,maximumFractionDigits:d});
+function num(id,intOnly){const el=$(id),e=$(id+'-e'),v=el.value.trim(),n=Number(v);
+  if(v===''||!isFinite(n)){e.textContent='Escriu un nombre';return null}
+  if(n<=0){e.textContent='Ha de ser més gran que 0';return null}
+  if(intOnly&&!Number.isInteger(n)){e.textContent='Ha de ser un nombre enter';return null}
+  e.textContent='';return n}
+function upCh(){const D=num('ch-d'),c=num('ch-c'),n=num('ch-n',true),vm=num('ch-v');
+  if([D,c,n,vm].some(v=>v===null)){$('ch-msg').innerHTML='';return}
+  const r=D/20,Vc=Math.PI*r*r*(c/10),Vt=Vc*n,rc=(Vc+vm)/vm;
+  $('ch-vc').textContent=fmt(Vc,0)+' cm³';$('ch-vt').textContent=fmt(Vt,0)+' cm³ ('+fmt(Vt/1000,2)+' L)';$('ch-r').textContent=fmt(rc,1);
+  let m;if(rc>=7&&rc<=10.5)m='<span class="pill ok">Valor típic d’un motor Otto (7 – 10)</span>';
+  else if(rc>=14&&rc<=22)m='<span class="pill info">Valor típic d’un motor Dièsel (14 – 22)</span>';
+  else m='<span class="pill bad">Fora dels valors habituals (Otto 7 – 10, Dièsel 14 – 22)</span>';
+  $('ch-msg').innerHTML=m;}
+['ch-d','ch-c','ch-n','ch-v'].forEach(id=>$(id).addEventListener('input',upCh));upCh();
+function upP(){const g=num('ch-g'),n=num('ch-rpm');if(g===null||n===null)return;const w=2*Math.PI*n/60,P=g*w;
+  $('ch-w').textContent=fmt(w,1)+' rad/s';$('ch-p').textContent=fmt(P/1000,1)+' kW';$('ch-cv').textContent=fmt(P/736,1)+' CV';}
+['ch-g','ch-rpm'].forEach(id=>$(id).addEventListener('input',upP));
+document.querySelectorAll('[data-pw]').forEach(b=>b.addEventListener('click',()=>{const p=b.dataset.pw.split(',');$('ch-g').value=p[0];$('ch-rpm').value=p[1];upP()}));upP();
+
+
+/* quiz */
+const Q=[
+ ['Quantes voltes fa el cigonyal en un cicle complet d’un motor de 4 temps?',['Una','Dues','Quatre','Mitja'],1,'Cada temps és mitja volta (180°): 4 × 180° = 720°, és a dir, dues voltes.'],
+ ['En quin temps es produeix treball?',['Admissió','Compressió','Explosió','Escapament'],2,'Només en el temps d’explosió els gasos empenyen el pistó. Els altres temps es fan per inèrcia.'],
+ ['Durant la compressió, com estan les vàlvules?',['Admissió oberta','Escapament oberta','Totes dues obertes','Totes dues tancades'],3,'Si alguna vàlvula estigués oberta, el gas s’escaparia i no es podria comprimir.'],
+ ['Per què la guspira salta una mica abans del PMS?',['Per estalviar combustible','Perquè la combustió no és instantània i cal donar temps al front de flama','Per refredar el cilindre','Perquè la vàlvula d’escapament ja és oberta'],1,'És l’avanç a l’encesa: així la combustió és completa quan el pistó comença a baixar.'],
+ ['Al diagrama p-V teòric, com és l’explosió 2 → 3?',['Isotèrmica','Adiabàtica','A volum constant (isocora)','A pressió constant'],2,'La combustió és tan ràpida que el pistó pràcticament no es mou: el volum no canvia mentre p i T pugen molt.'],
+ ['Què representa l’àrea tancada pel cicle al diagrama p-V?',['La calor Qh','El treball net','La calor Qc','La cilindrada'],1,'Com en qualsevol cicle, l’àrea tancada és el treball net: el que fa el gas a l’expansió menys el que consumeix la compressió.'],
+ ['Quantes voltes fa el cigonyal en cada cicle d\u2019un motor de 2 temps?',['Una','Dues','Quatre','Mitja'],0,'Al motor de 2 temps, l\u2019admissió i la compressió passen alhora, i l\u2019explosió i l\u2019escapament també: un cicle a cada volta.'],
+ ['Al motor de 2 temps, què obre i tanca els espiralls?',['L\u2019arbre de lleves','Unes vàlvules','El mateix pistó','La bugia'],2,'No hi ha vàlvules: el pistó tapa i destapa els espiralls segons la seva posició.'],
+ ['Com s\u2019encén el combustible en un motor Dièsel?',['Amb una guspira de la bugia','Sol, per l\u2019alta temperatura de l\u2019aire comprimit','Amb una flama pilot','Per la calor de l\u2019escapament'],1,'L\u2019aire es comprimeix tant que supera els 600 °C, i el gasoil s\u2019encén en injectar-lo.'],
+ ['Un motor té 4 cilindres de 400 cm³ cadascun. Quina és la cilindrada?',['400 cm³','1.600 cm³','100 cm³','4.000 cm³'],1,'Vt = Vc · nc = 400 · 4 = 1.600 cm³ (1,6 litres).'],
+ ['Un cilindre té Vc = 450 cm³ i una cambra de Vmín = 50 cm³. Quina és la relació de compressió?',['9','10','500','0,1'],1,'r = (Vc + Vmín) / Vmín = (450 + 50) / 50 = 10. És un valor típic d\u2019un motor Otto.']];
+const ans=new Array(Q.length).fill(null);
+function renderQ(){$('quiz').innerHTML=Q.map((q,i)=>'<div class="q" id="q'+i+'"><h4>'+(i+1)+'. '+q[0]+'</h4>'+q[1].map((o,j)=>'<label for="q'+i+'o'+j+'"><input type="radio" name="q'+i+'" id="q'+i+'o'+j+'" value="'+j+'"> <span>'+o+'</span></label>').join('')+
+  '<div class="row" style="margin-top:8px"><button class="btn" type="button" data-check="'+i+'">Comprova</button><span class="err" id="q'+i+'e"></span></div><div class="fb" id="q'+i+'f"></div></div>').join('');
+  document.querySelectorAll('[data-check]').forEach(b=>b.addEventListener('click',()=>check(+b.dataset.check)));
+  document.querySelectorAll('.q input').forEach(r=>r.addEventListener('change',()=>{$('q'+r.name.slice(1)+'e').textContent=''}));ans.fill(null);score();}
+function check(i){const sel=document.querySelector('input[name="q'+i+'"]:checked');if(!sel){$('q'+i+'e').textContent='Tria una resposta primer';return}
+  const v=+sel.value,ok=v===Q[i][2];ans[i]=ok;document.querySelectorAll('#q'+i+' label').forEach((l,j)=>{l.classList.remove('right','wrong');if(j===Q[i][2])l.classList.add('right');else if(j===v)l.classList.add('wrong')});
+  $('q'+i+'f').innerHTML=(ok?'<span class="pill ok">Correcte</span> ':'<span class="pill bad">No és aquesta</span> ')+Q[i][3];score();}
+function score(){$('q-score').textContent=ans.filter(a=>a===true).length+' de '+Q.length+' correctes'}
+$('q-reset').addEventListener('click',renderQ);renderQ();
+
+show((location.hash||'').slice(1),false);
+})();
+</script>
+<script>
+(function(){
+  var emb=false;try{emb=window.self!==window.top}catch(e){emb=true}
+  if(emb)document.body.classList.add('embed');
+  var d=document,root=d.documentElement;
+  if(d.fullscreenEnabled&&root.requestFullscreen){
+    var b=d.createElement('button');b.type='button';b.className='btn';b.id='fs-btn';b.textContent='⛶ Pantalla completa';
+    b.addEventListener('click',function(){if(d.fullscreenElement){d.exitFullscreen().catch(function(){})}else{root.requestFullscreen().catch(function(){})}});
+    d.addEventListener('fullscreenchange',function(){b.textContent=d.fullscreenElement?'✕ Surt de pantalla completa':'⛶ Pantalla completa'});
+    var seg=d.querySelector('.top .seg');if(seg)seg.parentNode.insertBefore(b,seg);
+  }else if(emb){
+    var a=d.createElement('a');a.className='btn';a.href='https://tecnolyd.github.io/artefactes/maquines-termiques.html';a.target='_blank';a.rel='noopener';a.textContent='⛶ Obre a pantalla completa';
+    var seg2=d.querySelector('.top .seg');if(seg2)seg2.parentNode.insertBefore(a,seg2);
+  }
+  var br=d.querySelector('.brand');if(br){var v=d.createElement('span');v.className='ver';v.textContent='v6';br.appendChild(v);}
+})();
+</script>
+
+</html>
