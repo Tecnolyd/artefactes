@@ -203,6 +203,21 @@ svg .hlmode [data-part].on{opacity:1}
 .leader{stroke:var(--muted);stroke-width:1;fill:none}
 .ind-svg{max-width:640px;margin:0 auto}
 @media (max-width:820px){.erow{grid-template-columns:minmax(0,1fr) 80px}.erow .etrack{grid-column:1 / -1;grid-row:2}}
+
+/* menú de mòduls sempre a dalt; versió ben visible */
+.shell{grid-template-columns:minmax(0,1fr);gap:12px;max-width:1180px}
+.side{position:static;flex-direction:row;overflow-x:auto;gap:4px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+.side button{white-space:nowrap}
+main{max-width:none}
+@media (min-width:821px){.side{flex-wrap:wrap;overflow:visible}}
+.ver{font-family:var(--f-mono);font-size:.8rem;color:var(--accent);background:var(--accent-soft);border-radius:999px;padding:2px 9px;margin-left:10px;vertical-align:3px}
+.expl{display:grid;gap:12px;margin:12px 0}
+.exp{display:grid;grid-template-columns:minmax(180px,250px) minmax(0,1fr);gap:16px;align-items:start}
+.exp h4{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.exp-sub{margin:0;color:var(--muted);font-family:var(--f-display);font-size:1.05em}
+.exp ol{margin:.4em 0 0;padding-left:1.3em}.exp li{margin:.25em 0}
+@media (max-width:640px){.exp{grid-template-columns:minmax(0,1fr)}}
+
 </style>
 <header class="top">
   <div class="brand">Generadors i <span>dinamo</span></div>
@@ -290,7 +305,7 @@ svg .hlmode [data-part].on{opacity:1}
     <tbody>
       <tr><td><b>Inductor</b></td><td>Crea el camp magnètic. Pot ser un imant permanent o un electroimant.</td></tr>
       <tr><td><b>Induït</b></td><td>Bobina (aquí, una sola espira) on s'indueix la fem ε.</td></tr>
-      <tr><td><b>Col·lector</b></td><td>Gira amb l'espira i la connecta amb l'exterior: <b>anells</b> (alternador) o <b>delgues</b> (dinamo).</td></tr>
+      <tr><td><b>Col·lector</b></td><td>Gira amb l'espira i la connecta amb l'exterior: <b>anells</b> (alternador) o <b>lamel·les</b> (dinamo).</td></tr>
       <tr><td><b>Escombretes</b></td><td>Peces fixes de grafit que freguen el col·lector i passen el corrent al circuit exterior.</td></tr>
     </tbody>
   </table></div>
@@ -322,21 +337,21 @@ svg .hlmode [data-part].on{opacity:1}
 
 <!-- ===== 4 DINAMO ===== -->
 <section class="mod" data-key="dinamo" hidden>
-  <p class="eyebrow">Mòdul 4 · Col·lector de delgues</p>
+  <p class="eyebrow">Mòdul 4 · Col·lector de lamel·les</p>
   <h2>La dinamo: de CA a CC</h2>
-  <p class="lead">La dinamo és el mateix generador amb un altre col·lector: un anell partit en dues meitats aïllades entre si, les <b>delgues</b>. Canvia entre anells i delgues i mira què passa a la gràfica.</p>
+  <p class="lead">La dinamo és el mateix generador amb un altre col·lector: un anell partit en dues meitats aïllades entre si, les <b>lamel·les</b>. Canvia entre anells i lamel·les i mira què passa a la gràfica.</p>
   <div id="sim-din"></div>
   <div class="est">
-    <h3>Què fan les delgues?</h3>
+    <h3>Què fan les lamel·les?</h3>
     <ul>
-      <li>Cada delga està soldada a un costat de l'espira i gira amb ella. Les escombretes són fixes.</li>
-      <li>Just quan <b>ε = 0</b> (espira perpendicular al camp), cada escombreta passa d'una delga a l'altra.</li>
+      <li>Cada lamel·la està soldada a un costat de l'espira i gira amb ella. Les escombretes són fixes.</li>
+      <li>Just quan <b>ε = 0</b> (espira perpendicular al camp), cada escombreta passa d'una lamel·la a l'altra.</li>
       <li>Així, l'escombreta esquerra toca sempre el costat de l'espira que en aquell moment fa de pol positiu.</li>
     </ul>
     <p>Dins l'espira, el corrent continua sent altern. A la sortida, però, va sempre en el mateix sentit: és <b>corrent continu (CC)</b>, encara que <b>polsant</b> (amb bonys).</p>
   </div>
   <div class="tbl"><table>
-    <thead><tr><th></th><th>Anells col·lectors</th><th>Col·lector de delgues</th></tr></thead>
+    <thead><tr><th></th><th>Anells col·lectors</th><th>Col·lector de lamel·les</th></tr></thead>
     <tbody>
       <tr><td>Màquina</td><td>Alternador</td><td>Dinamo</td></tr>
       <tr><td>Connexió espira–escombreta</td><td>Sempre la mateixa</td><td>S'intercanvia cada mitja volta</td></tr>
@@ -344,31 +359,31 @@ svg .hlmode [data-part].on{opacity:1}
       <tr><td>Galvanòmetre</td><td>L'agulla va d'un costat a l'altre</td><td>L'agulla es queda sempre al mateix costat</td></tr>
     </tbody>
   </table></div>
-  <p class="key">El col·lector de delgues inverteix la connexió de l'espira cada mitja volta, just quan ε = 0. Així rectifica: converteix la CA de l'espira en CC a la sortida.</p>
+  <p class="key">El col·lector de lamel·les inverteix la connexió de l'espira cada mitja volta, just quan ε = 0. Així rectifica: converteix la CA de l'espira en CC a la sortida.</p>
   <div class="pager"><button class="btn" type="button" data-go="alternador">← Corrent altern</button><button class="btn primary" type="button" data-go="colector">Següent: El col·lector de prop →</button></div>
 </section>
 
 <!-- ===== 5 COL·LECTOR DE PROP ===== -->
 <section class="mod" data-key="colector" hidden>
   <p class="eyebrow">Mòdul 5 · Vista frontal</p>
-  <h2>El col·lector de delgues, de prop</h2>
-  <p class="lead">Mirem la dinamo de cara, en la direcció de l'eix. A l'esquerra, l'espira entre els pols; a la dreta, el col·lector ampliat amb les dues escombretes. Cada delga té el color del costat de l'espira on està soldada.</p>
+  <h2>El col·lector de lamel·les, de prop</h2>
+  <p class="lead">Mirem la dinamo de cara, en la direcció de l'eix. A l'esquerra, l'espira entre els pols; a la dreta, el col·lector ampliat amb les dues escombretes. Cada lamel·la té el color del costat de l'espira on està soldada.</p>
   <div id="sim-col"></div>
 
   <h3>Altern, polsant o continu?</h3>
   <div class="cards"><div class="card"><h4>Corrent altern (CA)</h4><svg viewBox="0 0 260 104" role="img" aria-label="Corrent altern (CA)" style="width:100%;height:auto;display:block"><line x1="20" y1="55" x2="252" y2="55" stroke="var(--muted)" stroke-width="1"/><line x1="20" y1="12" x2="20" y2="98" stroke="var(--muted)" stroke-width="1"/><text class="sv-m" x="14" y="59" text-anchor="end">0</text><text class="sv-m" x="252" y="72" text-anchor="end">t</text><path d="M20.0 17.0L21.1 17.1L22.3 17.3L23.4 17.7L24.6 18.2L25.8 18.9L26.9 19.7L28.1 20.6L29.2 21.7L30.4 22.9L31.5 24.3L32.6 25.7L33.8 27.3L35.0 29.0L36.1 30.8L37.2 32.7L38.4 34.6L39.5 36.7L40.7 38.8L41.9 41.0L43.0 43.3L44.1 45.5L45.3 47.9L46.5 50.2L47.6 52.6L48.8 55.0L49.9 57.4L51.0 59.8L52.2 62.1L53.4 64.5L54.5 66.7L55.6 69.0L56.8 71.2L58.0 73.3L59.1 75.4L60.2 77.3L61.4 79.2L62.5 81.0L63.7 82.7L64.8 84.3L66.0 85.7L67.2 87.1L68.3 88.3L69.5 89.4L70.6 90.3L71.8 91.1L72.9 91.8L74.0 92.3L75.2 92.7L76.3 92.9L77.5 93.0L78.7 92.9L79.8 92.7L81.0 92.3L82.1 91.8L83.2 91.1L84.4 90.3L85.5 89.4L86.7 88.3L87.8 87.1L89.0 85.7L90.2 84.3L91.3 82.7L92.5 81.0L93.6 79.2L94.8 77.3L95.9 75.4L97.0 73.3L98.2 71.2L99.3 69.0L100.5 66.7L101.7 64.5L102.8 62.1L104.0 59.8L105.1 57.4L106.2 55.0L107.4 52.6L108.5 50.2L109.7 47.9L110.8 45.5L112.0 43.3L113.2 41.0L114.3 38.8L115.5 36.7L116.6 34.6L117.8 32.7L118.9 30.8L120.0 29.0L121.2 27.3L122.3 25.7L123.5 24.3L124.7 22.9L125.8 21.7L127.0 20.6L128.1 19.7L129.2 18.9L130.4 18.2L131.6 17.7L132.7 17.3L133.8 17.1L135.0 17.0L136.2 17.1L137.3 17.3L138.4 17.7L139.6 18.2L140.8 18.9L141.9 19.7L143.1 20.6L144.2 21.7L145.3 22.9L146.5 24.3L147.7 25.7L148.8 27.3L149.9 29.0L151.1 30.8L152.2 32.7L153.4 34.6L154.6 36.7L155.7 38.8L156.8 41.0L158.0 43.3L159.2 45.5L160.3 47.9L161.4 50.2L162.6 52.6L163.8 55.0L164.9 57.4L166.1 59.8L167.2 62.1L168.3 64.5L169.5 66.7L170.7 69.0L171.8 71.2L172.9 73.3L174.1 75.4L175.2 77.3L176.4 79.2L177.6 81.0L178.7 82.7L179.8 84.3L181.0 85.7L182.2 87.1L183.3 88.3L184.4 89.4L185.6 90.3L186.8 91.1L187.9 91.8L189.1 92.3L190.2 92.7L191.3 92.9L192.5 93.0L193.7 92.9L194.8 92.7L195.9 92.3L197.1 91.8L198.2 91.1L199.4 90.3L200.6 89.4L201.7 88.3L202.8 87.1L204.0 85.7L205.2 84.3L206.3 82.7L207.4 81.0L208.6 79.2L209.8 77.3L210.9 75.4L212.1 73.3L213.2 71.2L214.3 69.0L215.5 66.7L216.7 64.5L217.8 62.1L218.9 59.8L220.1 57.4L221.2 55.0L222.4 52.6L223.6 50.2L224.7 47.9L225.8 45.5L227.0 43.3L228.2 41.0L229.3 38.8L230.4 36.7L231.6 34.6L232.8 32.7L233.9 30.8L235.1 29.0L236.2 27.3L237.3 25.7L238.5 24.3L239.7 22.9L240.8 21.7L241.9 20.6L243.1 19.7L244.2 18.9L245.4 18.2L246.6 17.7L247.7 17.3L248.8 17.1L250.0 17.0" style="fill:none;stroke:var(--work)" stroke-width="3" stroke-linejoin="round"/></svg><p style="margin:.3em 0 0">Canvia de <b>sentit</b> i de <b>valor</b>. Cada mitja volta passa de + a −.</p></div><div class="card"><h4>Corrent continu polsant</h4><svg viewBox="0 0 260 104" role="img" aria-label="Corrent continu polsant" style="width:100%;height:auto;display:block"><line x1="20" y1="55" x2="252" y2="55" stroke="var(--muted)" stroke-width="1"/><line x1="20" y1="12" x2="20" y2="98" stroke="var(--muted)" stroke-width="1"/><text class="sv-m" x="14" y="59" text-anchor="end">0</text><text class="sv-m" x="252" y="72" text-anchor="end">t</text><path d="M20.0 17.0L21.1 17.1L22.3 17.3L23.4 17.7L24.6 18.2L25.8 18.9L26.9 19.7L28.1 20.6L29.2 21.7L30.4 22.9L31.5 24.3L32.6 25.7L33.8 27.3L35.0 29.0L36.1 30.8L37.2 32.7L38.4 34.6L39.5 36.7L40.7 38.8L41.9 41.0L43.0 43.3L44.1 45.5L45.3 47.9L46.5 50.2L47.6 52.6L48.8 55.0L49.9 52.6L51.0 50.2L52.2 47.9L53.4 45.5L54.5 43.3L55.6 41.0L56.8 38.8L58.0 36.7L59.1 34.6L60.2 32.7L61.4 30.8L62.5 29.0L63.7 27.3L64.8 25.7L66.0 24.3L67.2 22.9L68.3 21.7L69.5 20.6L70.6 19.7L71.8 18.9L72.9 18.2L74.0 17.7L75.2 17.3L76.3 17.1L77.5 17.0L78.7 17.1L79.8 17.3L81.0 17.7L82.1 18.2L83.2 18.9L84.4 19.7L85.5 20.6L86.7 21.7L87.8 22.9L89.0 24.3L90.2 25.7L91.3 27.3L92.5 29.0L93.6 30.8L94.8 32.7L95.9 34.6L97.0 36.7L98.2 38.8L99.3 41.0L100.5 43.3L101.7 45.5L102.8 47.9L104.0 50.2L105.1 52.6L106.2 55.0L107.4 52.6L108.5 50.2L109.7 47.9L110.8 45.5L112.0 43.3L113.2 41.0L114.3 38.8L115.5 36.7L116.6 34.6L117.8 32.7L118.9 30.8L120.0 29.0L121.2 27.3L122.3 25.7L123.5 24.3L124.7 22.9L125.8 21.7L127.0 20.6L128.1 19.7L129.2 18.9L130.4 18.2L131.6 17.7L132.7 17.3L133.8 17.1L135.0 17.0L136.2 17.1L137.3 17.3L138.4 17.7L139.6 18.2L140.8 18.9L141.9 19.7L143.1 20.6L144.2 21.7L145.3 22.9L146.5 24.3L147.7 25.7L148.8 27.3L149.9 29.0L151.1 30.8L152.2 32.7L153.4 34.6L154.6 36.7L155.7 38.8L156.8 41.0L158.0 43.3L159.2 45.5L160.3 47.9L161.4 50.2L162.6 52.6L163.8 55.0L164.9 52.6L166.1 50.2L167.2 47.9L168.3 45.5L169.5 43.3L170.7 41.0L171.8 38.8L172.9 36.7L174.1 34.6L175.2 32.7L176.4 30.8L177.6 29.0L178.7 27.3L179.8 25.7L181.0 24.3L182.2 22.9L183.3 21.7L184.4 20.6L185.6 19.7L186.8 18.9L187.9 18.2L189.1 17.7L190.2 17.3L191.3 17.1L192.5 17.0L193.7 17.1L194.8 17.3L195.9 17.7L197.1 18.2L198.2 18.9L199.4 19.7L200.6 20.6L201.7 21.7L202.8 22.9L204.0 24.3L205.2 25.7L206.3 27.3L207.4 29.0L208.6 30.8L209.8 32.7L210.9 34.6L212.1 36.7L213.2 38.8L214.3 41.0L215.5 43.3L216.7 45.5L217.8 47.9L218.9 50.2L220.1 52.6L221.2 55.0L222.4 52.6L223.6 50.2L224.7 47.9L225.8 45.5L227.0 43.3L228.2 41.0L229.3 38.8L230.4 36.7L231.6 34.6L232.8 32.7L233.9 30.8L235.1 29.0L236.2 27.3L237.3 25.7L238.5 24.3L239.7 22.9L240.8 21.7L241.9 20.6L243.1 19.7L244.2 18.9L245.4 18.2L246.6 17.7L247.7 17.3L248.8 17.1L250.0 17.0" style="fill:none;stroke:var(--work)" stroke-width="3" stroke-linejoin="round"/></svg><p style="margin:.3em 0 0">Sempre en el <b>mateix sentit</b>, però el valor puja i baixa fins a 0: fa «pulsacions».</p></div><div class="card"><h4>Corrent continu constant</h4><svg viewBox="0 0 260 104" role="img" aria-label="Corrent continu constant" style="width:100%;height:auto;display:block"><line x1="20" y1="55" x2="252" y2="55" stroke="var(--muted)" stroke-width="1"/><line x1="20" y1="12" x2="20" y2="98" stroke="var(--muted)" stroke-width="1"/><text class="sv-m" x="14" y="59" text-anchor="end">0</text><text class="sv-m" x="252" y="72" text-anchor="end">t</text><path d="M20.0 24.6L21.1 24.6L22.3 24.6L23.4 24.6L24.6 24.6L25.8 24.6L26.9 24.6L28.1 24.6L29.2 24.6L30.4 24.6L31.5 24.6L32.6 24.6L33.8 24.6L35.0 24.6L36.1 24.6L37.2 24.6L38.4 24.6L39.5 24.6L40.7 24.6L41.9 24.6L43.0 24.6L44.1 24.6L45.3 24.6L46.5 24.6L47.6 24.6L48.8 24.6L49.9 24.6L51.0 24.6L52.2 24.6L53.4 24.6L54.5 24.6L55.6 24.6L56.8 24.6L58.0 24.6L59.1 24.6L60.2 24.6L61.4 24.6L62.5 24.6L63.7 24.6L64.8 24.6L66.0 24.6L67.2 24.6L68.3 24.6L69.5 24.6L70.6 24.6L71.8 24.6L72.9 24.6L74.0 24.6L75.2 24.6L76.3 24.6L77.5 24.6L78.7 24.6L79.8 24.6L81.0 24.6L82.1 24.6L83.2 24.6L84.4 24.6L85.5 24.6L86.7 24.6L87.8 24.6L89.0 24.6L90.2 24.6L91.3 24.6L92.5 24.6L93.6 24.6L94.8 24.6L95.9 24.6L97.0 24.6L98.2 24.6L99.3 24.6L100.5 24.6L101.7 24.6L102.8 24.6L104.0 24.6L105.1 24.6L106.2 24.6L107.4 24.6L108.5 24.6L109.7 24.6L110.8 24.6L112.0 24.6L113.2 24.6L114.3 24.6L115.5 24.6L116.6 24.6L117.8 24.6L118.9 24.6L120.0 24.6L121.2 24.6L122.3 24.6L123.5 24.6L124.7 24.6L125.8 24.6L127.0 24.6L128.1 24.6L129.2 24.6L130.4 24.6L131.6 24.6L132.7 24.6L133.8 24.6L135.0 24.6L136.2 24.6L137.3 24.6L138.4 24.6L139.6 24.6L140.8 24.6L141.9 24.6L143.1 24.6L144.2 24.6L145.3 24.6L146.5 24.6L147.7 24.6L148.8 24.6L149.9 24.6L151.1 24.6L152.2 24.6L153.4 24.6L154.6 24.6L155.7 24.6L156.8 24.6L158.0 24.6L159.2 24.6L160.3 24.6L161.4 24.6L162.6 24.6L163.8 24.6L164.9 24.6L166.1 24.6L167.2 24.6L168.3 24.6L169.5 24.6L170.7 24.6L171.8 24.6L172.9 24.6L174.1 24.6L175.2 24.6L176.4 24.6L177.6 24.6L178.7 24.6L179.8 24.6L181.0 24.6L182.2 24.6L183.3 24.6L184.4 24.6L185.6 24.6L186.8 24.6L187.9 24.6L189.1 24.6L190.2 24.6L191.3 24.6L192.5 24.6L193.7 24.6L194.8 24.6L195.9 24.6L197.1 24.6L198.2 24.6L199.4 24.6L200.6 24.6L201.7 24.6L202.8 24.6L204.0 24.6L205.2 24.6L206.3 24.6L207.4 24.6L208.6 24.6L209.8 24.6L210.9 24.6L212.1 24.6L213.2 24.6L214.3 24.6L215.5 24.6L216.7 24.6L217.8 24.6L218.9 24.6L220.1 24.6L221.2 24.6L222.4 24.6L223.6 24.6L224.7 24.6L225.8 24.6L227.0 24.6L228.2 24.6L229.3 24.6L230.4 24.6L231.6 24.6L232.8 24.6L233.9 24.6L235.1 24.6L236.2 24.6L237.3 24.6L238.5 24.6L239.7 24.6L240.8 24.6L241.9 24.6L243.1 24.6L244.2 24.6L245.4 24.6L246.6 24.6L247.7 24.6L248.8 24.6L250.0 24.6" style="fill:none;stroke:var(--work)" stroke-width="3" stroke-linejoin="round"/></svg><p style="margin:.3em 0 0">Mateix sentit i <b>mateix valor</b> sempre, com el d’una pila.</p></div></div>
-  <div class="tbl"><table>
-    <thead><tr><th>Màquina</th><th>Què passa a la sortida</th><th>Corrent</th></tr></thead>
-    <tbody>
-      <tr><td>Espira + <b>anells col·lectors</b> (alternador)</td><td>Cada costat de l'espira va sempre a la mateixa escombreta: arriba a fora el mateix que passa dins.</td><td><b>Altern</b></td></tr>
-      <tr><td>1 espira + <b>2 delgues</b> (dinamo simple)</td><td>Les connexions s'intercanvien cada mitja volta: el sentit no canvia, però el valor baixa a 0 dues vegades per volta.</td><td><b>Continu polsant</b></td></tr>
-      <tr><td>Moltes espires + <b>moltes delgues</b> (dinamo real)</td><td>Sempre hi ha una espira prop del màxim connectada a les escombretes.</td><td><b>Continu gairebé constant</b></td></tr>
-    </tbody>
-  </table></div>
+  <h3>Quin corrent dona cada màquina?</h3>
+  <p>Dins l'espira passa sempre el mateix: ε és <b>alterna</b>. El que canvia d'una màquina a l'altra és com el col·lector porta aquesta ε a fora.</p>
+  <div class="expl">
+    <div class="card exp"><div class="exp-g"><svg viewBox="0 0 250 96" role="img" style="width:100%;height:auto;display:block"><line x1="20" y1="50" x2="244" y2="50" stroke="var(--muted)" stroke-width="1"/><line x1="20" y1="10" x2="20" y2="90" stroke="var(--muted)" stroke-width="1"/><text class="sv-m" x="14" y="54" text-anchor="end">0</text><text class="sv-m" x="244" y="66" text-anchor="end">t</text><path d="M20.0 16.0L21.1 16.1L22.2 16.3L23.3 16.6L24.4 17.1L25.5 17.7L26.6 18.4L27.7 19.2L28.8 20.2L29.9 21.3L31.0 22.5L32.1 23.8L33.2 25.2L34.3 26.7L35.4 28.3L36.5 30.0L37.6 31.8L38.7 33.6L39.8 35.5L40.9 37.5L42.0 39.5L43.1 41.5L44.2 43.6L45.3 45.7L46.4 47.9L47.5 50.0L48.6 52.1L49.7 54.3L50.8 56.4L51.9 58.5L53.0 60.5L54.1 62.5L55.2 64.5L56.3 66.4L57.4 68.2L58.5 70.0L59.6 71.7L60.7 73.3L61.8 74.8L62.9 76.2L64.0 77.5L65.1 78.7L66.2 79.8L67.3 80.8L68.4 81.6L69.5 82.3L70.6 82.9L71.7 83.4L72.8 83.7L73.9 83.9L75.0 84.0L76.1 83.9L77.2 83.7L78.3 83.4L79.4 82.9L80.5 82.3L81.6 81.6L82.7 80.8L83.8 79.8L84.9 78.7L86.0 77.5L87.1 76.2L88.2 74.8L89.3 73.3L90.4 71.7L91.5 70.0L92.6 68.2L93.7 66.4L94.8 64.5L95.9 62.5L97.0 60.5L98.1 58.5L99.2 56.4L100.3 54.3L101.4 52.1L102.5 50.0L103.6 47.9L104.7 45.7L105.8 43.6L106.9 41.5L108.0 39.5L109.1 37.5L110.2 35.5L111.3 33.6L112.4 31.8L113.5 30.0L114.6 28.3L115.7 26.7L116.8 25.2L117.9 23.8L119.0 22.5L120.1 21.3L121.2 20.2L122.3 19.2L123.4 18.4L124.5 17.7L125.6 17.1L126.7 16.6L127.8 16.3L128.9 16.1L130.0 16.0L131.1 16.1L132.2 16.3L133.3 16.6L134.4 17.1L135.5 17.7L136.6 18.4L137.7 19.2L138.8 20.2L139.9 21.3L141.0 22.5L142.1 23.8L143.2 25.2L144.3 26.7L145.4 28.3L146.5 30.0L147.6 31.8L148.7 33.6L149.8 35.5L150.9 37.5L152.0 39.5L153.1 41.5L154.2 43.6L155.3 45.7L156.4 47.9L157.5 50.0L158.6 52.1L159.7 54.3L160.8 56.4L161.9 58.5L163.0 60.5L164.1 62.5L165.2 64.5L166.3 66.4L167.4 68.2L168.5 70.0L169.6 71.7L170.7 73.3L171.8 74.8L172.9 76.2L174.0 77.5L175.1 78.7L176.2 79.8L177.3 80.8L178.4 81.6L179.5 82.3L180.6 82.9L181.7 83.4L182.8 83.7L183.9 83.9L185.0 84.0L186.1 83.9L187.2 83.7L188.3 83.4L189.4 82.9L190.5 82.3L191.6 81.6L192.7 80.8L193.8 79.8L194.9 78.7L196.0 77.5L197.1 76.2L198.2 74.8L199.3 73.3L200.4 71.7L201.5 70.0L202.6 68.2L203.7 66.4L204.8 64.5L205.9 62.5L207.0 60.5L208.1 58.5L209.2 56.4L210.3 54.3L211.4 52.1L212.5 50.0L213.6 47.9L214.7 45.7L215.8 43.6L216.9 41.5L218.0 39.5L219.1 37.5L220.2 35.5L221.3 33.6L222.4 31.8L223.5 30.0L224.6 28.3L225.7 26.7L226.8 25.2L227.9 23.8L229.0 22.5L230.1 21.3L231.2 20.2L232.3 19.2L233.4 18.4L234.5 17.7L235.6 17.1L236.7 16.6L237.8 16.3L238.9 16.1L240.0 16.0" style="fill:none;stroke:var(--work)" stroke-width="3"  stroke-linejoin="round"/></svg></div><div class="exp-t"><h4>Alternador <span class="pill info">Corrent altern</span></h4><p class="exp-sub">Espira + 2 anells col·lectors</p><ol><li>Cada costat de l'espira està soldat al seu anell, i cada anell frega sempre <b>la mateixa escombreta</b>.</li><li>La connexió no canvia mai: a fora arriba exactament el que passa dins l'espira.</li><li>Dins l'espira, ε canvia de signe cada mitja volta. Per tant, a fora el corrent també canvia de sentit: és <b>altern</b>.</li></ol></div></div>
+    <div class="card exp"><div class="exp-g"><svg viewBox="0 0 250 96" role="img" style="width:100%;height:auto;display:block"><line x1="20" y1="50" x2="244" y2="50" stroke="var(--muted)" stroke-width="1"/><line x1="20" y1="10" x2="20" y2="90" stroke="var(--muted)" stroke-width="1"/><text class="sv-m" x="14" y="54" text-anchor="end">0</text><text class="sv-m" x="244" y="66" text-anchor="end">t</text><path d="M20.0 16.0L21.1 16.1L22.2 16.3L23.3 16.6L24.4 17.1L25.5 17.7L26.6 18.4L27.7 19.2L28.8 20.2L29.9 21.3L31.0 22.5L32.1 23.8L33.2 25.2L34.3 26.7L35.4 28.3L36.5 30.0L37.6 31.8L38.7 33.6L39.8 35.5L40.9 37.5L42.0 39.5L43.1 41.5L44.2 43.6L45.3 45.7L46.4 47.9L47.5 50.0L48.6 52.1L49.7 54.3L50.8 56.4L51.9 58.5L53.0 60.5L54.1 62.5L55.2 64.5L56.3 66.4L57.4 68.2L58.5 70.0L59.6 71.7L60.7 73.3L61.8 74.8L62.9 76.2L64.0 77.5L65.1 78.7L66.2 79.8L67.3 80.8L68.4 81.6L69.5 82.3L70.6 82.9L71.7 83.4L72.8 83.7L73.9 83.9L75.0 84.0L76.1 83.9L77.2 83.7L78.3 83.4L79.4 82.9L80.5 82.3L81.6 81.6L82.7 80.8L83.8 79.8L84.9 78.7L86.0 77.5L87.1 76.2L88.2 74.8L89.3 73.3L90.4 71.7L91.5 70.0L92.6 68.2L93.7 66.4L94.8 64.5L95.9 62.5L97.0 60.5L98.1 58.5L99.2 56.4L100.3 54.3L101.4 52.1L102.5 50.0L103.6 47.9L104.7 45.7L105.8 43.6L106.9 41.5L108.0 39.5L109.1 37.5L110.2 35.5L111.3 33.6L112.4 31.8L113.5 30.0L114.6 28.3L115.7 26.7L116.8 25.2L117.9 23.8L119.0 22.5L120.1 21.3L121.2 20.2L122.3 19.2L123.4 18.4L124.5 17.7L125.6 17.1L126.7 16.6L127.8 16.3L128.9 16.1L130.0 16.0L131.1 16.1L132.2 16.3L133.3 16.6L134.4 17.1L135.5 17.7L136.6 18.4L137.7 19.2L138.8 20.2L139.9 21.3L141.0 22.5L142.1 23.8L143.2 25.2L144.3 26.7L145.4 28.3L146.5 30.0L147.6 31.8L148.7 33.6L149.8 35.5L150.9 37.5L152.0 39.5L153.1 41.5L154.2 43.6L155.3 45.7L156.4 47.9L157.5 50.0L158.6 52.1L159.7 54.3L160.8 56.4L161.9 58.5L163.0 60.5L164.1 62.5L165.2 64.5L166.3 66.4L167.4 68.2L168.5 70.0L169.6 71.7L170.7 73.3L171.8 74.8L172.9 76.2L174.0 77.5L175.1 78.7L176.2 79.8L177.3 80.8L178.4 81.6L179.5 82.3L180.6 82.9L181.7 83.4L182.8 83.7L183.9 83.9L185.0 84.0L186.1 83.9L187.2 83.7L188.3 83.4L189.4 82.9L190.5 82.3L191.6 81.6L192.7 80.8L193.8 79.8L194.9 78.7L196.0 77.5L197.1 76.2L198.2 74.8L199.3 73.3L200.4 71.7L201.5 70.0L202.6 68.2L203.7 66.4L204.8 64.5L205.9 62.5L207.0 60.5L208.1 58.5L209.2 56.4L210.3 54.3L211.4 52.1L212.5 50.0L213.6 47.9L214.7 45.7L215.8 43.6L216.9 41.5L218.0 39.5L219.1 37.5L220.2 35.5L221.3 33.6L222.4 31.8L223.5 30.0L224.6 28.3L225.7 26.7L226.8 25.2L227.9 23.8L229.0 22.5L230.1 21.3L231.2 20.2L232.3 19.2L233.4 18.4L234.5 17.7L235.6 17.1L236.7 16.6L237.8 16.3L238.9 16.1L240.0 16.0" style="fill:none;stroke:var(--muted)" stroke-width="1.6" stroke-dasharray="5 4" stroke-linejoin="round"/><path d="M20.0 16.0L21.1 16.1L22.2 16.3L23.3 16.6L24.4 17.1L25.5 17.7L26.6 18.4L27.7 19.2L28.8 20.2L29.9 21.3L31.0 22.5L32.1 23.8L33.2 25.2L34.3 26.7L35.4 28.3L36.5 30.0L37.6 31.8L38.7 33.6L39.8 35.5L40.9 37.5L42.0 39.5L43.1 41.5L44.2 43.6L45.3 45.7L46.4 47.9L47.5 50.0L48.6 47.9L49.7 45.7L50.8 43.6L51.9 41.5L53.0 39.5L54.1 37.5L55.2 35.5L56.3 33.6L57.4 31.8L58.5 30.0L59.6 28.3L60.7 26.7L61.8 25.2L62.9 23.8L64.0 22.5L65.1 21.3L66.2 20.2L67.3 19.2L68.4 18.4L69.5 17.7L70.6 17.1L71.7 16.6L72.8 16.3L73.9 16.1L75.0 16.0L76.1 16.1L77.2 16.3L78.3 16.6L79.4 17.1L80.5 17.7L81.6 18.4L82.7 19.2L83.8 20.2L84.9 21.3L86.0 22.5L87.1 23.8L88.2 25.2L89.3 26.7L90.4 28.3L91.5 30.0L92.6 31.8L93.7 33.6L94.8 35.5L95.9 37.5L97.0 39.5L98.1 41.5L99.2 43.6L100.3 45.7L101.4 47.9L102.5 50.0L103.6 47.9L104.7 45.7L105.8 43.6L106.9 41.5L108.0 39.5L109.1 37.5L110.2 35.5L111.3 33.6L112.4 31.8L113.5 30.0L114.6 28.3L115.7 26.7L116.8 25.2L117.9 23.8L119.0 22.5L120.1 21.3L121.2 20.2L122.3 19.2L123.4 18.4L124.5 17.7L125.6 17.1L126.7 16.6L127.8 16.3L128.9 16.1L130.0 16.0L131.1 16.1L132.2 16.3L133.3 16.6L134.4 17.1L135.5 17.7L136.6 18.4L137.7 19.2L138.8 20.2L139.9 21.3L141.0 22.5L142.1 23.8L143.2 25.2L144.3 26.7L145.4 28.3L146.5 30.0L147.6 31.8L148.7 33.6L149.8 35.5L150.9 37.5L152.0 39.5L153.1 41.5L154.2 43.6L155.3 45.7L156.4 47.9L157.5 50.0L158.6 47.9L159.7 45.7L160.8 43.6L161.9 41.5L163.0 39.5L164.1 37.5L165.2 35.5L166.3 33.6L167.4 31.8L168.5 30.0L169.6 28.3L170.7 26.7L171.8 25.2L172.9 23.8L174.0 22.5L175.1 21.3L176.2 20.2L177.3 19.2L178.4 18.4L179.5 17.7L180.6 17.1L181.7 16.6L182.8 16.3L183.9 16.1L185.0 16.0L186.1 16.1L187.2 16.3L188.3 16.6L189.4 17.1L190.5 17.7L191.6 18.4L192.7 19.2L193.8 20.2L194.9 21.3L196.0 22.5L197.1 23.8L198.2 25.2L199.3 26.7L200.4 28.3L201.5 30.0L202.6 31.8L203.7 33.6L204.8 35.5L205.9 37.5L207.0 39.5L208.1 41.5L209.2 43.6L210.3 45.7L211.4 47.9L212.5 50.0L213.6 47.9L214.7 45.7L215.8 43.6L216.9 41.5L218.0 39.5L219.1 37.5L220.2 35.5L221.3 33.6L222.4 31.8L223.5 30.0L224.6 28.3L225.7 26.7L226.8 25.2L227.9 23.8L229.0 22.5L230.1 21.3L231.2 20.2L232.3 19.2L233.4 18.4L234.5 17.7L235.6 17.1L236.7 16.6L237.8 16.3L238.9 16.1L240.0 16.0" style="fill:none;stroke:var(--work)" stroke-width="3"  stroke-linejoin="round"/></svg></div><div class="exp-t"><h4>Dinamo d'una espira <span class="pill info">Corrent continu polsant</span></h4><p class="exp-sub">1 espira + 2 lamel·les</p><ol><li>Cada mitja volta, just quan ε = 0, les escombretes passen d'una lamel·la a l'altra: <b>s'intercanvien les connexions</b>.</li><li>Quan dins l'espira el signe s'inverteix, la connexió també s'inverteix. Les dues inversions es compensen i a fora el <b>sentit no canvia mai</b>. A la gràfica, la part negativa «es gira» cap amunt.</li><li>El valor, però, continua pujant i baixant, i passa per 0 dues vegades a cada volta (quan l'espira és perpendicular al camp). Per això és <b>polsant</b>.</li></ol></div></div>
+    <div class="card exp"><div class="exp-g"><svg viewBox="0 0 250 96" role="img" style="width:100%;height:auto;display:block"><line x1="20" y1="50" x2="244" y2="50" stroke="var(--muted)" stroke-width="1"/><line x1="20" y1="10" x2="20" y2="90" stroke="var(--muted)" stroke-width="1"/><text class="sv-m" x="14" y="54" text-anchor="end">0</text><text class="sv-m" x="244" y="66" text-anchor="end">t</text><path d="M20.0 16.0L21.1 16.1L22.2 16.3L23.3 16.6L24.4 17.1L25.5 17.7L26.6 18.4L27.7 19.2L28.8 20.2L29.9 21.3L31.0 22.5L32.1 23.8L33.2 25.2L34.3 26.7L35.4 28.3L36.5 30.0L37.6 31.8L38.7 33.6L39.8 35.5L40.9 37.5L42.0 39.5L43.1 41.5L44.2 43.6L45.3 45.7L46.4 47.9L47.5 50.0L48.6 47.9L49.7 45.7L50.8 43.6L51.9 41.5L53.0 39.5L54.1 37.5L55.2 35.5L56.3 33.6L57.4 31.8L58.5 30.0L59.6 28.3L60.7 26.7L61.8 25.2L62.9 23.8L64.0 22.5L65.1 21.3L66.2 20.2L67.3 19.2L68.4 18.4L69.5 17.7L70.6 17.1L71.7 16.6L72.8 16.3L73.9 16.1L75.0 16.0L76.1 16.1L77.2 16.3L78.3 16.6L79.4 17.1L80.5 17.7L81.6 18.4L82.7 19.2L83.8 20.2L84.9 21.3L86.0 22.5L87.1 23.8L88.2 25.2L89.3 26.7L90.4 28.3L91.5 30.0L92.6 31.8L93.7 33.6L94.8 35.5L95.9 37.5L97.0 39.5L98.1 41.5L99.2 43.6L100.3 45.7L101.4 47.9L102.5 50.0L103.6 47.9L104.7 45.7L105.8 43.6L106.9 41.5L108.0 39.5L109.1 37.5L110.2 35.5L111.3 33.6L112.4 31.8L113.5 30.0L114.6 28.3L115.7 26.7L116.8 25.2L117.9 23.8L119.0 22.5L120.1 21.3L121.2 20.2L122.3 19.2L123.4 18.4L124.5 17.7L125.6 17.1L126.7 16.6L127.8 16.3L128.9 16.1L130.0 16.0L131.1 16.1L132.2 16.3L133.3 16.6L134.4 17.1L135.5 17.7L136.6 18.4L137.7 19.2L138.8 20.2L139.9 21.3L141.0 22.5L142.1 23.8L143.2 25.2L144.3 26.7L145.4 28.3L146.5 30.0L147.6 31.8L148.7 33.6L149.8 35.5L150.9 37.5L152.0 39.5L153.1 41.5L154.2 43.6L155.3 45.7L156.4 47.9L157.5 50.0L158.6 47.9L159.7 45.7L160.8 43.6L161.9 41.5L163.0 39.5L164.1 37.5L165.2 35.5L166.3 33.6L167.4 31.8L168.5 30.0L169.6 28.3L170.7 26.7L171.8 25.2L172.9 23.8L174.0 22.5L175.1 21.3L176.2 20.2L177.3 19.2L178.4 18.4L179.5 17.7L180.6 17.1L181.7 16.6L182.8 16.3L183.9 16.1L185.0 16.0L186.1 16.1L187.2 16.3L188.3 16.6L189.4 17.1L190.5 17.7L191.6 18.4L192.7 19.2L193.8 20.2L194.9 21.3L196.0 22.5L197.1 23.8L198.2 25.2L199.3 26.7L200.4 28.3L201.5 30.0L202.6 31.8L203.7 33.6L204.8 35.5L205.9 37.5L207.0 39.5L208.1 41.5L209.2 43.6L210.3 45.7L211.4 47.9L212.5 50.0L213.6 47.9L214.7 45.7L215.8 43.6L216.9 41.5L218.0 39.5L219.1 37.5L220.2 35.5L221.3 33.6L222.4 31.8L223.5 30.0L224.6 28.3L225.7 26.7L226.8 25.2L227.9 23.8L229.0 22.5L230.1 21.3L231.2 20.2L232.3 19.2L233.4 18.4L234.5 17.7L235.6 17.1L236.7 16.6L237.8 16.3L238.9 16.1L240.0 16.0" style="fill:none;stroke:var(--muted)" stroke-width="1.6" stroke-dasharray="5 4" stroke-linejoin="round"/><path d="M20.0 50.0L21.1 47.9L22.2 45.7L23.3 43.6L24.4 41.5L25.5 39.5L26.6 37.5L27.7 35.5L28.8 33.6L29.9 31.8L31.0 30.0L32.1 28.3L33.2 26.7L34.3 25.2L35.4 23.8L36.5 22.5L37.6 21.3L38.7 20.2L39.8 19.2L40.9 18.4L42.0 17.7L43.1 17.1L44.2 16.6L45.3 16.3L46.4 16.1L47.5 16.0L48.6 16.1L49.7 16.3L50.8 16.6L51.9 17.1L53.0 17.7L54.1 18.4L55.2 19.2L56.3 20.2L57.4 21.3L58.5 22.5L59.6 23.8L60.7 25.2L61.8 26.7L62.9 28.3L64.0 30.0L65.1 31.8L66.2 33.6L67.3 35.5L68.4 37.5L69.5 39.5L70.6 41.5L71.7 43.6L72.8 45.7L73.9 47.9L75.0 50.0L76.1 47.9L77.2 45.7L78.3 43.6L79.4 41.5L80.5 39.5L81.6 37.5L82.7 35.5L83.8 33.6L84.9 31.8L86.0 30.0L87.1 28.3L88.2 26.7L89.3 25.2L90.4 23.8L91.5 22.5L92.6 21.3L93.7 20.2L94.8 19.2L95.9 18.4L97.0 17.7L98.1 17.1L99.2 16.6L100.3 16.3L101.4 16.1L102.5 16.0L103.6 16.1L104.7 16.3L105.8 16.6L106.9 17.1L108.0 17.7L109.1 18.4L110.2 19.2L111.3 20.2L112.4 21.3L113.5 22.5L114.6 23.8L115.7 25.2L116.8 26.7L117.9 28.3L119.0 30.0L120.1 31.8L121.2 33.6L122.3 35.5L123.4 37.5L124.5 39.5L125.6 41.5L126.7 43.6L127.8 45.7L128.9 47.9L130.0 50.0L131.1 47.9L132.2 45.7L133.3 43.6L134.4 41.5L135.5 39.5L136.6 37.5L137.7 35.5L138.8 33.6L139.9 31.8L141.0 30.0L142.1 28.3L143.2 26.7L144.3 25.2L145.4 23.8L146.5 22.5L147.6 21.3L148.7 20.2L149.8 19.2L150.9 18.4L152.0 17.7L153.1 17.1L154.2 16.6L155.3 16.3L156.4 16.1L157.5 16.0L158.6 16.1L159.7 16.3L160.8 16.6L161.9 17.1L163.0 17.7L164.1 18.4L165.2 19.2L166.3 20.2L167.4 21.3L168.5 22.5L169.6 23.8L170.7 25.2L171.8 26.7L172.9 28.3L174.0 30.0L175.1 31.8L176.2 33.6L177.3 35.5L178.4 37.5L179.5 39.5L180.6 41.5L181.7 43.6L182.8 45.7L183.9 47.9L185.0 50.0L186.1 47.9L187.2 45.7L188.3 43.6L189.4 41.5L190.5 39.5L191.6 37.5L192.7 35.5L193.8 33.6L194.9 31.8L196.0 30.0L197.1 28.3L198.2 26.7L199.3 25.2L200.4 23.8L201.5 22.5L202.6 21.3L203.7 20.2L204.8 19.2L205.9 18.4L207.0 17.7L208.1 17.1L209.2 16.6L210.3 16.3L211.4 16.1L212.5 16.0L213.6 16.1L214.7 16.3L215.8 16.6L216.9 17.1L218.0 17.7L219.1 18.4L220.2 19.2L221.3 20.2L222.4 21.3L223.5 22.5L224.6 23.8L225.7 25.2L226.8 26.7L227.9 28.3L229.0 30.0L230.1 31.8L231.2 33.6L232.3 35.5L233.4 37.5L234.5 39.5L235.6 41.5L236.7 43.6L237.8 45.7L238.9 47.9L240.0 50.0" style="fill:none;stroke:var(--muted)" stroke-width="1.6" stroke-dasharray="5 4" stroke-linejoin="round"/><path d="M20.0 16.0L21.1 16.1L22.2 16.3L23.3 16.6L24.4 17.1L25.5 17.7L26.6 18.4L27.7 19.2L28.8 20.2L29.9 21.3L31.0 22.5L32.1 23.8L33.2 25.2L34.3 25.2L35.4 23.8L36.5 22.5L37.6 21.3L38.7 20.2L39.8 19.2L40.9 18.4L42.0 17.7L43.1 17.1L44.2 16.6L45.3 16.3L46.4 16.1L47.5 16.0L48.6 16.1L49.7 16.3L50.8 16.6L51.9 17.1L53.0 17.7L54.1 18.4L55.2 19.2L56.3 20.2L57.4 21.3L58.5 22.5L59.6 23.8L60.7 25.2L61.8 25.2L62.9 23.8L64.0 22.5L65.1 21.3L66.2 20.2L67.3 19.2L68.4 18.4L69.5 17.7L70.6 17.1L71.7 16.6L72.8 16.3L73.9 16.1L75.0 16.0L76.1 16.1L77.2 16.3L78.3 16.6L79.4 17.1L80.5 17.7L81.6 18.4L82.7 19.2L83.8 20.2L84.9 21.3L86.0 22.5L87.1 23.8L88.2 25.2L89.3 25.2L90.4 23.8L91.5 22.5L92.6 21.3L93.7 20.2L94.8 19.2L95.9 18.4L97.0 17.7L98.1 17.1L99.2 16.6L100.3 16.3L101.4 16.1L102.5 16.0L103.6 16.1L104.7 16.3L105.8 16.6L106.9 17.1L108.0 17.7L109.1 18.4L110.2 19.2L111.3 20.2L112.4 21.3L113.5 22.5L114.6 23.8L115.7 25.2L116.8 25.2L117.9 23.8L119.0 22.5L120.1 21.3L121.2 20.2L122.3 19.2L123.4 18.4L124.5 17.7L125.6 17.1L126.7 16.6L127.8 16.3L128.9 16.1L130.0 16.0L131.1 16.1L132.2 16.3L133.3 16.6L134.4 17.1L135.5 17.7L136.6 18.4L137.7 19.2L138.8 20.2L139.9 21.3L141.0 22.5L142.1 23.8L143.2 25.2L144.3 25.2L145.4 23.8L146.5 22.5L147.6 21.3L148.7 20.2L149.8 19.2L150.9 18.4L152.0 17.7L153.1 17.1L154.2 16.6L155.3 16.3L156.4 16.1L157.5 16.0L158.6 16.1L159.7 16.3L160.8 16.6L161.9 17.1L163.0 17.7L164.1 18.4L165.2 19.2L166.3 20.2L167.4 21.3L168.5 22.5L169.6 23.8L170.7 25.2L171.8 25.2L172.9 23.8L174.0 22.5L175.1 21.3L176.2 20.2L177.3 19.2L178.4 18.4L179.5 17.7L180.6 17.1L181.7 16.6L182.8 16.3L183.9 16.1L185.0 16.0L186.1 16.1L187.2 16.3L188.3 16.6L189.4 17.1L190.5 17.7L191.6 18.4L192.7 19.2L193.8 20.2L194.9 21.3L196.0 22.5L197.1 23.8L198.2 25.2L199.3 25.2L200.4 23.8L201.5 22.5L202.6 21.3L203.7 20.2L204.8 19.2L205.9 18.4L207.0 17.7L208.1 17.1L209.2 16.6L210.3 16.3L211.4 16.1L212.5 16.0L213.6 16.1L214.7 16.3L215.8 16.6L216.9 17.1L218.0 17.7L219.1 18.4L220.2 19.2L221.3 20.2L222.4 21.3L223.5 22.5L224.6 23.8L225.7 25.2L226.8 25.2L227.9 23.8L229.0 22.5L230.1 21.3L231.2 20.2L232.3 19.2L233.4 18.4L234.5 17.7L235.6 17.1L236.7 16.6L237.8 16.3L238.9 16.1L240.0 16.0" style="fill:none;stroke:var(--work)" stroke-width="3"  stroke-linejoin="round"/></svg></div><div class="exp-t"><h4>Dinamo real <span class="pill info">Corrent continu gairebé constant</span></h4><p class="exp-sub">Moltes espires + moltes lamel·les</p><ol><li>Les espires estan repartides en angles diferents, i cadascuna té el seu parell de lamel·les.</li><li>En cada moment, les escombretes toquen les lamel·les de l'espira més ben col·locada: la més paral·lela al camp, la que té més ε.</li><li>Quan aquesta espira comença a perdre ε, les escombretes ja passen a la següent. La tensió <b>no baixa mai a 0</b>: només fa petites ones. Com més espires, més plana.</li></ol></div></div>
+  </div>
+  <p class="est"><span class="lg"><i class="dash"></i>ε dins l'espira</span> · <span class="lg"><i></i>corrent al circuit exterior</span></p>
 
   <h3>Com ho fa el col·lector, mecànicament</h3>
-  <p>Dins l'espira, ε <b>sempre és alterna</b>: la física no es pot canviar. El col·lector de delgues és un <b>commutador mecànic</b>: un interruptor inversor que mou el mateix eix. Cada mitja volta gira les connexions, just quan l'espira canvia de signe. És com si algú intercanviés els dos cables de la bombeta cada cop que el corrent es gira.</p>
-  <p class="est">Prem cada posició: el simulador de dalt s'hi col·loca i s'atura.</p>
+  <p>Dins l'espira, ε <b>sempre és alterna</b>: la física no es pot canviar. El col·lector de lamel·les és un <b>commutador mecànic</b>: un interruptor inversor que mou el mateix eix. Cada mitja volta gira les connexions, just quan l'espira canvia de signe. És com si algú intercanviés els dos cables de la bombeta cada cop que el corrent es gira.</p>
+  <p>El <b>circuit exterior</b> és el que connectem a les escombretes per aprofitar el corrent: al simulador, una bombeta i un galvanòmetre. <span class="est">Prem cada posició: el simulador de dalt s'hi col·loca i s'atura.</span></p>
   <div class="row" role="group" aria-label="Posicions de l'espira">
     <button class="btn" type="button" data-pos="0">1 · Espira horitzontal</button>
     <button class="btn" type="button" data-pos="90">2 · Espira vertical</button>
@@ -376,26 +391,26 @@ svg .hlmode [data-part].on{opacity:1}
     <button class="btn" type="button" data-pos="270">4 · Vertical, girada</button>
   </div>
   <div class="tbl"><table>
-    <thead><tr><th>Posició</th><th>Dins l'espira</th><th>Escombreta +</th><th>Bombeta</th></tr></thead>
+    <thead><tr><th>Posició</th><th>Dins l'espira</th><th>Escombreta + (esquerra)</th><th>Circuit exterior</th></tr></thead>
     <tbody>
-      <tr id="pos-0"><td><b>1</b> · 0°</td><td>ε màxima. El costat <b style="color:var(--sb)">b</b> és el +</td><td>toca la delga <b style="color:var(--sb)">b</b></td><td>Màxima, cap a la dreta</td></tr>
-      <tr id="pos-90"><td><b>2</b> · 90°</td><td>ε = 0. A punt de canviar de signe</td><td>passa per l'aïllant: <b>canvi de delga</b></td><td>0</td></tr>
-      <tr id="pos-180"><td><b>3</b> · 180°</td><td>ε màxima, però girada: ara el + és <b style="color:var(--sa)">a</b></td><td>toca la delga <b style="color:var(--sa)">a</b></td><td>Màxima, <b>també cap a la dreta</b></td></tr>
-      <tr id="pos-270"><td><b>4</b> · 270°</td><td>ε = 0. Torna a canviar de signe</td><td>canvi de delga</td><td>0</td></tr>
+      <tr id="pos-0"><td><b>1</b> · 0°</td><td>ε màxima. El costat <b style="color:var(--sb)">b</b> és el +</td><td>toca la lamel·la <b style="color:var(--sb)">b</b></td><td>Corrent màxim. L'agulla del galvanòmetre va a la dreta</td></tr>
+      <tr id="pos-90"><td><b>2</b> · 90°</td><td>ε = 0. A punt de canviar de signe</td><td>passa per l'aïllant: <b>canvi de lamel·la</b></td><td>Corrent 0. L'agulla, al centre</td></tr>
+      <tr id="pos-180"><td><b>3</b> · 180°</td><td>ε màxima, però girada: ara el + és <b style="color:var(--sa)">a</b></td><td>toca la lamel·la <b style="color:var(--sa)">a</b></td><td>Corrent màxim i <b>en el mateix sentit</b>: l'agulla torna a la dreta</td></tr>
+      <tr id="pos-270"><td><b>4</b> · 270°</td><td>ε = 0. Torna a canviar de signe</td><td>canvi de lamel·la</td><td>Corrent 0. L'agulla, al centre</td></tr>
     </tbody>
   </table></div>
-  <p>Fixa't en les files 1 i 3: dins l'espira el signe s'ha invertit, però l'escombreta + també ha canviat de delga. Les dues inversions es compensen i a la bombeta el corrent va sempre en el mateix sentit. Com que a les posicions 2 i 4 el valor baixa a 0, el resultat és <b>continu polsant</b>.</p>
+  <p>Fixa't en les files 1 i 3: dins l'espira el signe s'ha invertit, però l'escombreta + també ha canviat de lamel·la. Les dues inversions es compensen i al circuit exterior el corrent va sempre en el mateix sentit. Com que a les posicions 2 i 4 el valor baixa a 0, el resultat és <b>continu polsant</b>.</p>
   <div class="est">
     <h3>Què has de mirar al simulador</h3>
     <ul>
-      <li>Els <b>signes de les delgues</b> (+ i −) canvien cada mitja volta, igual que ε dins l'espira.</li>
-      <li>Les <b>escombretes no es mouen</b>. Quan una delga canvia de signe, ja ha passat a tocar l'altra escombreta.</li>
-      <li>Per això l'escombreta esquerra sempre toca la delga que en aquell moment és <b>+</b>, i la dreta, la que és <b>−</b>.</li>
-      <li>L'intercanvi es fa a l'espai aïllant entre delgues, just quan ε = 0.</li>
+      <li>Els <b>signes de les lamel·les</b> (+ i −) canvien cada mitja volta, igual que ε dins l'espira.</li>
+      <li>Les <b>escombretes no es mouen</b>. Quan una lamel·la canvia de signe, ja ha passat a tocar l'altra escombreta.</li>
+      <li>Per això l'escombreta esquerra sempre toca la lamel·la que en aquell moment és <b>+</b>, i la dreta, la que és <b>−</b>.</li>
+      <li>L'intercanvi es fa a l'espai aïllant entre lamel·les, just quan ε = 0.</li>
     </ul>
-    <p>Amb 4 delgues i 2 espires, les escombretes connecten sempre amb l'espira que té més ε. Per això la tensió ja no baixa fins a zero.</p>
+    <p>Amb 4 lamel·les i 2 espires, les escombretes connecten sempre amb l'espira que té més ε. Per això la tensió ja no baixa fins a zero.</p>
   </div>
-  <p class="key">Dins l'espira, ε sempre és alterna. El col·lector de delgues és un commutador mecànic que inverteix les connexions cada mitja volta, just quan ε = 0. A fora, el corrent no canvia de sentit però puja i baixa: és corrent continu polsant.</p>
+  <p class="key">Dins l'espira, ε sempre és alterna. El col·lector de lamel·les és un commutador mecànic que inverteix les connexions cada mitja volta, just quan ε = 0. A fora, el corrent no canvia de sentit però puja i baixa: és corrent continu polsant.</p>
   <div class="pager"><button class="btn" type="button" data-go="dinamo">← Dinamo</button><button class="btn primary" type="button" data-go="real">Següent: La dinamo real →</button></div>
 </section>
 
@@ -403,14 +418,14 @@ svg .hlmode [data-part].on{opacity:1}
 <section class="mod" data-key="real" hidden>
   <p class="eyebrow">Mòdul 6 · Espires i excitació</p>
   <h2>La dinamo real</h2>
-  <p class="lead">Amb una sola espira, la CC té molts alts i baixos. Les dinamos reals tenen moltes bobines i un col·lector amb moltes delgues. A més, l'inductor sol ser un <b>electroimant</b>.</p>
+  <p class="lead">Amb una sola espira, la CC té molts alts i baixos. Les dinamos reals tenen moltes bobines i un col·lector amb moltes lamel·les. A més, l'inductor sol ser un <b>electroimant</b>.</p>
   <div id="sim-real"></div>
   <div class="two">
     <div class="card"><h4>Més espires, CC més plana</h4><p>Amb diverses espires repartides, les escombretes connecten sempre amb la que en aquell moment té més ε. La tensió de sortida ja no baixa fins a zero. <span class="est">Prova 1, 2 i 4 espires i compara la gràfica.</span></p></div>
     <div class="card"><h4>Imant o electroimant</h4><p>Amb un <b>imant permanent</b>, el camp és fix. Amb un <b>electroimant</b>, l'inductor és una bobina alimentada amb un <b>corrent d'excitació</b>: si el regulem, regulem ε; si el tallem, la dinamo deixa de generar.</p></div>
   </div>
   <div class="est note"><strong>Excitació independent.</strong> Al simulador, el corrent d'excitació ve d'una font externa (excitació independent). En moltes dinamos, l'inductor s'alimenta amb el corrent que genera la mateixa dinamo (autoexcitació).</div>
-  <p class="key">Una dinamo real té moltes espires i delgues perquè la CC sigui més constant. Amb electroimant, el corrent d'excitació permet regular la fem.</p>
+  <p class="key">Una dinamo real té moltes espires i lamel·les perquè la CC sigui més constant. Amb electroimant, el corrent d'excitació permet regular la fem.</p>
   <div class="pager"><button class="btn" type="button" data-go="colector">← El col·lector de prop</button><button class="btn primary" type="button" data-go="energia">Següent: Mecànica → elèctrica →</button></div>
 </section>
 
@@ -552,7 +567,7 @@ const PARTS={
   inductor:['Inductor','Crea el camp magnètic. Aquí són els pols N i S d’un imant permanent; també pot ser un electroimant (mòdul 6). A la dinamo, l’inductor és fix: forma part de l’estator.'],
   induit:['Induït','És la bobina on s’indueix la fem ε. Aquí n’hi ha una sola espira (costats a i b). A la dinamo, l’induït gira: és el rotor.'],
   eix:['Eix i manovella','Per aquí entra l’energia mecànica. En lloc d’una manovella, pot ser una turbina, un motor o la roda d’una bicicleta.'],
-  col:['Col·lector','Gira solidari amb l’espira. Pot ser de dos anells (alternador) o d’un anell partit en delgues aïllades (dinamo). Canvia-ho amb el botó i compara.'],
+  col:['Col·lector','Gira solidari amb l’espira. Pot ser de dos anells (alternador) o d’un anell partit en lamel·les aïllades (dinamo). Canvia-ho amb el botó i compara.'],
   esc:['Escombretes','Són fixes, normalment de grafit. Freguen el col·lector mentre gira i passen el corrent de l’espira al circuit exterior.'],
   circuit:['Circuit exterior','La càrrega que aprofita l’energia elèctrica (la bombeta) i un galvanòmetre de zero central per veure el sentit del corrent.']};
 
@@ -570,7 +585,7 @@ function makeSim(host,cfg){
   c+=`</div><div class="controls"><label class="ctl" for="${id}-sp"><span>Velocitat de gir</span><input id="${id}-sp" type="range" min="0.5" max="2" step="0.25" value="1"><output id="${id}-spo"></output></label>`;
   if(has('exc'))c+=`<label class="ctl" for="${id}-ie" id="${id}-iew" hidden><span>Corrent d'excitació</span><input id="${id}-ie" type="range" min="0" max="100" step="5" value="100"><output id="${id}-ieo">100 %</output></label>`;
   c+=`</div><div class="segs">`;
-  if(has('col'))c+=`<div class="grp"><span>Col·lector</span><div class="seg" role="group" aria-label="Tipus de col·lector"><button type="button" data-v="anells" id="${id}-ca">Anells · alternador</button><button type="button" data-v="delgues" id="${id}-cd">Delgues · dinamo</button></div></div>`;
+  if(has('col'))c+=`<div class="grp"><span>Col·lector</span><div class="seg" role="group" aria-label="Tipus de col·lector"><button type="button" data-v="anells" id="${id}-ca">Anells · alternador</button><button type="button" data-v="lamel·les" id="${id}-cd">Lamel·les · dinamo</button></div></div>`;
   if(has('N'))c+=`<div class="grp"><span>Espires de l'induït</span><div class="seg" role="group" aria-label="Nombre d'espires"><button type="button" data-n="1">1</button><button type="button" data-n="2">2</button><button type="button" data-n="4">4</button></div></div>`;
   if(has('exc'))c+=`<div class="grp"><span>Inductor</span><div class="seg" role="group" aria-label="Tipus d'inductor"><button type="button" data-e="imant">Imant permanent</button><button type="button" data-e="electro">Electroimant</button></div></div>`;
   if(has('switch'))c+=`<div class="grp"><span>Interruptor</span><div class="seg" role="group" aria-label="Interruptor del circuit"><button type="button" data-sw="1">Tancat</button><button type="button" data-sw="0">Obert</button></div></div>`;
@@ -693,7 +708,7 @@ function makeSim(host,cfg){
       l+=lbl(632,52,'Manovella',P(0,0,-172)[0]+8,P(0,0,-172)[1]-4,'end');
       l+=`<text class="sv-s" style="fill:var(--accent)" x="632" y="70" text-anchor="end">energia mecànica</text>`;
       const cp=s.col==='anells'?P(0,RR,ZA):P(0,RC,ZCM);
-      l+=lbl(12,298,s.col==='anells'?'Anells col·lectors':'Delgues',cp[0]-6,cp[1]+4);
+      l+=lbl(12,298,s.col==='anells'?'Anells col·lectors':'Lamel·les',cp[0]-6,cp[1]+4);
       const ep=s.col==='anells'?P(0,-RR-10,ZB):P(-RC-14,0,ZCM);
       l+=lbl(12,330,'Escombretes',ep[0]-6,ep[1]+4);
       h+=`<g>${l}</g>`;}
@@ -719,10 +734,10 @@ function makeSim(host,cfg){
     $(id+'-o').textContent=!s.closed?'Circuit obert':(Math.abs(r.I)<0.01?'0':(s.col==='anells'?(r.I>0?'→ un sentit':'← sentit contrari'):'→ sempre igual'));
     if(s.col==='anells'){$(id+'-wk').textContent='Cada escombreta toca';$(id+'-w').innerHTML='<span class="chipx chipa">anell a</span> <span class="chipx chipb">anell b</span>';}
     else{const k=r.ak,t=s.th+k*PI/s.N,side=Math.cos(t)<0?'a':'b';$(id+'-wk').textContent='Escombreta esquerra (+) toca';
-      $(id+'-w').innerHTML=`<span class="chipx chip${side}">delga ${side}${s.N>1?' · espira '+(k+1):''}</span>`;}
+      $(id+'-w').innerHTML=`<span class="chipx chip${side}">lamel·la ${side}${s.N>1?' · espira '+(k+1):''}</span>`;}
     let m='';
     if(A<0.01)m='<span class="pill bad">Sense camp</span> L’inductor no crea camp magnètic: encara que l’espira giri, no s’indueix cap fem.';
-    else if(Math.abs(e)<0.08&&s.N===1)m=s.col==='delgues'?'<span class="pill info">ε = 0</span> L’espira és perpendicular al camp. Ara mateix les escombretes canvien de delga.':'<span class="pill info">ε = 0</span> L’espira és perpendicular al camp: els costats no tallen línies. A partir d’ara, ε canvia de sentit.';
+    else if(Math.abs(e)<0.08&&s.N===1)m=s.col==='lamel·les'?'<span class="pill info">ε = 0</span> L’espira és perpendicular al camp. Ara mateix les escombretes canvien de lamel·la.':'<span class="pill info">ε = 0</span> L’espira és perpendicular al camp: els costats no tallen línies. A partir d’ara, ε canvia de sentit.';
     else if(Math.abs(e)>0.97&&s.N===1)m='<span class="pill ok">ε màxima</span> L’espira és paral·lela al camp: els costats tallen les línies de ple.';
     $(id+'-msg').innerHTML=m;
     if(has('energy')){const pm=s.pel+0.05*s.speed,mx=1.1,set=(k,v)=>$(id+'-b'+k).style.width=Math.min(100,v/mx*100).toFixed(1)+'%';
@@ -760,23 +775,23 @@ function makeSim(host,cfg){
   syncUI();render();sims.push(s);return s;
 }
 
-makeSim($('sim-parts'),{id:'sp',col:'delgues',labels:true,controls:['labels','col']});
+makeSim($('sim-parts'),{id:'sp',col:'lamel·les',labels:true,controls:['labels','col']});
 makeSim($('sim-alt'),{id:'sa',col:'anells',labels:true,controls:['labels']});
-makeSim($('sim-din'),{id:'sd',col:'delgues',labels:true,controls:['labels','col']});
-makeSim($('sim-real'),{id:'sr',col:'delgues',controls:['labels','N','exc']});
-makeSim($('sim-full'),{id:'sf',col:'delgues',controls:['labels','col','N','exc','switch','energy']});
+makeSim($('sim-din'),{id:'sd',col:'lamel·les',labels:true,controls:['labels','col']});
+makeSim($('sim-real'),{id:'sr',col:'lamel·les',controls:['labels','N','exc']});
+makeSim($('sim-full'),{id:'sf',col:'lamel·les',controls:['labels','col','N','exc','switch','energy']});
 
 /* =========================================================
-   VISTA FRONTAL: espira + col·lector de delgues ampliat
+   VISTA FRONTAL: espira + col·lector de lamel·les ampliat
    ========================================================= */
 function makeColl(host){
   const id='cc',s={th:PI/2,N:1,speed:1,slow:true,play:!reduce,t:0,buf:[],host};
-  host.innerHTML=`<div class="fig simfig"><div class="svgwrap"><svg id="cc-m" viewBox="0 0 640 360" role="img" aria-label="Vista frontal de l'espira entre els pols i del col·lector de delgues amb les escombretes"></svg></div>`+
+  host.innerHTML=`<div class="fig simfig"><div class="svgwrap"><svg id="cc-m" viewBox="0 0 640 360" role="img" aria-label="Vista frontal de l'espira entre els pols i del col·lector de lamel·les amb les escombretes"></svg></div>`+
    `<div class="gtitle"><b>Gràfica ε–t</b><span class="lg"><i></i>tensió a les escombretes</span><span class="lg"><i class="dash"></i>ε dins l'espira</span></div>`+
    `<svg id="cc-g" viewBox="0 0 640 175" role="img" aria-label="Gràfica de la fem en funció del temps"></svg></div>`+
    `<div class="row"><button class="btn primary" type="button" id="cc-play"></button><button class="btn" type="button" id="cc-step">Pas a pas (+45°)</button><button class="btn" type="button" id="cc-slow" aria-pressed="true">Càmera lenta</button></div>`+
    `<div class="controls"><label class="ctl" for="cc-sp"><span>Velocitat de gir</span><input id="cc-sp" type="range" min="0.5" max="2" step="0.25" value="1"><output id="cc-spo"></output></label></div>`+
-   `<div class="segs"><div class="grp"><span>Col·lector</span><div class="seg" role="group" aria-label="Nombre de delgues"><button type="button" data-cn="1">2 delgues · 1 espira</button><button type="button" data-cn="2">4 delgues · 2 espires</button></div></div></div>`+
+   `<div class="segs"><div class="grp"><span>Col·lector</span><div class="seg" role="group" aria-label="Nombre de lamel·les"><button type="button" data-cn="1">2 lamel·les · 1 espira</button><button type="button" data-cn="2">4 lamel·les · 2 espires</button></div></div></div>`+
    `<p class="msg" id="cc-msg"></p>`;
   const CX=165,CY=170,RE=70,KX2=468,KY2=170,RO=64,RI=38,G=0.09;
   const amp=()=>s.speed/2;
@@ -824,7 +839,7 @@ function makeColl(host){
       b+=`<path d="${z}" style="fill:none;stroke:var(--muted)" stroke-width="1.6"/><rect x="${F(Math.min(xh,xh+dir*8))}" y="${KY2-16}" width="8" height="32" style="fill:var(--muted)"/>`;
       b+=`<text class="sv-pole" style="font-size:26px;fill:var(--work)" x="${F(x0+dir*17)}" y="${KY2-22}" text-anchor="middle">${sign}</text>`;return b;};
     h+=brush(KX2-RO+1,-1,commL,'+')+brush(KX2+RO-1,1,commR,'−');
-    h+=`<text class="sv-s" x="${KX2}" y="${KY2-RO-14}" text-anchor="middle">Escombretes fixes · delgues que giren</text>`;
+    h+=`<text class="sv-s" x="${KX2}" y="${KY2-RO-14}" text-anchor="middle">Escombretes fixes · lamel·les que giren</text>`;
     // circuit exterior
     const xl=KX2-RO-64,xr=KX2+RO+64,yb=322,glow=Math.min(1,I*1.6);
     h+=pl([[xl,KY2],[xl,yb],[xr,yb],[xr,KY2]],'var(--fg)',2);
@@ -837,8 +852,8 @@ function makeColl(host){
     // missatge
     const t=th+ak*PI/N,ek=Math.cos(t),left=ek<0?'a':'b',right=left==='a'?'b':'a';
     let m;
-    if(comm)m='<span class="pill info">Canvi de delga</span> Les escombretes passen per l’espai aïllant entre dues delgues. Just ara '+(N===1?'ε = 0':'les dues espires tenen la mateixa ε')+' i la connexió s’intercanvia.';
-    else m=`<span class="pill ok">L’escombreta + toca la delga ${left}</span> La delga ${left} és ara el pol positiu de l’espira${N>1?' '+(ak+1):''}, i la delga ${right}, el negatiu.`;
+    if(comm)m='<span class="pill info">Canvi de lamel·la</span> Les escombretes passen per l’espai aïllant entre dues lamel·les. Just ara '+(N===1?'ε = 0':'les dues espires tenen la mateixa ε')+' i la connexió s’intercanvia.';
+    else m=`<span class="pill ok">L’escombreta + toca la lamel·la ${left}</span> La lamel·la ${left} és ara el pol positiu de l’espira${N>1?' '+(ak+1):''}, i la lamel·la ${right}, el negatiu.`;
     $('cc-msg').innerHTML=m;
   }
   function graph(){const X0=46,X1=626,Y0=86,AMP=72,W=4;let g='';
@@ -891,10 +906,10 @@ const Q=[
  ['En quina posició de l’espira la fem és màxima?',['Quan el pla de l’espira és perpendicular al camp','Quan el pla de l’espira és paral·lel al camp','Sempre és igual','Quan l’espira s’atura'],1,'Amb l’espira paral·lela al camp, els costats es mouen perpendiculars a les línies i les tallen de ple.'],
  ['Cada quant canvia de sentit la fem dins d’una espira que gira?',['Cada volta','Cada mitja volta','Cada quart de volta','Mai'],1,'Cada mitja volta, el costat que pujava passa a baixar i ε s’inverteix.'],
  ['Una espira gira amb dos anells col·lectors. Quin corrent arriba al circuit exterior?',['Continu','Altern','Cap','Continu i constant'],1,'Cada costat va sempre al mateix anell i a la mateixa escombreta: el corrent exterior canvia de sentit com dins l’espira. És un alternador.'],
- ['Quina peça converteix la CA de l’espira en CC a la sortida de la dinamo?',['L’inductor','Les escombretes de grafit','El col·lector de delgues','La manovella'],2,'Les delgues intercanvien la connexió de l’espira amb les escombretes cada mitja volta.'],
- ['En una dinamo, quan passen les escombretes d’una delga a l’altra?',['Quan ε és màxima','Quan ε = 0','A l’atzar','Només quan s’atura'],1,'El canvi es fa just quan ε = 0, amb l’espira perpendicular al camp. Així el sentit a la sortida no canvia mai.'],
+ ['Quina peça converteix la CA de l’espira en CC a la sortida de la dinamo?',['L’inductor','Les escombretes de grafit','El col·lector de lamel·les','La manovella'],2,'Les lamel·les intercanvien la connexió de l’espira amb les escombretes cada mitja volta.'],
+ ['En una dinamo, quan passen les escombretes d’una lamel·la a l’altra?',['Quan ε és màxima','Quan ε = 0','A l’atzar','Només quan s’atura'],1,'El canvi es fa just quan ε = 0, amb l’espira perpendicular al camp. Així el sentit a la sortida no canvia mai.'],
  ['Què vol dir que el corrent d\u2019una dinamo d\u2019una espira és continu polsant?',['Que canvia de sentit cada mitja volta','Que va sempre en el mateix sentit, però el valor puja i baixa fins a 0','Que és constant com el d\u2019una pila','Que només circula a mitja volta'],1,'El col·lector evita el canvi de sentit, però no pot evitar que ε passi per 0 dues vegades a cada volta.'],
- ['Per què les dinamos reals tenen moltes espires i moltes delgues?',['Per girar més ràpid','Perquè la CC sigui més constant (menys polsant)','Per obtenir corrent altern','Per no necessitar escombretes'],1,'Les escombretes connecten sempre amb l’espira que té més ε, i la tensió ja no baixa fins a zero.'],
+ ['Per què les dinamos reals tenen moltes espires i moltes lamel·les?',['Per girar més ràpid','Perquè la CC sigui més constant (menys polsant)','Per obtenir corrent altern','Per no necessitar escombretes'],1,'Les escombretes connecten sempre amb l’espira que té més ε, i la tensió ja no baixa fins a zero.'],
  ['L’inductor és un electroimant. Què passa si reduïm el corrent d’excitació?',['ε augmenta','ε disminueix','ε no canvia','Passa a donar CA'],1,'Menys corrent d’excitació vol dir un camp més feble, i per tant menys fem. Si el tallem, ε = 0.'],
  ['Per què costa més girar la manovella quan la bombeta està encesa?',['Perquè l’espira s’escalfa i pesa més','Pel corrent induït, que s’oposa al gir (llei de Lenz)','Perquè les escombretes es claven','No costa més'],1,'El corrent que circula per l’espira dins del camp rep forces contràries al gir. Aquest esforç extra és l’energia que obtenim.']];
 const ans=new Array(Q.length).fill(null);
@@ -926,7 +941,7 @@ show((location.hash||'').slice(1),false);
     var a=d.createElement('a');a.className='btn';a.href='https://tecnolyd.github.io/artefactes/generador-dinamo.html';a.target='_blank';a.rel='noopener';a.textContent='⛶ Obre a pantalla completa';
     var seg2=d.querySelector('.top .seg');if(seg2)seg2.parentNode.insertBefore(a,seg2);
   }
-  var br=d.querySelector('.brand');if(br){var v=d.createElement('span');v.className='ver';v.textContent='v3';br.appendChild(v);}
+  var br=d.querySelector('.brand');if(br){var v=d.createElement('span');v.className='ver';v.textContent='v4';br.appendChild(v);}
 })();
 </script>
 
