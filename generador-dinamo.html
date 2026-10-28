@@ -1,0 +1,777 @@
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>[hidden]{display:none!important}body{margin:0}</style>
+<title>Generadors i dinamo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+<style>
+/* Layout: quadern d'enginyeria — barra lateral de mòduls + pàgina central; calent (Th) i fred (Tc) codificats en color a tot arreu */
+:root{
+  --bg:#f3f5f8; --surface:#ffffff; --fg:#18202b; --muted:#566273; --line:#d6dce4;
+  --accent:#23395d; --accent-soft:#e3e9f3;
+  --hot:#bf4329; --hot-soft:#f8e2db; --cold:#2a66a8; --cold-soft:#dde9f6;
+  --work:#a46f12; --work-soft:#f6ead0; --ok:#2c7a4b; --ok-soft:#dcefe3; --bad:#b0291c; --bad-soft:#f8dedb;
+  --f-display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --f-body:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#11151b; --surface:#191f27; --fg:#e5e9ef; --muted:#9aa5b4; --line:#2b3440;
+  --accent:#a9c1e6; --accent-soft:#1f2b3d;
+  --hot:#f08a6f; --hot-soft:#3b211b; --cold:#72a9e8; --cold-soft:#18283b;
+  --work:#e3b450; --work-soft:#382c13; --ok:#6cc690; --ok-soft:#17301f; --bad:#f08478; --bad-soft:#3a1c19;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#11151b; --surface:#191f27; --fg:#e5e9ef; --muted:#9aa5b4; --line:#2b3440;
+  --accent:#a9c1e6; --accent-soft:#1f2b3d;
+  --hot:#f08a6f; --hot-soft:#3b211b; --cold:#72a9e8; --cold-soft:#18283b;
+  --work:#e3b450; --work-soft:#382c13; --ok:#6cc690; --ok-soft:#17301f; --bad:#f08478; --bad-soft:#3a1c19;
+  color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:17px;line-height:1.6}
+body.classe{font-size:20px}
+body.classe .est{display:none!important}
+h1,h2,h3,.ui{font-family:var(--f-display)}
+h2{font-size:2.2em;line-height:1.05;margin:.1em 0 .35em;font-weight:700;text-wrap:balance;letter-spacing:.005em}
+h3{font-size:1.35em;margin:1.6em 0 .4em;font-weight:600;text-wrap:balance}
+p{margin:.6em 0}
+.mono,.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line);padding:10px 16px;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.brand{font-family:var(--f-display);font-weight:700;font-size:1.3rem;letter-spacing:.02em}
+.brand span{color:var(--hot)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.seg button{font-family:var(--f-display);font-size:1rem;font-weight:600;border:0;background:transparent;color:var(--muted);padding:6px 16px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--surface)}
+.shell{display:grid;grid-template-columns:230px minmax(0,1fr);gap:28px;max-width:1240px;margin:0 auto;padding-inline:16px;padding-block:24px 48px}
+.side{position:sticky;top:76px;align-self:start;display:flex;flex-direction:column;gap:2px}
+.side button{display:flex;gap:10px;align-items:baseline;text-align:left;font-family:var(--f-display);font-size:1.08rem;font-weight:500;color:var(--muted);background:none;border:0;border-radius:8px;padding:8px 10px;cursor:pointer}
+.side button b{font-family:var(--f-mono);font-size:.8rem;font-weight:500;color:var(--muted);min-width:1.4em}
+.side button:hover{background:var(--accent-soft);color:var(--fg)}
+.side button[aria-current="true"]{background:var(--accent-soft);color:var(--fg);font-weight:700}
+.side button[aria-current="true"] b{color:var(--hot)}
+main{min-width:0;max-width:900px}
+body.classe main{max-width:1180px}
+.eyebrow{font-family:var(--f-display);text-transform:uppercase;letter-spacing:.12em;font-size:.85rem;color:var(--hot);font-weight:600;margin:0}
+.lead{font-size:1.12em;color:var(--fg);max-width:65ch}
+.est p,.est li{max-width:68ch}
+.fig{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;margin:18px 0}
+.fig svg{display:block;width:100%;height:auto}
+.svgwrap{overflow-x:auto}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.controls{display:grid;gap:10px;margin-top:12px}
+.ctl{display:grid;grid-template-columns:minmax(120px,190px) minmax(0,1fr) 92px;gap:10px;align-items:center;font-family:var(--f-display);font-size:1.05rem}
+.ctl output{font-family:var(--f-mono);font-size:.95rem;text-align:right}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:14px}
+.stat{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg)}
+.stat .k{font-family:var(--f-display);font-size:.95rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.stat .v{font-family:var(--f-mono);font-size:1.35em;font-variant-numeric:tabular-nums}
+.stat.hot .v{color:var(--hot)} .stat.cold .v{color:var(--cold)} .stat.work .v{color:var(--work)}
+.pill{display:inline-block;font-family:var(--f-display);font-weight:600;font-size:.95rem;border-radius:999px;padding:3px 12px}
+.pill.ok{background:var(--ok-soft);color:var(--ok)} .pill.bad{background:var(--bad-soft);color:var(--bad)} .pill.info{background:var(--accent-soft);color:var(--accent)}
+.msg{margin-top:10px;min-height:1.6em}
+.key{border:1px solid var(--line);background:var(--accent-soft);border-radius:12px;padding:14px 18px;margin:24px 0;font-style:italic;font-size:1.06em}
+.key::before{content:"Frase resum";display:block;font-style:normal;font-family:var(--f-display);text-transform:uppercase;letter-spacing:.1em;font-size:.8rem;color:var(--accent);font-weight:700;margin-bottom:4px}
+.note{border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin:16px 0;background:var(--surface)}
+.note strong{font-family:var(--f-display);font-size:1.08em}
+.tbl{overflow-x:auto;margin:14px 0;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:.93em}
+th,td{padding:8px 12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{font-family:var(--f-display);font-size:1.02em;font-weight:600;background:var(--bg)}
+tr:last-child td{border-bottom:0}
+td.h{color:var(--hot);font-weight:600} td.c{color:var(--cold);font-weight:600}
+.eq{font-family:var(--f-mono);font-size:1.05em;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 14px;display:inline-block;margin:6px 0}
+.btn{font-family:var(--f-display);font-weight:600;font-size:1.02rem;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:8px;padding:7px 14px;cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--surface);border-color:var(--accent)}
+.btn[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent)}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.pager{display:flex;justify-content:space-between;gap:12px;margin-top:40px;padding-top:16px;border-top:1px solid var(--line);flex-wrap:wrap}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:12px 0}
+.card{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--surface)}
+.card h4{font-family:var(--f-display);font-size:1.15em;margin:0 0 4px}
+.tag{font-family:var(--f-display);font-weight:600;font-size:.9rem}
+.tag.ok{color:var(--ok)} .tag.bad{color:var(--bad)}
+.stepper{display:flex;flex-wrap:wrap;gap:6px}
+.stagecard{margin-top:14px}
+.stagecard dl{display:grid;grid-template-columns:minmax(110px,170px) minmax(0,1fr);gap:6px 14px;margin:8px 0}
+.stagecard dt{font-family:var(--f-display);font-weight:600;color:var(--muted)}
+.stagecard dd{margin:0}
+.bar{display:flex;height:44px;border-radius:8px;overflow:hidden;border:1px solid var(--line);margin-top:10px}
+.bar div{display:flex;align-items:center;justify-content:center;font-family:var(--f-mono);font-size:.85rem;white-space:nowrap;overflow:hidden;transition:flex-basis .25s}
+.seg-w{background:var(--work-soft);color:var(--work)} .seg-p{background:var(--bad-soft);color:var(--bad)} .seg-c{background:var(--cold-soft);color:var(--cold)}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:8px;font-family:var(--f-display);font-size:1rem}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.gauge{position:relative;height:28px;border-radius:999px;background:var(--bg);border:1px solid var(--line);margin:22px 0 30px}
+.gauge .fill{position:absolute;inset:0 auto 0 0;border-radius:999px;background:var(--work-soft);border-right:3px solid var(--work)}
+.gauge .mark{position:absolute;top:-8px;bottom:-8px;width:3px;background:var(--hot)}
+.gauge .mlabel{position:absolute;top:32px;transform:translateX(-50%);font-family:var(--f-display);font-size:.9rem;color:var(--hot);white-space:nowrap}
+.field{display:grid;gap:4px;font-family:var(--f-display);font-size:1rem}
+.field input{font-family:var(--f-mono);font-size:1rem;padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);width:100%}
+.err{color:var(--bad);font-size:13px;min-height:1.2em;font-family:var(--f-display)}
+.quiz{display:grid;gap:14px}
+.q{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:var(--surface)}
+.q h4{font-family:var(--f-display);font-size:1.2em;margin:0 0 8px;font-weight:600}
+.q label{display:flex;gap:10px;align-items:flex-start;padding:6px 8px;border-radius:8px;cursor:pointer}
+.q label:hover{background:var(--bg)}
+.q label.right{background:var(--ok-soft)} .q label.wrong{background:var(--bad-soft)}
+.q .fb{margin-top:8px}
+.reveal{margin-top:8px}
+/* svg */
+.sv-t{fill:var(--fg);font-family:var(--f-display);font-size:16px;font-weight:600}
+.sv-s{fill:var(--muted);font-family:var(--f-display);font-size:14px}
+.sv-m{fill:var(--fg);font-family:var(--f-mono);font-size:13px}
+.sv-hot{fill:var(--hot-soft);stroke:var(--hot);stroke-width:1.2}
+.sv-cold{fill:var(--cold-soft);stroke:var(--cold);stroke-width:1.2}
+.sv-neu{fill:var(--bg);stroke:var(--muted);stroke-width:1.2}
+.sv-pipe{fill:none;stroke:var(--muted);stroke-width:2}
+.sv-front{fill:none;stroke:var(--muted);stroke-width:1;stroke-dasharray:6 5}
+.fl-hot{fill:var(--hot)} .fl-cold{fill:var(--cold)} .fl-work{fill:var(--work)} .fl-neu{fill:var(--muted)}
+.tx-hot{fill:var(--hot)} .tx-cold{fill:var(--cold)} .tx-work{fill:var(--work)}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+@media (max-width:820px){
+  .shell{grid-template-columns:minmax(0,1fr);gap:12px;padding-block:12px 40px}
+  .side{position:static;flex-direction:row;overflow-x:auto;gap:4px;padding-bottom:6px}
+  .side button{white-space:nowrap}
+  .ctl{grid-template-columns:minmax(0,1fr) 84px}
+  .ctl input{grid-column:1 / -1;grid-row:2}
+  h2{font-size:1.9em}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+.soon{display:flex;gap:10px;align-items:baseline;font-family:var(--f-display);font-size:1.08rem;color:var(--muted);opacity:.6;padding:8px 10px}
+.soon b{font-family:var(--f-mono);font-size:.8rem;min-width:1.4em}
+.soon i{font-style:normal;font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;margin-left:auto}
+a.btn{text-decoration:none;display:inline-block}
+.info4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:16px 0}
+.i4{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:12px;text-align:center}
+.i4 h4{font-family:var(--f-display);font-size:1.3em;margin:0}
+.i4n{font-family:var(--f-display);font-weight:700;font-size:2.2em;line-height:1}
+.i4 svg{width:100%;max-width:150px;height:auto;margin:6px auto;display:block}
+.i4v{font-family:var(--f-display);font-weight:700;font-size:1.2em;margin:4px 0}
+.i4s{font-size:.9em;color:var(--muted);margin:0}
+@media (max-width:820px){.info4{grid-template-columns:repeat(2,minmax(0,1fr))}.soon{white-space:nowrap}}
+
+@media (max-width:1040px){.shell{grid-template-columns:minmax(0,1fr);gap:12px}.side{position:static;flex-direction:row;overflow-x:auto;gap:4px;padding-bottom:6px}.side button,.soon{white-space:nowrap}main{max-width:none}}
+body.embed{font-size:16px}
+body.embed.classe{font-size:19px}
+body.embed .top{padding:6px 12px}
+body.embed .shell{max-width:none;padding-block:12px 32px}
+body.embed main,body.embed.classe main{max-width:none}
+body.embed h2{font-size:1.9em}
+body.embed .lead,body.embed .est p,body.embed .est li{max-width:none}
+:fullscreen body,body:fullscreen{overflow:auto}
+body.embed .shell{grid-template-columns:minmax(0,1fr);gap:12px}body.embed .side{position:static;flex-direction:row;overflow-x:auto;gap:4px;padding-bottom:6px}body.embed .side button,body.embed .soon{white-space:nowrap}
+.ver{font-family:var(--f-mono);font-size:.75rem;color:var(--muted);margin-left:8px}
+.chip{display:inline-block;padding:3px 10px;border-radius:999px;font-family:var(--f-display);font-weight:600;font-size:.95rem;border:1px solid var(--line);color:var(--muted)}.chip.on{background:var(--ok-soft);color:var(--ok);border-color:transparent}
+/* ---- específic: generadors i dinamo ----
+   Significat dels colors: pol N = calent, pol S = fred, energia elèctrica (ε, corrent) = treball (ambre),
+   energia mecànica = accent, costat a de l'espira = --sa (lila), costat b = --sb (verd blavós), bobinatges = coure */
+:root{--mut:var(--muted);--mut-soft:var(--bg);--sa:#7a3f9e;--sa-soft:#efe4f6;--sb:#17797a;--sb-soft:#d9eeee;--cu:#9a5b2e;--gr:#454b55}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--sa:#c69be6;--sa-soft:#2c2137;--sb:#5ec7c5;--sb-soft:#15302f;--cu:#d69a6c;--gr:#9aa2ad}}
+:root[data-theme="dark"]{--sa:#c69be6;--sa-soft:#2c2137;--sb:#5ec7c5;--sb-soft:#15302f;--cu:#d69a6c;--gr:#9aa2ad}
+.simfig{padding:12px}
+.simfig .gtitle{display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center;margin:10px 4px 2px;font-family:var(--f-display);font-size:1rem}
+.simfig .gtitle b{font-weight:700}
+.lg{display:inline-flex;align-items:center;gap:6px;color:var(--muted)}
+.lg i{display:inline-block;width:22px;height:0;border-top:3px solid var(--work)}
+.lg i.dash{border-top:2px dashed var(--muted)}
+.segs{display:flex;flex-wrap:wrap;gap:10px 18px;margin-top:12px}
+.segs .grp{display:grid;gap:4px}
+.segs .grp>span{font-family:var(--f-display);font-size:.9rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.seg button:disabled{opacity:.4;cursor:not-allowed}
+.chipa{color:var(--sa);background:var(--sa-soft)}
+.chipb{color:var(--sb);background:var(--sb-soft)}
+.chipx{display:inline-block;padding:2px 10px;border-radius:999px;font-family:var(--f-display);font-weight:700;font-size:.95rem}
+.energy{display:grid;gap:8px;margin-top:14px}
+.erow{display:grid;grid-template-columns:minmax(120px,210px) minmax(0,1fr) 90px;gap:10px;align-items:center;font-family:var(--f-display);font-size:1.02rem}
+.etrack{height:18px;border-radius:999px;background:var(--bg);border:1px solid var(--line);overflow:hidden}
+.etrack div{height:100%;transition:width .2s}
+.e-mec{background:var(--accent)} .e-el{background:var(--work)} .e-per{background:var(--muted)}
+.erow output{font-family:var(--f-display);font-weight:700;text-align:right}
+.partlist{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.partbox{margin-top:12px;min-height:5.2em}
+.partbox h4{font-family:var(--f-display);font-size:1.25em;margin:0 0 4px}
+svg .hlmode [data-part]{opacity:.22;transition:opacity .25s}
+svg .hlmode [data-part].on{opacity:1}
+.sv-pole{font-family:var(--f-display);font-weight:700;font-size:40px}
+.sv-l{fill:var(--fg);font-family:var(--f-display);font-size:15px;font-weight:700}
+.leader{stroke:var(--muted);stroke-width:1;fill:none}
+.ind-svg{max-width:640px;margin:0 auto}
+@media (max-width:820px){.erow{grid-template-columns:minmax(0,1fr) 80px}.erow .etrack{grid-column:1 / -1;grid-row:2}}
+</style>
+<header class="top">
+  <div class="brand">Generadors i <span>dinamo</span></div>
+  <div class="row">
+    <div class="seg" role="group" aria-label="Mode de visualització">
+      <button id="mode-estudi" type="button" aria-pressed="true">Mode estudi</button>
+      <button id="mode-classe" type="button" aria-pressed="false">Mode classe</button>
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+<nav class="side" aria-label="Mòduls">
+  <button type="button" data-go="induccio"><b>1</b>Inducció</button>
+  <button type="button" data-go="parts"><b>2</b>Parts del generador</button>
+  <button type="button" data-go="alternador"><b>3</b>Corrent altern</button>
+  <button type="button" data-go="dinamo"><b>4</b>Dinamo: de CA a CC</button>
+  <button type="button" data-go="real"><b>5</b>La dinamo real</button>
+  <button type="button" data-go="energia"><b>6</b>Mecànica → elèctrica</button>
+  <button type="button" data-go="quiz"><b>7</b>Autoavaluació</button>
+</nav>
+
+<main>
+<!-- ===== 1 INDUCCIÓ ===== -->
+<section class="mod" data-key="induccio">
+  <p class="eyebrow">Mòdul 1 · El principi</p>
+  <h2>La inducció electromagnètica</h2>
+  <p class="lead">Un generador transforma <b style="color:var(--accent)">energia mecànica</b> en <b style="color:var(--work)">energia elèctrica</b>. Ho aconsegueix amb la <b>inducció electromagnètica</b>: quan un conductor es mou dins d'un camp magnètic i en talla les línies, hi apareix una <b>força electromotriu induïda, ε</b>.</p>
+  <div class="fig">
+    <div class="svgwrap ind-svg"><svg id="ind-svg" viewBox="0 0 640 340" role="img" aria-label="Conductor que es mou entre els pols d'un imant, amb un galvanòmetre que indica la fem induïda"></svg></div>
+    <div class="row" style="margin-top:10px" role="group" aria-label="Moviment del conductor">
+      <button class="btn" type="button" data-im="quiet">Quiet</button>
+      <button class="btn" type="button" data-im="up">Amunt</button>
+      <button class="btn" type="button" data-im="down">Avall</button>
+      <button class="btn" type="button" data-im="osc">Amunt i avall</button>
+      <button class="btn" type="button" data-im="par">Paral·lel al camp</button>
+    </div>
+    <div class="controls">
+      <label class="ctl" for="ind-v"><span>Rapidesa del moviment</span><input id="ind-v" type="range" min="0.5" max="2" step="0.25" value="1"><output id="ind-vo">mitjana</output></label>
+    </div>
+    <p class="msg" id="ind-msg"></p>
+  </div>
+  <div class="est">
+    <p>El conductor es veu de cara: és un fil perpendicular a la pantalla. Els seus extrems estan connectats a un <b>galvanòmetre</b> de zero central, que indica el sentit i la intensitat del corrent.</p>
+    <ul>
+      <li><b>⊗</b> el corrent entra a la pantalla · <b>⊙</b> el corrent surt de la pantalla.</li>
+      <li>Si canvia el sentit del moviment, canvia el sentit de ε (i del corrent).</li>
+      <li>Si el conductor és quiet, o es mou <b>paral·lel</b> a les línies de camp, no en talla cap: ε = 0.</li>
+    </ul>
+  </div>
+  <div class="tbl"><table>
+    <thead><tr><th>Què fa que ε sigui més gran?</th><th>Per què</th></tr></thead>
+    <tbody>
+      <tr><td>Moure el conductor <b>més ràpid</b></td><td>Talla més línies de camp per segon.</td></tr>
+      <tr><td>Un <b>camp magnètic més intens</b></td><td>Hi ha més línies de camp per tallar.</td></tr>
+      <tr><td><b>Més conductor</b> dins del camp (més espires)</td><td>Cada tros de conductor aporta la seva fem.</td></tr>
+    </tbody>
+  </table></div>
+  <div class="cards">
+    <div class="card"><h4>Llei de Faraday</h4><p>Es genera una fem induïda sempre que <b>varia el flux magnètic</b> que travessa un circuit. Com més ràpida és la variació, més gran és ε.</p></div>
+    <div class="card"><h4>Llei de Lenz</h4><p>El corrent induït té un sentit tal que <b>s'oposa a la causa que el produeix</b>. Ho veuràs al mòdul 6: per això costa fer girar un generador.</p></div>
+  </div>
+  <p class="key">Quan un conductor talla les línies d'un camp magnètic, s'hi indueix una fem ε. Sense moviment, o movent-se paral·lel al camp, no n'hi ha.</p>
+  <div class="pager"><span></span><button class="btn primary" type="button" data-go="parts">Següent: Parts del generador →</button></div>
+</section>
+
+<!-- ===== 2 PARTS ===== -->
+<section class="mod" data-key="parts" hidden>
+  <p class="eyebrow">Mòdul 2 · Anatomia</p>
+  <h2>Les parts d'un generador</h2>
+  <p class="lead">Per aprofitar la inducció de manera contínua, fem <b>girar</b> una espira dins d'un imant. Tots els generadors rotatius tenen les mateixes parts bàsiques. Toca una part per trobar-la al dibuix.</p>
+  <div id="sim-parts"></div>
+  <div class="partlist" role="group" aria-label="Parts del generador">
+    <button class="btn" type="button" data-part-btn="inductor">Inductor</button>
+    <button class="btn" type="button" data-part-btn="induit">Induït</button>
+    <button class="btn" type="button" data-part-btn="eix">Eix i manovella</button>
+    <button class="btn" type="button" data-part-btn="col">Col·lector</button>
+    <button class="btn" type="button" data-part-btn="esc">Escombretes</button>
+    <button class="btn" type="button" data-part-btn="circuit">Circuit exterior</button>
+    <button class="btn" type="button" data-part-btn="">Totes</button>
+  </div>
+  <div class="note partbox" id="part-box"><strong>Tria una part.</strong> El dibuix la ressaltarà i aquí en veuràs la funció.</div>
+  <div class="tbl"><table>
+    <tbody>
+      <tr><td><b>Inductor</b></td><td>Crea el camp magnètic. Pot ser un imant permanent o un electroimant.</td></tr>
+      <tr><td><b>Induït</b></td><td>Bobina (aquí, una sola espira) on s'indueix la fem ε.</td></tr>
+      <tr><td><b>Col·lector</b></td><td>Gira amb l'espira i la connecta amb l'exterior: <b>anells</b> (alternador) o <b>delgues</b> (dinamo).</td></tr>
+      <tr><td><b>Escombretes</b></td><td>Peces fixes de grafit que freguen el col·lector i passen el corrent al circuit exterior.</td></tr>
+    </tbody>
+  </table></div>
+  <div class="est note"><strong>Estator i rotor.</strong> L'<b>estator</b> és la part fixa i el <b>rotor</b>, la part que gira. A la dinamo, l'inductor és a l'estator i l'induït és al rotor.</div>
+  <p class="key">L'inductor crea el camp; l'induït gira dins del camp i s'hi indueix ε; el col·lector i les escombretes porten el corrent a l'exterior.</p>
+  <div class="pager"><button class="btn" type="button" data-go="induccio">← Inducció</button><button class="btn primary" type="button" data-go="alternador">Següent: Corrent altern →</button></div>
+</section>
+
+<!-- ===== 3 ALTERNADOR ===== -->
+<section class="mod" data-key="alternador" hidden>
+  <p class="eyebrow">Mòdul 3 · Anells col·lectors</p>
+  <h2>L'espira que gira: corrent altern</h2>
+  <p class="lead">Quan l'espira gira, el costat <b style="color:var(--sa)">a</b> i el costat <b style="color:var(--sb)">b</b> van pujant i baixant per davant dels pols. Cada <b>mitja volta</b>, el sentit de ε s'inverteix.</p>
+  <div id="sim-alt"></div>
+  <div class="est">
+    <h3>Fes servir «Pas a pas» i comprova-ho</h3>
+    <div class="tbl"><table>
+      <thead><tr><th>Posició de l'espira</th><th>Talla línies de camp?</th><th>ε</th></tr></thead>
+      <tbody>
+        <tr><td>Pla de l'espira <b>perpendicular</b> al camp (espira vertical)</td><td>No: els costats es mouen paral·lels a les línies</td><td><b>0</b></td></tr>
+        <tr><td>Pla de l'espira <b>paral·lel</b> al camp (espira horitzontal)</td><td>Sí, de ple: els costats es mouen perpendiculars a les línies</td><td><b>Màxima</b></td></tr>
+      </tbody>
+    </table></div>
+    <p>Cada costat de l'espira està soldat sempre al <b>mateix anell</b>, i cada anell frega sempre la <b>mateixa escombreta</b>. Per això el que passa a l'espira arriba igual a l'exterior: el corrent canvia de sentit cada mitja volta. És <b>corrent altern (CA)</b>, i aquesta màquina és un <b>alternador</b>.</p>
+  </div>
+  <p class="key">Una espira que gira dins d'un camp magnètic genera una fem alterna. Amb anells col·lectors, el circuit exterior rep corrent altern.</p>
+  <div class="pager"><button class="btn" type="button" data-go="parts">← Parts</button><button class="btn primary" type="button" data-go="dinamo">Següent: Dinamo →</button></div>
+</section>
+
+<!-- ===== 4 DINAMO ===== -->
+<section class="mod" data-key="dinamo" hidden>
+  <p class="eyebrow">Mòdul 4 · Col·lector de delgues</p>
+  <h2>La dinamo: de CA a CC</h2>
+  <p class="lead">La dinamo és el mateix generador amb un altre col·lector: un anell partit en dues meitats aïllades entre si, les <b>delgues</b>. Canvia entre anells i delgues i mira què passa a la gràfica.</p>
+  <div id="sim-din"></div>
+  <div class="est">
+    <h3>Què fan les delgues?</h3>
+    <ul>
+      <li>Cada delga està soldada a un costat de l'espira i gira amb ella. Les escombretes són fixes.</li>
+      <li>Just quan <b>ε = 0</b> (espira perpendicular al camp), cada escombreta passa d'una delga a l'altra.</li>
+      <li>Així, l'escombreta esquerra toca sempre el costat de l'espira que en aquell moment fa de pol positiu.</li>
+    </ul>
+    <p>Dins l'espira, el corrent continua sent altern. A la sortida, però, va sempre en el mateix sentit: és <b>corrent continu (CC)</b>, encara que <b>polsant</b> (amb bonys).</p>
+  </div>
+  <div class="tbl"><table>
+    <thead><tr><th></th><th>Anells col·lectors</th><th>Col·lector de delgues</th></tr></thead>
+    <tbody>
+      <tr><td>Màquina</td><td>Alternador</td><td>Dinamo</td></tr>
+      <tr><td>Connexió espira–escombreta</td><td>Sempre la mateixa</td><td>S'intercanvia cada mitja volta</td></tr>
+      <tr><td>Corrent a la sortida</td><td>Altern (CA)</td><td>Continu (CC) polsant</td></tr>
+      <tr><td>Galvanòmetre</td><td>L'agulla va d'un costat a l'altre</td><td>L'agulla es queda sempre al mateix costat</td></tr>
+    </tbody>
+  </table></div>
+  <p class="key">El col·lector de delgues inverteix la connexió de l'espira cada mitja volta, just quan ε = 0. Així rectifica: converteix la CA de l'espira en CC a la sortida.</p>
+  <div class="pager"><button class="btn" type="button" data-go="alternador">← Corrent altern</button><button class="btn primary" type="button" data-go="real">Següent: La dinamo real →</button></div>
+</section>
+
+<!-- ===== 5 DINAMO REAL ===== -->
+<section class="mod" data-key="real" hidden>
+  <p class="eyebrow">Mòdul 5 · Espires i excitació</p>
+  <h2>La dinamo real</h2>
+  <p class="lead">Amb una sola espira, la CC té molts alts i baixos. Les dinamos reals tenen moltes bobines i un col·lector amb moltes delgues. A més, l'inductor sol ser un <b>electroimant</b>.</p>
+  <div id="sim-real"></div>
+  <div class="two">
+    <div class="card"><h4>Més espires, CC més plana</h4><p>Amb diverses espires repartides, les escombretes connecten sempre amb la que en aquell moment té més ε. La tensió de sortida ja no baixa fins a zero. <span class="est">Prova 1, 2 i 4 espires i compara la gràfica.</span></p></div>
+    <div class="card"><h4>Imant o electroimant</h4><p>Amb un <b>imant permanent</b>, el camp és fix. Amb un <b>electroimant</b>, l'inductor és una bobina alimentada amb un <b>corrent d'excitació</b>: si el regulem, regulem ε; si el tallem, la dinamo deixa de generar.</p></div>
+  </div>
+  <div class="est note"><strong>Excitació independent.</strong> Al simulador, el corrent d'excitació ve d'una font externa (excitació independent). En moltes dinamos, l'inductor s'alimenta amb el corrent que genera la mateixa dinamo (autoexcitació).</div>
+  <p class="key">Una dinamo real té moltes espires i delgues perquè la CC sigui més constant. Amb electroimant, el corrent d'excitació permet regular la fem.</p>
+  <div class="pager"><button class="btn" type="button" data-go="dinamo">← Dinamo</button><button class="btn primary" type="button" data-go="energia">Següent: Mecànica → elèctrica →</button></div>
+</section>
+
+<!-- ===== 6 ENERGIA ===== -->
+<section class="mod" data-key="energia" hidden>
+  <p class="eyebrow">Mòdul 6 · Simulador complet</p>
+  <h2>De l'energia mecànica a l'elèctrica</h2>
+  <p class="lead">L'energia elèctrica no surt del no-res: la paga qui fa girar la manovella. Obre i tanca l'interruptor i mira com canvia l'esforç per fer-la girar.</p>
+  <div id="sim-full"></div>
+  <div class="est">
+    <h3>Per què costa més girar amb la bombeta encesa?</h3>
+    <ul>
+      <li><b>Circuit obert:</b> hi ha ε, però no hi circula corrent. Girar costa poc: només cal vèncer els fregaments.</li>
+      <li><b>Circuit tancat:</b> circula corrent per l'espira. Aquest corrent, dins del camp, rep forces que <b>s'oposen al gir</b> (llei de Lenz). Cal fer més força a la manovella.</li>
+    </ul>
+    <p>Aquesta força extra és justament l'energia mecànica que es transforma en elèctrica.</p>
+  </div>
+  <div class="eq">Energia mecànica = energia elèctrica útil + pèrdues</div>
+  <p>Les pèrdues són els fregaments (eix, escombretes) i l'escalfament dels fils. Per això el rendiment d'un generador sempre és més petit que 1.</p>
+  <div class="cards">
+    <div class="card"><h4>Dinamo de bicicleta</h4><p>La roda fa girar un petit imant o una bobina. Pedalant, l'energia de les cames encén el llum.</p></div>
+    <div class="card"><h4>Central elèctrica</h4><p>Una turbina (de vapor, d'aigua o de vent) fa girar un alternador enorme que genera CA.</p></div>
+  </div>
+  <p class="key">Un generador transforma energia mecànica en elèctrica. Quan en traiem corrent, s'oposa al gir (llei de Lenz), i aquest esforç extra és l'energia que obtenim.</p>
+  <div class="pager"><button class="btn" type="button" data-go="real">← La dinamo real</button><button class="btn primary" type="button" data-go="quiz">Següent: Autoavaluació →</button></div>
+</section>
+
+<!-- ===== 7 QUIZ ===== -->
+<section class="mod" data-key="quiz" hidden>
+  <p class="eyebrow">Mòdul 7 · Comprova-ho</p>
+  <h2>Autoavaluació</h2>
+  <p class="lead">Preguntes sobre la inducció, l'alternador i la dinamo.</p>
+  <div class="quiz" id="quiz"></div>
+  <div class="row" style="margin-top:16px"><span class="pill info" id="q-score">0 correctes</span><button class="btn" type="button" id="q-reset">Torna a començar</button></div>
+  <div class="pager"><button class="btn" type="button" data-go="energia">← Mecànica → elèctrica</button><span></span></div>
+</section>
+</main>
+</div>
+
+<script>
+(function(){
+"use strict";
+const $=id=>document.getElementById(id);
+const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+function arrowPts(x1,y1,x2,y2,w){const dx=x2-x1,dy=y2-y1,L=Math.hypot(dx,dy)||1,ux=dx/L,uy=dy/L,nx=-uy,ny=ux,h=w/2,hh=h+5,hl=Math.min(w+7,L*.6),bx=x2-ux*hl,by=y2-uy*hl;
+  return [[x1+nx*h,y1+ny*h],[bx+nx*h,by+ny*h],[bx+nx*hh,by+ny*hh],[x2,y2],[bx-nx*hh,by-ny*hh],[bx-nx*h,by-ny*h],[x1-nx*h,y1-ny*h]].map(q=>q[0].toFixed(1)+','+q[1].toFixed(1)).join(' ');}
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+const fmt=(n,d)=>Number(n).toLocaleString('ca-ES',{minimumFractionDigits:d,maximumFractionDigits:d});
+const TAU=Math.PI*2,PI=Math.PI;
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+
+/* ---------- navegació i mode ---------- */
+const mods=[...document.querySelectorAll('.mod')],keys=mods.map(m=>m.dataset.key);
+function show(key,scroll){if(!keys.includes(key))key='induccio';mods.forEach(m=>m.hidden=m.dataset.key!==key);
+  document.querySelectorAll('.side button').forEach(b=>b.setAttribute('aria-current',b.dataset.go===key?'true':'false'));
+  try{history.replaceState(null,'','#'+key)}catch(e){}
+  if(scroll)window.scrollTo({top:0,behavior:reduce?'auto':'smooth'});}
+document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>show(b.dataset.go,true)));
+function setMode(m){document.body.classList.toggle('classe',m==='classe');$('mode-classe').setAttribute('aria-pressed',m==='classe');$('mode-estudi').setAttribute('aria-pressed',m!=='classe');store.set('gd-mode',m);}
+$('mode-classe').addEventListener('click',()=>setMode('classe'));$('mode-estudi').addEventListener('click',()=>setMode('estudi'));
+setMode(store.get('gd-mode')==='classe'?'classe':'estudi');
+const visible=el=>el&&el.offsetParent!==null;
+
+/* ---------- peces SVG comunes ---------- */
+function galv(cx,cy,r,val,label){ // galvanòmetre de zero central; val entre -1 i 1
+  const a=clamp(val,-1,1)*58*PI/180,px=cx,py=cy+r*.45,len=r*1.15;
+  let t='';for(let i=-4;i<=4;i++){const g=i*14.5*PI/180,r1=r*.98,r2=i===0?r*.72:r*.84;
+    t+=`<line x1="${(px+Math.sin(g)*r2).toFixed(1)}" y1="${(py-Math.cos(g)*r2).toFixed(1)}" x2="${(px+Math.sin(g)*r1).toFixed(1)}" y2="${(py-Math.cos(g)*r1).toFixed(1)}" stroke="var(--muted)" stroke-width="${i===0?2:1.2}"/>`;}
+  return `<circle cx="${cx}" cy="${cy}" r="${r}" style="fill:var(--surface);stroke:var(--fg)" stroke-width="2"/>${t}`+
+   `<text class="sv-s" x="${px-r*.78}" y="${py-r*.05}" text-anchor="middle" style="font-size:${r*.5}px">−</text><text class="sv-s" x="${px+r*.78}" y="${py-r*.05}" text-anchor="middle" style="font-size:${r*.5}px">+</text>`+
+   `<line x1="${px}" y1="${py}" x2="${(px+Math.sin(a)*len).toFixed(1)}" y2="${(py-Math.cos(a)*len).toFixed(1)}" style="stroke:var(--bad)" stroke-width="2.4" stroke-linecap="round"/><circle cx="${px}" cy="${py}" r="3.5" style="fill:var(--fg)"/>`+
+   (label?`<text class="sv-s" x="${cx}" y="${cy+r+16}" text-anchor="middle">${label}</text>`:'');}
+
+/* =========================================================
+   MÒDUL 1 · conductor que es mou dins d'un camp
+   ========================================================= */
+const ind={mode:'osc',t:0,x:320,y:150,vUp:0,vx:0,k:1,last:0};
+const IY0=70,IY1=232;
+function indDraw(){
+  const e=clamp(ind.vUp/200,-1,1),s=ind;let h='';
+  h+=`<rect x="30" y="40" width="120" height="220" rx="8" class="sv-hot"/><text class="sv-pole tx-hot" x="90" y="164" text-anchor="middle">N</text>`;
+  h+=`<rect x="490" y="40" width="120" height="220" rx="8" class="sv-cold"/><text class="sv-pole tx-cold" x="550" y="164" text-anchor="middle">S</text>`;
+  for(let i=0;i<6;i++){const y=62+i*35;h+=`<line x1="152" y1="${y}" x2="488" y2="${y}" stroke="var(--muted)" stroke-width="1.2" stroke-dasharray="5 4"/>`+
+    `<polygon class="fl-neu" points="${arrowPts(205,y,222,y,2)}"/><polygon class="fl-neu" points="${arrowPts(420,y,437,y,2)}"/>`;}
+  h+=`<text class="sv-t" x="320" y="30" text-anchor="middle">Camp magnètic B (de N a S)</text>`;
+  // conductor
+  h+=`<circle cx="${s.x.toFixed(1)}" cy="${s.y.toFixed(1)}" r="19" style="fill:var(--surface);stroke:var(--fg)" stroke-width="2.5"/>`;
+  if(Math.abs(e)>0.03){const c='var(--work)';
+    if(e>0)h+=`<line x1="${s.x-9}" y1="${s.y-9}" x2="${s.x+9}" y2="${s.y+9}" style="stroke:${c}" stroke-width="3.5"/><line x1="${s.x-9}" y1="${s.y+9}" x2="${s.x+9}" y2="${s.y-9}" style="stroke:${c}" stroke-width="3.5"/>`;
+    else h+=`<circle cx="${s.x}" cy="${s.y}" r="6" style="fill:${c}"/>`;}
+  // velocitat
+  const vx=s.vx,vy=-s.vUp,vl=Math.hypot(vx,vy);
+  if(vl>4){const L=24+Math.min(46,vl*.32),ux=vx/vl,uy=vy/vl,x1=s.x+ux*24,y1=s.y+uy*24;
+    h+=`<polygon style="fill:var(--accent)" points="${arrowPts(x1,y1,x1+ux*L,y1+uy*L,5)}"/><text class="sv-m" style="fill:var(--accent);font-weight:600" x="${(x1+ux*L*.55+(Math.abs(uy)>.5?16:0)).toFixed(1)}" y="${(y1+uy*L*.55+(Math.abs(uy)>.5?5:-12)).toFixed(1)}" text-anchor="middle">v</text>`;}
+  h+=galv(320,300,26,e,'');
+  h+=`<text class="sv-s" x="360" y="296">Galvanòmetre</text><text class="sv-s" x="360" y="314">(connectat als extrems del conductor)</text>`;
+  $('ind-svg').innerHTML=h;
+  let m;
+  if(Math.abs(e)<=0.03)m=s.mode==='par'?'<span class="pill info">ε = 0</span> El conductor es mou, però paral·lel a les línies de camp: no en talla cap.':'<span class="pill info">ε = 0</span> '+(s.mode==='quiet'?'El conductor és quiet: no talla cap línia de camp.':'Ara el conductor s’atura un instant per canviar de sentit.');
+  else m='<span class="pill ok">ε ≠ 0</span> El conductor talla línies de camp. Corrent '+(e>0?'cap endins de la pantalla (⊗)':'cap enfora de la pantalla (⊙)')+'.';
+  $('ind-msg').innerHTML=m;
+}
+function indStep(dt){const s=ind,k=s.k;s.t+=dt;
+  if(s.mode==='quiet'){s.vUp=0;s.vx=0}
+  else if(s.mode==='up'||s.mode==='down'){const v=80*k*(s.mode==='up'?1:-1);s.vUp=v;s.vx=0;s.x=320;s.y-=v*dt;if(s.y<IY0)s.y=IY1;if(s.y>IY1)s.y=IY0;}
+  else if(s.mode==='osc'){const w=1.2*k;s.x=320;s.y=151-70*Math.sin(w*s.t);s.vUp=70*w*Math.cos(w*s.t);s.vx=0;}
+  else if(s.mode==='par'){const w=1.2*k;s.y=151;s.x=320+90*Math.sin(w*s.t);s.vx=90*w*Math.cos(w*s.t);s.vUp=0;}
+}
+function setInd(m){ind.mode=m;ind.t=0;if(m!=='up'&&m!=='down'){ind.y=151;ind.x=320}
+  document.querySelectorAll('[data-im]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.im===m));indStep(0);indDraw();}
+document.querySelectorAll('[data-im]').forEach(b=>b.addEventListener('click',()=>setInd(b.dataset.im)));
+$('ind-v').addEventListener('input',()=>{ind.k=+$('ind-v').value;$('ind-vo').textContent=ind.k<0.9?'lenta':ind.k<1.6?'mitjana':'ràpida';});
+setInd('osc');
+
+/* =========================================================
+   SIMULADOR DEL GENERADOR (projecció obliqua)
+   eix x: de N cap a S · eix y: amunt · eix z: eix de gir, cap a l'observador
+   ========================================================= */
+const KX=-0.5,KY=0.42,OX=330,OY=160,NX=0.643,NY=0.766;
+const P=(x,y,z)=>[OX+x+KX*z,OY-y+KY*z];
+const F=v=>v.toFixed(1);
+const ps=a=>a.map(p=>F(p[0])+','+F(p[1])).join(' ');
+const vis=a=>0.5*Math.cos(a)+0.42*Math.sin(a);
+const R=62,LZ=100,ZA=190,ZB=245,RR=20,ZC0=200,ZC1=240,RC=22,ZCM=220;
+const YB=370,YT=300,XR=600,XG=455;
+
+function prism(x0,x1,y0,y1,z0,z1,c){
+  const f=[P(x0,y0,z1),P(x1,y0,z1),P(x1,y1,z1),P(x0,y1,z1)],t=[P(x0,y1,z1),P(x1,y1,z1),P(x1,y1,z0),P(x0,y1,z0)],r=[P(x1,y0,z1),P(x1,y0,z0),P(x1,y1,z0),P(x1,y1,z1)];
+  const st=`style="fill:var(--${c}-soft);stroke:var(--${c})" stroke-width="1.5" stroke-linejoin="round"`;
+  return `<polygon points="${ps(r)}" ${st}/><polygon points="${ps(r)}" style="fill:var(--fg)" opacity=".07"/><polygon points="${ps(t)}" ${st}/><polygon points="${ps(t)}" style="fill:var(--surface)" opacity=".35"/><polygon points="${ps(f)}" ${st}/>`;}
+function cylinder(z0,z1,r,fill,stroke){const c0=P(0,0,z0),c1=P(0,0,z1);
+  const a=[c0[0]+NX*r,c0[1]+NY*r],b=[c1[0]+NX*r,c1[1]+NY*r],c=[c1[0]-NX*r,c1[1]-NY*r],d=[c0[0]-NX*r,c0[1]-NY*r];
+  return `<circle cx="${F(c0[0])}" cy="${F(c0[1])}" r="${r}" style="fill:${fill};stroke:${stroke}" stroke-width="1.4"/>`+
+   `<polygon points="${ps([a,b,c,d])}" style="fill:${fill}"/><line x1="${F(a[0])}" y1="${F(a[1])}" x2="${F(b[0])}" y2="${F(b[1])}" style="stroke:${stroke}" stroke-width="1.4"/><line x1="${F(c[0])}" y1="${F(c[1])}" x2="${F(d[0])}" y2="${F(d[1])}" style="stroke:${stroke}" stroke-width="1.4"/>`;}
+const pl=(pts,st,w,extra)=>`<polyline points="${ps(pts)}" style="fill:none;stroke:${st}" stroke-width="${w}" stroke-linejoin="round" stroke-linecap="round" ${extra||''}/>`;
+const lbl=(x,y,t,lx,ly,anchor)=>`<line class="leader" x1="${lx}" y1="${ly}" x2="${(x+(anchor==='end'?-1:1)*(t.length*7.6+5)).toFixed(1)}" y2="${y-5}"/><circle cx="${lx}" cy="${ly}" r="2.5" style="fill:var(--muted)"/><text class="sv-l" x="${x}" y="${y}" text-anchor="${anchor||'start'}">${t}</text>`;
+
+const PARTS={
+  inductor:['Inductor','Crea el camp magnètic. Aquí són els pols N i S d’un imant permanent; també pot ser un electroimant (mòdul 5). A la dinamo, l’inductor és fix: forma part de l’estator.'],
+  induit:['Induït','És la bobina on s’indueix la fem ε. Aquí n’hi ha una sola espira (costats a i b). A la dinamo, l’induït gira: és el rotor.'],
+  eix:['Eix i manovella','Per aquí entra l’energia mecànica. En lloc d’una manovella, pot ser una turbina, un motor o la roda d’una bicicleta.'],
+  col:['Col·lector','Gira solidari amb l’espira. Pot ser de dos anells (alternador) o d’un anell partit en delgues aïllades (dinamo). Canvia-ho amb el botó i compara.'],
+  esc:['Escombretes','Són fixes, normalment de grafit. Freguen el col·lector mentre gira i passen el corrent de l’espira al circuit exterior.'],
+  circuit:['Circuit exterior','La càrrega que aprofita l’energia elèctrica (la bombeta) i un galvanòmetre de zero central per veure el sentit del corrent.']};
+
+const sims=[];
+function makeSim(host,cfg){
+  const id=cfg.id,has=k=>cfg.controls.includes(k);
+  const s={th:PI/2,col:cfg.col||'anells',exc:'imant',iexc:1,N:1,speed:1,slow:false,play:!reduce,labels:!!cfg.labels,closed:true,t:0,buf:[],hl:null,pel:0,host};
+  let c='';
+  c+=`<div class="fig simfig"><div class="svgwrap"><svg id="${id}-m" viewBox="0 0 640 405" role="img" aria-label="Generador: espira que gira entre els pols d'un imant, amb col·lector, escombretes, bombeta i galvanòmetre"></svg></div>`;
+  c+=`<div class="gtitle"><b>Gràfica ε–t</b><span class="lg"><i></i>tensió a les escombretes</span><span class="lg"><i class="dash"></i>ε dins l'espira</span></div>`;
+  c+=`<svg id="${id}-g" viewBox="0 0 640 175" role="img" aria-label="Gràfica de la fem en funció del temps"></svg></div>`;
+  c+=`<div class="row">`;
+  c+=`<button class="btn primary" type="button" id="${id}-play"></button><button class="btn" type="button" id="${id}-step">Pas a pas (+45°)</button><button class="btn" type="button" id="${id}-slow" aria-pressed="false">Càmera lenta</button>`;
+  if(has('labels'))c+=`<button class="btn" type="button" id="${id}-lab" aria-pressed="${s.labels}">Noms de les parts</button>`;
+  c+=`</div><div class="controls"><label class="ctl" for="${id}-sp"><span>Velocitat de gir</span><input id="${id}-sp" type="range" min="0.5" max="2" step="0.25" value="1"><output id="${id}-spo"></output></label>`;
+  if(has('exc'))c+=`<label class="ctl" for="${id}-ie" id="${id}-iew" hidden><span>Corrent d'excitació</span><input id="${id}-ie" type="range" min="0" max="100" step="5" value="100"><output id="${id}-ieo">100 %</output></label>`;
+  c+=`</div><div class="segs">`;
+  if(has('col'))c+=`<div class="grp"><span>Col·lector</span><div class="seg" role="group" aria-label="Tipus de col·lector"><button type="button" data-v="anells" id="${id}-ca">Anells · alternador</button><button type="button" data-v="delgues" id="${id}-cd">Delgues · dinamo</button></div></div>`;
+  if(has('N'))c+=`<div class="grp"><span>Espires de l'induït</span><div class="seg" role="group" aria-label="Nombre d'espires"><button type="button" data-n="1">1</button><button type="button" data-n="2">2</button><button type="button" data-n="4">4</button></div></div>`;
+  if(has('exc'))c+=`<div class="grp"><span>Inductor</span><div class="seg" role="group" aria-label="Tipus d'inductor"><button type="button" data-e="imant">Imant permanent</button><button type="button" data-e="electro">Electroimant</button></div></div>`;
+  if(has('switch'))c+=`<div class="grp"><span>Interruptor</span><div class="seg" role="group" aria-label="Interruptor del circuit"><button type="button" data-sw="1">Tancat</button><button type="button" data-sw="0">Obert</button></div></div>`;
+  c+=`</div>`;
+  c+=`<div class="stats"><div class="stat"><div class="k">Angle de gir</div><div class="v" id="${id}-ang"></div></div><div class="stat"><div class="k">ε dins l'espira</div><div class="v" id="${id}-e"></div></div><div class="stat work"><div class="k">Corrent a la sortida</div><div class="v" id="${id}-o"></div></div>`;
+  c+=`<div class="stat"><div class="k" id="${id}-wk">Escombreta esquerra toca</div><div class="v" id="${id}-w"></div></div></div>`;
+  if(has('energy'))c+=`<div class="energy"><div class="erow"><span>Potència mecànica (manovella)</span><div class="etrack"><div class="e-mec" id="${id}-bm"></div></div><output id="${id}-em"></output></div>`+
+    `<div class="erow"><span>Potència elèctrica (bombeta)</span><div class="etrack"><div class="e-el" id="${id}-be"></div></div><output id="${id}-ee"></output></div>`+
+    `<div class="erow"><span>Pèrdues (fregaments)</span><div class="etrack"><div class="e-per" id="${id}-bp"></div></div><output id="${id}-ep"></output></div></div>`;
+  c+=`<p class="msg" id="${id}-msg"></p>`;
+  host.innerHTML=c;
+  const B=()=>s.exc==='imant'?1:s.iexc;
+  const amp=()=>B()*s.speed/2;
+  function outN(th){if(s.col==='anells')return Math.cos(th);let m=0;for(let k=0;k<s.N;k++)m=Math.max(m,Math.abs(Math.cos(th+k*PI/s.N)));return m;}
+  function activeK(){if(s.col==='anells')return 0;let best=0,m=-1;for(let k=0;k<s.N;k++){const v=Math.abs(Math.cos(s.th+k*PI/s.N));if(v>m+1e-9){m=v;best=k}}return best;}
+  function sample(){s.buf.push({t:s.t,e:amp()*Math.cos(s.th),v:amp()*outN(s.th)});while(s.buf.length&&s.t-s.buf[0].t>4.2)s.buf.shift();}
+
+  function drawMachine(){
+    const th=s.th,b=B(),A=amp(),N=s.col==='anells'?1:s.N,ak=activeK(),out=A*outN(th),I=s.closed?out:0;
+    const part=(p,inner)=>`<g data-part="${p}" class="${s.hl===p?'on':''}">${inner}</g>`;
+    let ind='',h='';
+    // camp + pols
+    let fld='';
+    if(b>0.02)for(const y of [-36,-12,12,36])for(const z of [-30,30]){const a=P(-100,y,z),e=P(100,y,z),m=P(-5,y,z),m2=P(14,y,z);
+      fld+=`<line x1="${F(a[0])}" y1="${F(a[1])}" x2="${F(e[0])}" y2="${F(e[1])}" stroke="var(--muted)" stroke-width="1.1" stroke-dasharray="5 4" opacity="${(0.35+0.65*b).toFixed(2)}"/><polygon class="fl-neu" opacity="${(0.35+0.65*b).toFixed(2)}" points="${arrowPts(m[0],m[1],m2[0],m2[1],2)}"/>`;}
+    const nOn=b>0.02;
+    ind+=prism(-185,-100,-55,55,-60,60,nOn?'hot':'mut');
+    ind+=fld;
+    ind+=prism(100,185,-55,55,-60,60,nOn?'cold':'mut');
+    const fn=P(-142,0,60),fs=P(142,0,60);
+    ind+=`<text class="sv-pole ${nOn?'tx-hot':''}" style="${nOn?'':'fill:var(--muted)'}" x="${F(fn[0])}" y="${F(fn[1]+14)}" text-anchor="middle">N</text><text class="sv-pole ${nOn?'tx-cold':''}" style="${nOn?'':'fill:var(--muted)'}" x="${F(fs[0])}" y="${F(fs[1]+14)}" text-anchor="middle">S</text>`;
+    if(s.exc==='electro'){
+      const wc=nOn?'var(--cu)':'var(--muted)';
+      for(const [xa,xb] of [[-178,-118],[118,178]])for(let x=xa;x<=xb;x+=12){ind+=pl([P(x,-55,60),P(x,55,60),P(x,55,-60)],wc,2.6);}
+      const n1=P(-150,55,-60),s1=P(150,55,-60),yb=18,on=s.iexc>0.02;
+      ind+=pl([n1,[n1[0],yb],[302,yb]],'var(--fg)',1.6)+pl([s1,[s1[0],yb],[358,yb]],'var(--fg)',1.6);
+      ind+=`<line x1="302" y1="${yb-13}" x2="302" y2="${yb+13}" style="stroke:var(--fg)" stroke-width="2.4"/><line x1="312" y1="${yb-7}" x2="312" y2="${yb+7}" style="stroke:var(--fg)" stroke-width="4"/>`+
+        `<line x1="312" y1="${yb}" x2="330" y2="${yb}" style="stroke:var(--fg)" stroke-width="1.6"/>`+
+        (on?`<line x1="330" y1="${yb}" x2="358" y2="${yb}" style="stroke:var(--fg)" stroke-width="1.6"/>`:`<line x1="330" y1="${yb}" x2="354" y2="${yb-12}" style="stroke:var(--fg)" stroke-width="1.8"/><line x1="356" y1="${yb}" x2="358" y2="${yb}" style="stroke:var(--fg)" stroke-width="1.6"/>`)+
+        `<text class="sv-s" x="372" y="${yb+5}">Excitació ${on?'(Iexc = '+Math.round(s.iexc*100)+' %)':'tallada'}</text>`;
+    }
+    h+=part('inductor',ind);
+    // manovella i eix
+    const ck=P(0,0,-172),ce=P(38*Math.cos(th),38*Math.sin(th),-172),ch=P(38*Math.cos(th),38*Math.sin(th),-197);
+    let eix=pl([P(0,0,-200),P(0,0,ZB+12)],'var(--muted)',8)+pl([P(0,0,-200),P(0,0,ZB+12)],'var(--surface)',2);
+    let arc=[];for(let a=25;a<=150;a+=5){const r=P(52*Math.cos(a*PI/180),52*Math.sin(a*PI/180),-172);arc.push(r)}
+    const a1=arc[arc.length-2],a2=arc[arc.length-1];
+    let crank=pl(arc,'var(--accent)',2.5)+`<polygon style="fill:var(--accent)" points="${arrowPts(a1[0],a1[1],a2[0]+(a2[0]-a1[0])*2,a2[1]+(a2[1]-a1[1])*2,3)}"/>`;
+    crank+=pl([ck,ce],'var(--accent)',7)+pl([ce,ch],'var(--accent)',9)+`<circle cx="${F(ck[0])}" cy="${F(ck[1])}" r="7" style="fill:var(--accent)"/>`;
+    // espires
+    let back='',front='',leads='';
+    for(let k=0;k<N;k++){
+      const t=th+k*PI/N,ca=Math.cos(t),sa=Math.sin(t),act=k===ak,op=act?1:.3,w=act?5:3;
+      const a0=P(R*ca,R*sa,-LZ),a1_=P(R*ca,R*sa,LZ),b0=P(-R*ca,-R*sa,-LZ),b1=P(-R*ca,-R*sa,LZ);
+      const sideA=`<g opacity="${op}">${pl([a0,a1_],'var(--sa)',w)}</g>`,sideB=`<g opacity="${op}">${pl([b0,b1],'var(--sb)',w)}</g>`;
+      back+=`<g opacity="${op}">${pl([a0,b0],'var(--cu)',act?3.5:2.5)}</g>`;
+      if(vis(t)<0)back+=sideA;else front+=sideA;
+      if(vis(t+PI)<0)back+=sideB;else front+=sideB;
+      if(act){const e=Math.cos(t)*A;
+        if(Math.abs(e)>0.03&&s.closed){const sg=Math.sign(e),wa=3+Math.min(5,Math.abs(e)*6);
+          const pa1=P(R*ca,R*sa,22*sg),pa2=P(R*ca,R*sa,-22*sg),pb1=P(-R*ca,-R*sa,-22*sg),pb2=P(-R*ca,-R*sa,22*sg);
+          front+=`<polygon class="fl-work" points="${arrowPts(pa1[0],pa1[1],pa2[0],pa2[1],wa)}"/><polygon class="fl-work" points="${arrowPts(pb1[0],pb1[1],pb2[0],pb2[1],wa)}"/>`;}
+        const la=P(R*ca*1.18,R*sa*1.18,LZ*.55),lb=P(-R*ca*1.18,-R*sa*1.18,LZ*.55);
+        front+=`<text class="sv-t" style="fill:var(--sa)" x="${F(la[0])}" y="${F(la[1]+5)}" text-anchor="middle">a</text><text class="sv-t" style="fill:var(--sb)" x="${F(lb[0])}" y="${F(lb[1]+5)}" text-anchor="middle">b</text>`;}
+      // connexions al col·lector
+      if(s.col==='anells'){
+        leads+=pl([a1_,P(10*ca,10*sa,LZ+8),P(10*ca,10*sa,ZA-6)],'var(--sa)',2.4)+pl([b1,P(-10*ca,-10*sa,LZ+8),P(-10*ca,-10*sa,ZB-6)],'var(--sb)',2.4);
+      }else{
+        leads+=`<g opacity="${op}">`+pl([a1_,P(12*ca,12*sa,LZ+14),P(RC*ca,RC*sa,ZC0)],'var(--sa)',act?2.4:1.6)+pl([b1,P(-12*ca,-12*sa,LZ+14),P(-RC*ca,-RC*sa,ZC0)],'var(--sb)',act?2.4:1.6)+`</g>`;
+      }
+    }
+    h+=part('eix',crank);
+    h+=part('induit',back);
+    h+=part('eix',eix);
+    h+=part('induit',front+leads);
+    // col·lector i escombretes
+    let col='',esc='',tb,tt;
+    if(s.col==='anells'){
+      col+=cylinder(ZA-7,ZA+7,RR,'var(--sa-soft)','var(--sa)');const fa=P(0,0,ZA+7);col+=`<circle cx="${F(fa[0])}" cy="${F(fa[1])}" r="${RR}" style="fill:var(--sa-soft);stroke:var(--sa)" stroke-width="1.6"/><circle cx="${F(fa[0])}" cy="${F(fa[1])}" r="7" style="fill:var(--muted)"/>`;
+      col+=pl([P(0,0,ZA+7),P(0,0,ZB-7)],'var(--muted)',8);
+      col+=cylinder(ZB-7,ZB+7,RR,'var(--sb-soft)','var(--sb)');const fb=P(0,0,ZB+7);col+=`<circle cx="${F(fb[0])}" cy="${F(fb[1])}" r="${RR}" style="fill:var(--sb-soft);stroke:var(--sb)" stroke-width="1.6"/><circle cx="${F(fb[0])}" cy="${F(fb[1])}" r="7" style="fill:var(--muted)"/>`;
+      const ka=P(0,-RR,ZA),kb=P(0,-RR,ZB);
+      esc+=`<rect x="${F(ka[0]-6)}" y="${F(ka[1])}" width="12" height="16" rx="2" style="fill:var(--gr)"/><rect x="${F(kb[0]-6)}" y="${F(kb[1])}" width="12" height="16" rx="2" style="fill:var(--gr)"/>`;
+      tt=[[ka[0],ka[1]+16],[ka[0],YT]];tb=[[kb[0],kb[1]+16],[kb[0],YB]];
+    }else{
+      const n=2*N,hw=PI/n,g=0.07,phi0=Math.atan2(0.42,0.5);
+      col+=cylinder(ZC0,ZC1,RC,'var(--surface)','var(--muted)');
+      const c1=P(0,0,ZC1);col+=`<circle cx="${F(c1[0])}" cy="${F(c1[1])}" r="${RC}" style="fill:var(--muted)"/>`;
+      let surf='',face='';
+      for(let m=0;m<n;m++){const k=m%N,side=m<N?'a':'b',ctr=th+k*PI/N+(side==='b'?PI:0),act=k===ak;
+        const fill=act?`var(--s${side}-soft)`:'var(--bg)',st=act?`var(--s${side})`:'var(--muted)';
+        let fr=[],bk=[];for(let i=0;i<=14;i++){const a=ctr-hw+g+(2*hw-2*g)*i/14;if(Math.cos(a-phi0)>0.02){fr.push(P(RC*Math.cos(a),RC*Math.sin(a),ZC1));bk.push(P(RC*Math.cos(a),RC*Math.sin(a),ZC0))}}
+        if(fr.length>1)surf+=`<polygon points="${ps(fr.concat(bk.reverse()))}" style="fill:${fill};stroke:${st}" stroke-width="1.3" stroke-linejoin="round"/>`;
+        let sec=[c1];for(let i=0;i<=10;i++){const a=ctr-hw+g+(2*hw-2*g)*i/10;sec.push(P((RC-1)*Math.cos(a),(RC-1)*Math.sin(a),ZC1))}
+        face+=`<polygon points="${ps(sec)}" style="fill:${fill};stroke:${st}" stroke-width="1.2" stroke-linejoin="round"/>`;}
+      col+=surf+face+`<circle cx="${F(c1[0])}" cy="${F(c1[1])}" r="6" style="fill:var(--muted)"/>`;
+      const kl=P(-RC,0,ZCM),kr=P(RC,0,ZCM);
+      esc+=`<rect x="${F(kl[0]-20)}" y="${F(kl[1]-7)}" width="20" height="14" rx="2" style="fill:var(--gr)"/><rect x="${F(kr[0])}" y="${F(kr[1]-7)}" width="20" height="14" rx="2" style="fill:var(--gr)"/>`;
+      tb=[[kl[0]-20,kl[1]],[kl[0]-30,kl[1]],[kl[0]-30,YB]];tt=[[kr[0]+20,kr[1]],[kr[0]+30,kr[1]],[kr[0]+30,YT]];
+    }
+    h+=part('col',col);h+=part('esc',esc);
+    // circuit exterior
+    const glow=Math.min(1,Math.abs(I)*1.6);let cir='';
+    const wire='var(--fg)';
+    cir+=pl(tb.concat([[XR,YB],[XR,348]]),wire,2)+pl([[XR,322],[XR,YT]].concat([[tt[tt.length-1][0],YT]]).concat(tt.slice().reverse()),wire,2);
+    cir+=s.closed?pl([[XR,348],[XR,322]],wire,2):`<line x1="${XR}" y1="348" x2="${XR-16}" y2="326" style="stroke:${wire}" stroke-width="2.2"/>`;
+    cir+=`<circle cx="${XR}" cy="348" r="3" style="fill:${wire}"/><circle cx="${XR}" cy="322" r="3" style="fill:${wire}"/><text class="sv-s" x="${XR-10}" y="338" text-anchor="end">${s.closed?'Interruptor tancat':'Interruptor obert'}</text>`;
+    cir+=`<circle cx="${XG}" cy="${YT}" r="30" style="fill:var(--work)" opacity="${(glow*.35).toFixed(2)}"/><circle cx="${XG}" cy="${YT}" r="13" style="fill:var(--surface);stroke:var(--fg)" stroke-width="2"/><circle cx="${XG}" cy="${YT}" r="13" style="fill:var(--work)" opacity="${(glow*.85).toFixed(2)}"/>`+
+      `<path d="M${XG-6} ${YT+4} l3 -8 l3 8 l3 -8 l3 8" style="fill:none;stroke:var(--fg)" stroke-width="1.4"/><text class="sv-s" x="${XG}" y="${YT-36}" text-anchor="middle">Bombeta</text>`;
+    cir+=galv(XG,YB,22,I,'');cir+=`<text class="sv-s" x="${XG-30}" y="${YB-14}" text-anchor="end">Galvanòmetre</text>`;
+    if(Math.abs(I)>0.03){const sg=Math.sign(I),w=3+Math.min(5,Math.abs(I)*6);
+      for(const x of [345,545])cir+=`<polygon class="fl-work" points="${arrowPts(x-13*sg,YB,x+13*sg,YB,w)}"/>`;
+      cir+=`<polygon class="fl-work" points="${arrowPts(375+13*sg,YT,375-13*sg,YT,w)}"/>`;
+      cir+=`<polygon class="fl-work" points="${arrowPts(XR,YB-28+13*sg,XR,YB-28-13*sg,w)}"/>`;}
+    h+=part('circuit',cir);
+    // noms
+    if(s.labels){let l='';
+      l+=lbl(12,72,'Inductor',P(-150,55,0)[0],P(-150,55,0)[1]);
+      l+=lbl(250,40,'Induït',P(0,0,-LZ)[0],P(0,0,-LZ)[1]);
+      l+=lbl(632,52,'Manovella',P(0,0,-172)[0]+8,P(0,0,-172)[1]-4,'end');
+      l+=`<text class="sv-s" style="fill:var(--accent)" x="632" y="70" text-anchor="end">energia mecànica</text>`;
+      const cp=s.col==='anells'?P(0,RR,ZA):P(0,RC,ZCM);
+      l+=lbl(12,298,s.col==='anells'?'Anells col·lectors':'Delgues',cp[0]-6,cp[1]+4);
+      const ep=s.col==='anells'?P(0,-RR-10,ZB):P(-RC-14,0,ZCM);
+      l+=lbl(12,330,'Escombretes',ep[0]-6,ep[1]+4);
+      h+=`<g>${l}</g>`;}
+    $(id+'-m').innerHTML=`<g class="${s.hl?'hlmode':''}">${h}</g>`;
+    return {out,I,ak};
+  }
+  function drawGraph(){
+    const X0=46,X1=626,Y0=86,AMP=72,W=4;let g='';
+    g+=`<line x1="${X0}" y1="${Y0}" x2="${X1}" y2="${Y0}" stroke="var(--muted)" stroke-width="1"/><line x1="${X0}" y1="${Y0-AMP-6}" x2="${X0}" y2="${Y0+AMP+6}" stroke="var(--muted)" stroke-width="1"/>`;
+    g+=`<line x1="${X0}" y1="${Y0-AMP}" x2="${X1}" y2="${Y0-AMP}" stroke="var(--line)" stroke-dasharray="3 4"/><line x1="${X0}" y1="${Y0+AMP}" x2="${X1}" y2="${Y0+AMP}" stroke="var(--line)" stroke-dasharray="3 4"/>`;
+    g+=`<text class="sv-m" x="${X0-8}" y="${Y0+4}" text-anchor="end">0</text><text class="sv-m" x="${X0-8}" y="${Y0-AMP+12}" text-anchor="end">+</text><text class="sv-m" x="${X0-8}" y="${Y0+AMP-2}" text-anchor="end">−</text><text class="sv-m" x="${X1}" y="${Y0+18}" text-anchor="end">t</text><text class="sv-m" x="${X0+6}" y="${Y0-AMP-8+18}" style="fill:var(--muted)">ε</text>`;
+    const xs=b=>X1-(s.t-b.t)/W*(X1-X0);
+    if(s.buf.length>1){let pe='',pv='';s.buf.forEach((b,i)=>{const x=xs(b);if(x<X0)return;pe+=(pe?'L':'M')+F(x)+' '+F(Y0-b.e*AMP);pv+=(pv?'L':'M')+F(x)+' '+F(Y0-b.v*AMP)});
+      g+=`<path d="${pe}" style="fill:none;stroke:var(--muted)" stroke-width="1.6" stroke-dasharray="5 4"/><path d="${pv}" style="fill:none;stroke:var(--work)" stroke-width="3" stroke-linejoin="round"/>`;
+      const lb=s.buf[s.buf.length-1];g+=`<circle cx="${X1}" cy="${F(Y0-lb.v*AMP)}" r="4.5" style="fill:var(--work)"/>`;}
+    $(id+'-g').innerHTML=g;
+  }
+  function render(){
+    const r=drawMachine();drawGraph();
+    const deg=((s.th*180/PI)%360+360)%360,e=Math.cos(s.th),A=amp();
+    $(id+'-ang').textContent=fmt(Math.round(deg/5)*5%360,0)+'°';
+    $(id+'-e').textContent=A<0.01||Math.abs(e)<0.06?'0':(e>0?'positiva':'negativa');
+    $(id+'-o').textContent=!s.closed?'Circuit obert':(Math.abs(r.I)<0.01?'0':(s.col==='anells'?(r.I>0?'→ un sentit':'← sentit contrari'):'→ sempre igual'));
+    if(s.col==='anells'){$(id+'-wk').textContent='Cada escombreta toca';$(id+'-w').innerHTML='<span class="chipx chipa">anell a</span> <span class="chipx chipb">anell b</span>';}
+    else{const k=r.ak,t=s.th+k*PI/s.N,side=Math.cos(t)<0?'a':'b';$(id+'-wk').textContent='Escombreta esquerra (+) toca';
+      $(id+'-w').innerHTML=`<span class="chipx chip${side}">delga ${side}${s.N>1?' · espira '+(k+1):''}</span>`;}
+    let m='';
+    if(A<0.01)m='<span class="pill bad">Sense camp</span> L’inductor no crea camp magnètic: encara que l’espira giri, no s’indueix cap fem.';
+    else if(Math.abs(e)<0.08&&s.N===1)m=s.col==='delgues'?'<span class="pill info">ε = 0</span> L’espira és perpendicular al camp. Ara mateix les escombretes canvien de delga.':'<span class="pill info">ε = 0</span> L’espira és perpendicular al camp: els costats no tallen línies. A partir d’ara, ε canvia de sentit.';
+    else if(Math.abs(e)>0.97&&s.N===1)m='<span class="pill ok">ε màxima</span> L’espira és paral·lela al camp: els costats tallen les línies de ple.';
+    $(id+'-msg').innerHTML=m;
+    if(has('energy')){const pm=s.pel+0.05*s.speed,mx=1.1,set=(k,v)=>$(id+'-b'+k).style.width=Math.min(100,v/mx*100).toFixed(1)+'%';
+      set('m',pm);set('e',s.pel);set('p',0.05*s.speed);
+      const q=v=>v<0.02?'nul·la':v<0.15?'baixa':v<0.45?'mitjana':'alta';
+      $(id+'-em').textContent=pm<0.15?'Lleuger':pm<0.45?'Moderat':'Gran';$(id+'-ee').textContent=q(s.pel);$(id+'-ep').textContent=q(0.05*s.speed);}
+  }
+  function syncUI(){
+    $(id+'-play').textContent=s.play?'⏸ Atura':'▶ Engega';
+    $(id+'-slow').setAttribute('aria-pressed',s.slow);
+    $(id+'-spo').textContent=fmt(s.speed,2)+' v/s';
+    if(has('labels'))$(id+'-lab').setAttribute('aria-pressed',s.labels);
+    host.querySelectorAll('[data-v]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===s.col));
+    host.querySelectorAll('[data-n]').forEach(b=>{b.setAttribute('aria-pressed',+b.dataset.n===s.N);b.disabled=s.col==='anells'&&+b.dataset.n>1;});
+    host.querySelectorAll('[data-e]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.e===s.exc));
+    host.querySelectorAll('[data-sw]').forEach(b=>b.setAttribute('aria-pressed',(b.dataset.sw==='1')===s.closed));
+    if(has('exc')){$(id+'-iew').hidden=s.exc!=='electro';$(id+'-ieo').textContent=Math.round(s.iexc*100)+' %';}
+  }
+  function advance(dSim){s.th+=TAU*s.speed*dSim;s.t+=dSim;if(s.th>TAU*1000)s.th-=TAU*1000;}
+  s.tick=dt=>{if(s.play){const d=dt*(s.slow?0.2:1);const nSub=Math.max(1,Math.ceil(d/0.008));for(let i=0;i<nSub;i++){advance(d/nSub);sample()}}
+    const I=s.closed?amp()*outN(s.th):0;s.pel+=(I*I-s.pel)*Math.min(1,dt*2.5);render();};
+  $(id+'-play').addEventListener('click',()=>{s.play=!s.play;syncUI();render()});
+  $(id+'-step').addEventListener('click',()=>{s.play=false;const tot=(PI/4)/(TAU*s.speed);for(let i=0;i<24;i++){advance(tot/24);sample()}
+    s.th=Math.round(s.th/(PI/4))*(PI/4);syncUI();render()});
+  $(id+'-slow').addEventListener('click',()=>{s.slow=!s.slow;syncUI()});
+  $(id+'-sp').addEventListener('input',e=>{s.speed=+e.target.value;syncUI();render()});
+  if(has('labels'))$(id+'-lab').addEventListener('click',()=>{s.labels=!s.labels;syncUI();render()});
+  host.querySelectorAll('[data-v]').forEach(b=>b.addEventListener('click',()=>{s.col=b.dataset.v;if(s.col==='anells')s.N=1;syncUI();render()}));
+  host.querySelectorAll('[data-n]').forEach(b=>b.addEventListener('click',()=>{if(b.disabled)return;s.N=+b.dataset.n;syncUI();render()}));
+  host.querySelectorAll('[data-e]').forEach(b=>b.addEventListener('click',()=>{s.exc=b.dataset.e;syncUI();render()}));
+  host.querySelectorAll('[data-sw]').forEach(b=>b.addEventListener('click',()=>{s.closed=b.dataset.sw==='1';syncUI();render()}));
+  if(has('exc'))$(id+'-ie').addEventListener('input',e=>{s.iexc=+e.target.value/100;syncUI();render()});
+  s.setHL=p=>{s.hl=p||null;render()};
+  for(let i=0;i<60;i++){advance(1/60*0.5);sample()}
+  syncUI();render();sims.push(s);return s;
+}
+
+makeSim($('sim-parts'),{id:'sp',col:'delgues',labels:true,controls:['labels','col']});
+makeSim($('sim-alt'),{id:'sa',col:'anells',labels:true,controls:['labels']});
+makeSim($('sim-din'),{id:'sd',col:'delgues',labels:true,controls:['labels','col']});
+makeSim($('sim-real'),{id:'sr',col:'delgues',controls:['labels','N','exc']});
+makeSim($('sim-full'),{id:'sf',col:'delgues',controls:['labels','col','N','exc','switch','energy']});
+
+/* parts: ressaltar */
+const sp=sims[0];
+document.querySelectorAll('[data-part-btn]').forEach(b=>b.addEventListener('click',()=>{const p=b.dataset.partBtn;sp.setHL(p);
+  document.querySelectorAll('[data-part-btn]').forEach(x=>x.setAttribute('aria-pressed',x===b&&p!==''));
+  $('part-box').innerHTML=p?`<h4>${PARTS[p][0]}</h4><p style="margin:0">${PARTS[p][1]}</p>`:'<strong>Totes les parts.</strong> Tria una part per ressaltar-la al dibuix.';}));
+
+/* bucle d'animació: només s'anima el que es veu */
+let last=performance.now();
+function loop(now){const dt=Math.min(0.05,(now-last)/1000);last=now;
+  if(visible($('ind-svg'))&&!reduce){indStep(dt);indDraw()}
+  sims.forEach(s=>{if(visible(s.host))s.tick(dt)});
+  requestAnimationFrame(loop);}
+requestAnimationFrame(loop);
+
+/* ---------- quiz ---------- */
+const Q=[
+ ['Quina transformació d’energia fa un generador?',['Elèctrica en mecànica','Mecànica en elèctrica','Química en elèctrica','Tèrmica en mecànica'],1,'El generador rep energia mecànica (gir de l’eix) i la transforma en energia elèctrica gràcies a la inducció.'],
+ ['Quan s’indueix una fem en un conductor dins d’un camp magnètic?',['Sempre que hi ha un imant a prop','Quan el conductor és quiet','Quan el conductor es mou tallant les línies de camp','Quan es mou paral·lel a les línies de camp'],2,'Cal que el conductor talli línies de camp. Quiet o movent-se paral·lel al camp, ε = 0.'],
+ ['Quina part del generador crea el camp magnètic?',['L’induït','L’inductor','Les escombretes','El col·lector'],1,'L’inductor crea el camp (imant permanent o electroimant). L’induït és on s’indueix la fem.'],
+ ['En quina posició de l’espira la fem és màxima?',['Quan el pla de l’espira és perpendicular al camp','Quan el pla de l’espira és paral·lel al camp','Sempre és igual','Quan l’espira s’atura'],1,'Amb l’espira paral·lela al camp, els costats es mouen perpendiculars a les línies i les tallen de ple.'],
+ ['Cada quant canvia de sentit la fem dins d’una espira que gira?',['Cada volta','Cada mitja volta','Cada quart de volta','Mai'],1,'Cada mitja volta, el costat que pujava passa a baixar i ε s’inverteix.'],
+ ['Una espira gira amb dos anells col·lectors. Quin corrent arriba al circuit exterior?',['Continu','Altern','Cap','Continu i constant'],1,'Cada costat va sempre al mateix anell i a la mateixa escombreta: el corrent exterior canvia de sentit com dins l’espira. És un alternador.'],
+ ['Quina peça converteix la CA de l’espira en CC a la sortida de la dinamo?',['L’inductor','Les escombretes de grafit','El col·lector de delgues','La manovella'],2,'Les delgues intercanvien la connexió de l’espira amb les escombretes cada mitja volta.'],
+ ['En una dinamo, quan passen les escombretes d’una delga a l’altra?',['Quan ε és màxima','Quan ε = 0','A l’atzar','Només quan s’atura'],1,'El canvi es fa just quan ε = 0, amb l’espira perpendicular al camp. Així el sentit a la sortida no canvia mai.'],
+ ['Per què les dinamos reals tenen moltes espires i moltes delgues?',['Per girar més ràpid','Perquè la CC sigui més constant (menys polsant)','Per obtenir corrent altern','Per no necessitar escombretes'],1,'Les escombretes connecten sempre amb l’espira que té més ε, i la tensió ja no baixa fins a zero.'],
+ ['L’inductor és un electroimant. Què passa si reduïm el corrent d’excitació?',['ε augmenta','ε disminueix','ε no canvia','Passa a donar CA'],1,'Menys corrent d’excitació vol dir un camp més feble, i per tant menys fem. Si el tallem, ε = 0.'],
+ ['Per què costa més girar la manovella quan la bombeta està encesa?',['Perquè l’espira s’escalfa i pesa més','Pel corrent induït, que s’oposa al gir (llei de Lenz)','Perquè les escombretes es claven','No costa més'],1,'El corrent que circula per l’espira dins del camp rep forces contràries al gir. Aquest esforç extra és l’energia que obtenim.']];
+const ans=new Array(Q.length).fill(null);
+function renderQ(){$('quiz').innerHTML=Q.map((q,i)=>'<div class="q" id="q'+i+'"><h4>'+(i+1)+'. '+q[0]+'</h4>'+q[1].map((o,j)=>'<label for="q'+i+'o'+j+'"><input type="radio" name="q'+i+'" id="q'+i+'o'+j+'" value="'+j+'"> <span>'+o+'</span></label>').join('')+
+  '<div class="row" style="margin-top:8px"><button class="btn" type="button" data-check="'+i+'">Comprova</button><span class="err" id="q'+i+'e"></span></div><div class="fb" id="q'+i+'f"></div></div>').join('');
+  document.querySelectorAll('[data-check]').forEach(b=>b.addEventListener('click',()=>check(+b.dataset.check)));
+  document.querySelectorAll('.q input').forEach(r=>r.addEventListener('change',()=>{$('q'+r.name.slice(1)+'e').textContent=''}));ans.fill(null);score();}
+function check(i){const sel=document.querySelector('input[name="q'+i+'"]:checked');if(!sel){$('q'+i+'e').textContent='Tria una resposta primer';return}
+  const v=+sel.value,ok=v===Q[i][2];ans[i]=ok;document.querySelectorAll('#q'+i+' label').forEach((l,j)=>{l.classList.remove('right','wrong');if(j===Q[i][2])l.classList.add('right');else if(j===v)l.classList.add('wrong')});
+  $('q'+i+'f').innerHTML=(ok?'<span class="pill ok">Correcte</span> ':'<span class="pill bad">No és aquesta</span> ')+Q[i][3];score();}
+function score(){$('q-score').textContent=ans.filter(a=>a===true).length+' de '+Q.length+' correctes'}
+$('q-reset').addEventListener('click',renderQ);renderQ();
+
+show((location.hash||'').slice(1),false);
+})();
+</script>
+
+<script>
+(function(){
+  var emb=false;try{emb=window.self!==window.top}catch(e){emb=true}
+  if(emb)document.body.classList.add('embed');
+  var d=document,root=d.documentElement;
+  if(d.fullscreenEnabled&&root.requestFullscreen){
+    var b=d.createElement('button');b.type='button';b.className='btn';b.id='fs-btn';b.textContent='⛶ Pantalla completa';
+    b.addEventListener('click',function(){if(d.fullscreenElement){d.exitFullscreen().catch(function(){})}else{root.requestFullscreen().catch(function(){})}});
+    d.addEventListener('fullscreenchange',function(){b.textContent=d.fullscreenElement?'✕ Surt de pantalla completa':'⛶ Pantalla completa'});
+    var seg=d.querySelector('.top .seg');if(seg)seg.parentNode.insertBefore(b,seg);
+  }else if(emb){
+    var a=d.createElement('a');a.className='btn';a.href='https://tecnolyd.github.io/artefactes/generador-dinamo.html';a.target='_blank';a.rel='noopener';a.textContent='⛶ Obre a pantalla completa';
+    var seg2=d.querySelector('.top .seg');if(seg2)seg2.parentNode.insertBefore(a,seg2);
+  }
+  var br=d.querySelector('.brand');if(br){var v=d.createElement('span');v.className='ver';v.textContent='v1';br.appendChild(v);}
+})();
+</script>
+
+</html>
