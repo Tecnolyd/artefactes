@@ -1,0 +1,597 @@
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>[hidden]{display:none!important}body{margin:0}</style>
+<title>Regles de la mà</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+<style>
+/* Layout: quadern d'enginyeria — barra lateral de mòduls + pàgina central; calent (Th) i fred (Tc) codificats en color a tot arreu */
+:root{
+  --bg:#f3f5f8; --surface:#ffffff; --fg:#18202b; --muted:#566273; --line:#d6dce4;
+  --accent:#23395d; --accent-soft:#e3e9f3;
+  --hot:#bf4329; --hot-soft:#f8e2db; --cold:#2a66a8; --cold-soft:#dde9f6;
+  --work:#a46f12; --work-soft:#f6ead0; --ok:#2c7a4b; --ok-soft:#dcefe3; --bad:#b0291c; --bad-soft:#f8dedb;
+  --f-display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --f-body:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#11151b; --surface:#191f27; --fg:#e5e9ef; --muted:#9aa5b4; --line:#2b3440;
+  --accent:#a9c1e6; --accent-soft:#1f2b3d;
+  --hot:#f08a6f; --hot-soft:#3b211b; --cold:#72a9e8; --cold-soft:#18283b;
+  --work:#e3b450; --work-soft:#382c13; --ok:#6cc690; --ok-soft:#17301f; --bad:#f08478; --bad-soft:#3a1c19;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#11151b; --surface:#191f27; --fg:#e5e9ef; --muted:#9aa5b4; --line:#2b3440;
+  --accent:#a9c1e6; --accent-soft:#1f2b3d;
+  --hot:#f08a6f; --hot-soft:#3b211b; --cold:#72a9e8; --cold-soft:#18283b;
+  --work:#e3b450; --work-soft:#382c13; --ok:#6cc690; --ok-soft:#17301f; --bad:#f08478; --bad-soft:#3a1c19;
+  color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:17px;line-height:1.6}
+body.classe{font-size:20px}
+body.classe .est{display:none!important}
+h1,h2,h3,.ui{font-family:var(--f-display)}
+h2{font-size:2.2em;line-height:1.05;margin:.1em 0 .35em;font-weight:700;text-wrap:balance;letter-spacing:.005em}
+h3{font-size:1.35em;margin:1.6em 0 .4em;font-weight:600;text-wrap:balance}
+p{margin:.6em 0}
+.mono,.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line);padding:10px 16px;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.brand{font-family:var(--f-display);font-weight:700;font-size:1.3rem;letter-spacing:.02em}
+.brand span{color:var(--hot)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.seg button{font-family:var(--f-display);font-size:1rem;font-weight:600;border:0;background:transparent;color:var(--muted);padding:6px 16px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--surface)}
+.shell{display:grid;grid-template-columns:230px minmax(0,1fr);gap:28px;max-width:1240px;margin:0 auto;padding-inline:16px;padding-block:24px 48px}
+.side{position:sticky;top:76px;align-self:start;display:flex;flex-direction:column;gap:2px}
+.side button{display:flex;gap:10px;align-items:baseline;text-align:left;font-family:var(--f-display);font-size:1.08rem;font-weight:500;color:var(--muted);background:none;border:0;border-radius:8px;padding:8px 10px;cursor:pointer}
+.side button b{font-family:var(--f-mono);font-size:.8rem;font-weight:500;color:var(--muted);min-width:1.4em}
+.side button:hover{background:var(--accent-soft);color:var(--fg)}
+.side button[aria-current="true"]{background:var(--accent-soft);color:var(--fg);font-weight:700}
+.side button[aria-current="true"] b{color:var(--hot)}
+main{min-width:0;max-width:900px}
+body.classe main{max-width:1180px}
+.eyebrow{font-family:var(--f-display);text-transform:uppercase;letter-spacing:.12em;font-size:.85rem;color:var(--hot);font-weight:600;margin:0}
+.lead{font-size:1.12em;color:var(--fg);max-width:65ch}
+.est p,.est li{max-width:68ch}
+.fig{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;margin:18px 0}
+.fig svg{display:block;width:100%;height:auto}
+.svgwrap{overflow-x:auto}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.controls{display:grid;gap:10px;margin-top:12px}
+.ctl{display:grid;grid-template-columns:minmax(120px,190px) minmax(0,1fr) 92px;gap:10px;align-items:center;font-family:var(--f-display);font-size:1.05rem}
+.ctl output{font-family:var(--f-mono);font-size:.95rem;text-align:right}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:14px}
+.stat{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg)}
+.stat .k{font-family:var(--f-display);font-size:.95rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.stat .v{font-family:var(--f-mono);font-size:1.35em;font-variant-numeric:tabular-nums}
+.stat.hot .v{color:var(--hot)} .stat.cold .v{color:var(--cold)} .stat.work .v{color:var(--work)}
+.pill{display:inline-block;font-family:var(--f-display);font-weight:600;font-size:.95rem;border-radius:999px;padding:3px 12px}
+.pill.ok{background:var(--ok-soft);color:var(--ok)} .pill.bad{background:var(--bad-soft);color:var(--bad)} .pill.info{background:var(--accent-soft);color:var(--accent)}
+.msg{margin-top:10px;min-height:1.6em}
+.key{border:1px solid var(--line);background:var(--accent-soft);border-radius:12px;padding:14px 18px;margin:24px 0;font-style:italic;font-size:1.06em}
+.key::before{content:"Frase resum";display:block;font-style:normal;font-family:var(--f-display);text-transform:uppercase;letter-spacing:.1em;font-size:.8rem;color:var(--accent);font-weight:700;margin-bottom:4px}
+.note{border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin:16px 0;background:var(--surface)}
+.note strong{font-family:var(--f-display);font-size:1.08em}
+.tbl{overflow-x:auto;margin:14px 0;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:.93em}
+th,td{padding:8px 12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{font-family:var(--f-display);font-size:1.02em;font-weight:600;background:var(--bg)}
+tr:last-child td{border-bottom:0}
+td.h{color:var(--hot);font-weight:600} td.c{color:var(--cold);font-weight:600}
+.eq{font-family:var(--f-mono);font-size:1.05em;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 14px;display:inline-block;margin:6px 0}
+.btn{font-family:var(--f-display);font-weight:600;font-size:1.02rem;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:8px;padding:7px 14px;cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--surface);border-color:var(--accent)}
+.btn[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent)}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.pager{display:flex;justify-content:space-between;gap:12px;margin-top:40px;padding-top:16px;border-top:1px solid var(--line);flex-wrap:wrap}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:12px 0}
+.card{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--surface)}
+.card h4{font-family:var(--f-display);font-size:1.15em;margin:0 0 4px}
+.tag{font-family:var(--f-display);font-weight:600;font-size:.9rem}
+.tag.ok{color:var(--ok)} .tag.bad{color:var(--bad)}
+.stepper{display:flex;flex-wrap:wrap;gap:6px}
+.stagecard{margin-top:14px}
+.stagecard dl{display:grid;grid-template-columns:minmax(110px,170px) minmax(0,1fr);gap:6px 14px;margin:8px 0}
+.stagecard dt{font-family:var(--f-display);font-weight:600;color:var(--muted)}
+.stagecard dd{margin:0}
+.bar{display:flex;height:44px;border-radius:8px;overflow:hidden;border:1px solid var(--line);margin-top:10px}
+.bar div{display:flex;align-items:center;justify-content:center;font-family:var(--f-mono);font-size:.85rem;white-space:nowrap;overflow:hidden;transition:flex-basis .25s}
+.seg-w{background:var(--work-soft);color:var(--work)} .seg-p{background:var(--bad-soft);color:var(--bad)} .seg-c{background:var(--cold-soft);color:var(--cold)}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:8px;font-family:var(--f-display);font-size:1rem}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.gauge{position:relative;height:28px;border-radius:999px;background:var(--bg);border:1px solid var(--line);margin:22px 0 30px}
+.gauge .fill{position:absolute;inset:0 auto 0 0;border-radius:999px;background:var(--work-soft);border-right:3px solid var(--work)}
+.gauge .mark{position:absolute;top:-8px;bottom:-8px;width:3px;background:var(--hot)}
+.gauge .mlabel{position:absolute;top:32px;transform:translateX(-50%);font-family:var(--f-display);font-size:.9rem;color:var(--hot);white-space:nowrap}
+.field{display:grid;gap:4px;font-family:var(--f-display);font-size:1rem}
+.field input{font-family:var(--f-mono);font-size:1rem;padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);width:100%}
+.err{color:var(--bad);font-size:13px;min-height:1.2em;font-family:var(--f-display)}
+.quiz{display:grid;gap:14px}
+.q{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:var(--surface)}
+.q h4{font-family:var(--f-display);font-size:1.2em;margin:0 0 8px;font-weight:600}
+.q label{display:flex;gap:10px;align-items:flex-start;padding:6px 8px;border-radius:8px;cursor:pointer}
+.q label:hover{background:var(--bg)}
+.q label.right{background:var(--ok-soft)} .q label.wrong{background:var(--bad-soft)}
+.q .fb{margin-top:8px}
+.reveal{margin-top:8px}
+/* svg */
+.sv-t{fill:var(--fg);font-family:var(--f-display);font-size:16px;font-weight:600}
+.sv-s{fill:var(--muted);font-family:var(--f-display);font-size:14px}
+.sv-m{fill:var(--fg);font-family:var(--f-mono);font-size:13px}
+.sv-hot{fill:var(--hot-soft);stroke:var(--hot);stroke-width:1.2}
+.sv-cold{fill:var(--cold-soft);stroke:var(--cold);stroke-width:1.2}
+.sv-neu{fill:var(--bg);stroke:var(--muted);stroke-width:1.2}
+.sv-pipe{fill:none;stroke:var(--muted);stroke-width:2}
+.sv-front{fill:none;stroke:var(--muted);stroke-width:1;stroke-dasharray:6 5}
+.fl-hot{fill:var(--hot)} .fl-cold{fill:var(--cold)} .fl-work{fill:var(--work)} .fl-neu{fill:var(--muted)}
+.tx-hot{fill:var(--hot)} .tx-cold{fill:var(--cold)} .tx-work{fill:var(--work)}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+@media (max-width:820px){
+  .shell{grid-template-columns:minmax(0,1fr);gap:12px;padding-block:12px 40px}
+  .side{position:static;flex-direction:row;overflow-x:auto;gap:4px;padding-bottom:6px}
+  .side button{white-space:nowrap}
+  .ctl{grid-template-columns:minmax(0,1fr) 84px}
+  .ctl input{grid-column:1 / -1;grid-row:2}
+  h2{font-size:1.9em}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+.soon{display:flex;gap:10px;align-items:baseline;font-family:var(--f-display);font-size:1.08rem;color:var(--muted);opacity:.6;padding:8px 10px}
+.soon b{font-family:var(--f-mono);font-size:.8rem;min-width:1.4em}
+.soon i{font-style:normal;font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;margin-left:auto}
+a.btn{text-decoration:none;display:inline-block}
+.info4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:16px 0}
+.i4{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:12px;text-align:center}
+.i4 h4{font-family:var(--f-display);font-size:1.3em;margin:0}
+.i4n{font-family:var(--f-display);font-weight:700;font-size:2.2em;line-height:1}
+.i4 svg{width:100%;max-width:150px;height:auto;margin:6px auto;display:block}
+.i4v{font-family:var(--f-display);font-weight:700;font-size:1.2em;margin:4px 0}
+.i4s{font-size:.9em;color:var(--muted);margin:0}
+@media (max-width:820px){.info4{grid-template-columns:repeat(2,minmax(0,1fr))}.soon{white-space:nowrap}}
+
+@media (max-width:1040px){.shell{grid-template-columns:minmax(0,1fr);gap:12px}.side{position:static;flex-direction:row;overflow-x:auto;gap:4px;padding-bottom:6px}.side button,.soon{white-space:nowrap}main{max-width:none}}
+body.embed{font-size:16px}
+body.embed.classe{font-size:19px}
+body.embed .top{padding:6px 12px}
+body.embed .shell{max-width:none;padding-block:12px 32px}
+body.embed main,body.embed.classe main{max-width:none}
+body.embed h2{font-size:1.9em}
+body.embed .lead,body.embed .est p,body.embed .est li{max-width:none}
+:fullscreen body,body:fullscreen{overflow:auto}
+body.embed .shell{grid-template-columns:minmax(0,1fr);gap:12px}body.embed .side{position:static;flex-direction:row;overflow-x:auto;gap:4px;padding-bottom:6px}body.embed .side button,body.embed .soon{white-space:nowrap}
+.ver{font-family:var(--f-mono);font-size:.75rem;color:var(--muted);margin-left:8px}
+.chip{display:inline-block;padding:3px 10px;border-radius:999px;font-family:var(--f-display);font-weight:600;font-size:.95rem;border:1px solid var(--line);color:var(--muted)}.chip.on{background:var(--ok-soft);color:var(--ok);border-color:transparent}
+/* ---- específic: generadors i dinamo ----
+   Significat dels colors: pol N = calent, pol S = fred, energia elèctrica (ε, corrent) = treball (ambre),
+   energia mecànica = accent, costat a de l'espira = --sa (lila), costat b = --sb (verd blavós), bobinatges = coure */
+:root{--mut:var(--muted);--mut-soft:var(--bg);--sa:#7a3f9e;--sa-soft:#efe4f6;--sb:#17797a;--sb-soft:#d9eeee;--cu:#9a5b2e;--gr:#454b55}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--sa:#c69be6;--sa-soft:#2c2137;--sb:#5ec7c5;--sb-soft:#15302f;--cu:#d69a6c;--gr:#9aa2ad}}
+:root[data-theme="dark"]{--sa:#c69be6;--sa-soft:#2c2137;--sb:#5ec7c5;--sb-soft:#15302f;--cu:#d69a6c;--gr:#9aa2ad}
+.simfig{padding:12px}
+.simfig .gtitle{display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center;margin:10px 4px 2px;font-family:var(--f-display);font-size:1rem}
+.simfig .gtitle b{font-weight:700}
+.lg{display:inline-flex;align-items:center;gap:6px;color:var(--muted)}
+.lg i{display:inline-block;width:22px;height:0;border-top:3px solid var(--work)}
+.lg i.dash{border-top:2px dashed var(--muted)}
+.segs{display:flex;flex-wrap:wrap;gap:10px 18px;margin-top:12px}
+.segs .grp{display:grid;gap:4px}
+.segs .grp>span{font-family:var(--f-display);font-size:.9rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.seg button:disabled{opacity:.4;cursor:not-allowed}
+.chipa{color:var(--sa);background:var(--sa-soft)}
+.chipb{color:var(--sb);background:var(--sb-soft)}
+.chipx{display:inline-block;padding:2px 10px;border-radius:999px;font-family:var(--f-display);font-weight:700;font-size:.95rem}
+.energy{display:grid;gap:8px;margin-top:14px}
+.erow{display:grid;grid-template-columns:minmax(120px,210px) minmax(0,1fr) 90px;gap:10px;align-items:center;font-family:var(--f-display);font-size:1.02rem}
+.etrack{height:18px;border-radius:999px;background:var(--bg);border:1px solid var(--line);overflow:hidden}
+.etrack div{height:100%;transition:width .2s}
+.e-mec{background:var(--accent)} .e-el{background:var(--work)} .e-per{background:var(--muted)}
+.erow output{font-family:var(--f-display);font-weight:700;text-align:right}
+.partlist{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.partbox{margin-top:12px;min-height:5.2em}
+.partbox h4{font-family:var(--f-display);font-size:1.25em;margin:0 0 4px}
+svg .hlmode [data-part]{opacity:.22;transition:opacity .25s}
+svg .hlmode [data-part].on{opacity:1}
+.sv-pole{font-family:var(--f-display);font-weight:700;font-size:40px}
+.sv-l{fill:var(--fg);font-family:var(--f-display);font-size:15px;font-weight:700}
+.leader{stroke:var(--muted);stroke-width:1;fill:none}
+.ind-svg{max-width:640px;margin:0 auto}
+@media (max-width:820px){.erow{grid-template-columns:minmax(0,1fr) 80px}.erow .etrack{grid-column:1 / -1;grid-row:2}}
+
+/* menú de mòduls sempre a dalt; versió ben visible */
+.shell{grid-template-columns:minmax(0,1fr);gap:12px;max-width:1180px}
+.side{position:static;flex-direction:row;overflow-x:auto;gap:4px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+.side button{white-space:nowrap}
+main{max-width:none}
+@media (min-width:821px){.side{flex-wrap:wrap;overflow:visible}}
+.ver{font-family:var(--f-mono);font-size:.8rem;color:var(--accent);background:var(--accent-soft);border-radius:999px;padding:2px 9px;margin-left:10px;vertical-align:3px}
+.expl{display:grid;gap:12px;margin:12px 0}
+.stat.flash{background:var(--work-soft);border-color:var(--work)}
+.stat{transition:background .3s,border-color .3s}
+.exp{display:grid;grid-template-columns:minmax(180px,250px) minmax(0,1fr);gap:16px;align-items:start}
+.exp h4{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.exp-sub{margin:0;color:var(--muted);font-family:var(--f-display);font-size:1.05em}
+.exp ol{margin:.4em 0 0;padding-left:1.3em}.exp li{margin:.25em 0}
+@media (max-width:640px){.exp{grid-template-columns:minmax(0,1fr)}}
+
+
+/* ---- específic: regles de la mà ----
+   Colors: camp B = blau (fred), corrent I = ambre (treball), força F / moviment v = accent */
+:root{--cb:var(--cold);--skin:#f2cfae;--skin-d:#c99a76}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--skin:#c9a283;--skin-d:#8d6a50}}
+:root[data-theme="dark"]{--skin:#c9a283;--skin-d:#8d6a50}
+.c-b{color:var(--cb)} .c-i{color:var(--work)} .c-f{color:var(--accent)}
+.fin{font-family:var(--f-display);font-weight:700}
+.hl-esq{background:var(--accent-soft)} body.dre .hl-esq{background:transparent} body.dre .hl-dre{background:var(--accent-soft)}
+.pr-grid{display:grid;grid-template-columns:minmax(0,360px) minmax(0,1fr);gap:20px;align-items:start;margin-top:14px}
+.pr-fig{margin:0}.pr-fig svg{display:block;width:100%;height:auto}
+.pr-ans{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.pr-ans .btn{font-size:1.15rem;min-width:9em}
+.btn.a-ok{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)} .btn.a-bad{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.btn:disabled{cursor:default}
+#ma-steps li{margin:.35em 0}
+.sv-l{paint-order:stroke;stroke:var(--surface);stroke-width:5px;stroke-linejoin:round}
+@media (max-width:760px){.pr-grid{grid-template-columns:minmax(0,1fr)}}
+</style>
+<header class="top">
+  <div class="brand">Regles de la <span>mà</span></div>
+  <div class="row">
+    <div class="seg" role="group" aria-label="Regla">
+      <button id="hand-esq" type="button" aria-pressed="true">Mà esquerra</button>
+      <button id="hand-dre" type="button" aria-pressed="false">Mà dreta</button>
+    </div>
+    <div class="seg" role="group" aria-label="Mode de visualització">
+      <button id="mode-estudi" type="button" aria-pressed="true">Mode estudi</button>
+      <button id="mode-classe" type="button" aria-pressed="false">Mode classe</button>
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+<nav class="side" aria-label="Mòduls">
+  <button type="button" data-go="fenomens"><b>1</b>Dos fenòmens</button>
+  <button type="button" data-go="ma"><b>2</b>La mà</button>
+  <button type="button" data-go="simulador"><b>3</b>Simulador</button>
+  <button type="button" data-go="practica"><b>4</b>Practica</button>
+</nav>
+
+<main>
+<!-- ===== 1 DOS FENÒMENS ===== -->
+<section class="mod" data-key="fenomens">
+  <p class="eyebrow">Mòdul 1 · Què volem saber</p>
+  <h2>Dos fenòmens oposats, dues mans</h2>
+  <p class="lead">Quan un conductor és dins d'un camp magnètic poden passar dues coses oposades. Per saber el sentit del que passa fem servir una mà o l'altra.</p>
+  <div class="tbl"><table>
+    <thead><tr><th></th><th class="hl-esq">Mà esquerra</th><th class="hl-dre">Mà dreta</th></tr></thead>
+    <tbody>
+      <tr><td>Què passa</td><td class="hl-esq">Un <b>corrent</b> dins d'un camp rep una <b>força</b></td><td class="hl-dre">Un conductor que es <b>mou</b> dins d'un camp genera una <b>fem</b></td></tr>
+      <tr><td>Transformació</td><td class="hl-esq">Electricitat → moviment</td><td class="hl-dre">Moviment → electricitat</td></tr>
+      <tr><td>Màquina</td><td class="hl-esq"><b>Motor</b></td><td class="hl-dre"><b>Generador</b> (dinamo, alternador)</td></tr>
+      <tr><td><span class="fin fin-p">Polze</span></td><td class="hl-esq">Força <b class="c-f">F</b></td><td class="hl-dre">Moviment <b class="c-f">v</b></td></tr>
+      <tr><td><span class="fin fin-i">Índex</span></td><td class="hl-esq">Camp magnètic <b class="c-b">B</b></td><td class="hl-dre">Camp magnètic <b class="c-b">B</b></td></tr>
+      <tr><td><span class="fin fin-c">Cor</span> (dit del mig)</td><td class="hl-esq">Corrent <b class="c-i">I</b></td><td class="hl-dre">Fem i corrent induït <b class="c-i">I</b></td></tr>
+      <tr><td>Saps…</td><td class="hl-esq">B i I → trobes <b>F</b></td><td class="hl-dre">B i v → trobes <b>I</b></td></tr>
+    </tbody>
+  </table></div>
+  <div class="cards">
+    <div class="card"><h4>Truc per recordar-ho</h4><p><b>M</b>otor → esquerra · <b>G</b>enerador → dreta. A totes dues, l'<b>índex</b> sempre és el camp <b class="c-b">B</b>.</p></div>
+    <div class="card"><h4>Els tres dits, perpendiculars</h4><p>Polze, índex i cor es col·loquen formant angles rectes entre ells, com les tres arestes d'una cantonada d'una capsa.</p></div>
+  </div>
+  <div class="est note"><strong>Com es dibuixa el sentit cap a dins o cap a fora.</strong> Quan un corrent o un vector és perpendicular a la pantalla: <b>⊙</b> vol dir que surt de la pantalla (cap a tu) i <b>⊗</b>, que hi entra. És com veure la punta o la cua d'una fletxa.</div>
+  <p class="key">Motor → mà esquerra: el corrent dins d'un camp rep una força. Generador → mà dreta: el moviment dins d'un camp genera corrent. L'índex sempre assenyala el camp B.</p>
+  <div class="pager"><span></span><button class="btn primary" type="button" data-go="ma">Següent: La mà →</button></div>
+</section>
+
+<!-- ===== 2 LA MÀ ===== -->
+<section class="mod" data-key="ma" hidden>
+  <p class="eyebrow">Mòdul 2 · Com es col·loca</p>
+  <h2 id="ma-title">La regla de la mà esquerra</h2>
+  <p class="lead" id="ma-lead"></p>
+  <div class="fig">
+    <div class="svgwrap"><svg id="hand-svg" viewBox="0 0 640 360" role="img" aria-label="Mà amb els tres dits perpendiculars, cadascun assenyalant una magnitud"></svg></div>
+    <div class="controls">
+      <label class="ctl" for="hand-yaw"><span>Gira la vista</span><input id="hand-yaw" type="range" min="-80" max="80" step="1" value="-30"><output id="hand-yawo"></output></label>
+    </div>
+  </div>
+  <ol id="ma-steps"></ol>
+  <p class="key" id="ma-key"></p>
+  <div class="pager"><button class="btn" type="button" data-go="fenomens">← Dos fenòmens</button><button class="btn primary" type="button" data-go="simulador">Següent: Simulador →</button></div>
+</section>
+
+<!-- ===== 3 SIMULADOR ===== -->
+<section class="mod" data-key="simulador" hidden>
+  <p class="eyebrow">Mòdul 3 · Comprova-ho</p>
+  <h2 id="sim-title">Un conductor dins d'un camp magnètic</h2>
+  <p class="lead" id="sim-lead"></p>
+  <div class="fig">
+    <div class="svgwrap"><svg id="sim-svg" viewBox="0 0 640 420" role="img" aria-label="Conductor entre els pols d'un imant amb els vectors B, I i F o v"></svg></div>
+    <div class="controls">
+      <label class="ctl" for="sim-yaw"><span>Gira la vista</span><input id="sim-yaw" type="range" min="-80" max="80" step="1" value="-30"><output id="sim-yawo"></output></label>
+    </div>
+    <div class="segs">
+      <div class="grp"><span>Imant</span><div class="seg" role="group" aria-label="Posició dels pols"><button type="button" data-b="1">N a l'esquerra</button><button type="button" data-b="-1">N a la dreta</button></div></div>
+      <div class="grp" id="g-i"><span>Corrent</span><div class="seg" role="group" aria-label="Sentit del corrent"><button type="button" data-i="1">Cap a tu ⊙</button><button type="button" data-i="-1">Cap endins ⊗</button><button type="button" data-i="0">Desconnectat</button></div></div>
+      <div class="grp" id="g-v" hidden><span>Moviment del conductor</span><div class="seg" role="group" aria-label="Moviment del conductor"><button type="button" data-v="1">Amunt</button><button type="button" data-v="-1">Avall</button><button type="button" data-v="0">Quiet</button></div></div>
+      <div class="grp"><span>Mostra</span><div class="seg" role="group" aria-label="Què es mostra"><button type="button" id="sim-hand" aria-pressed="true">La mà</button></div></div>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="k">Camp B (índex)</div><div class="v c-b" id="st-b"></div></div>
+      <div class="stat"><div class="k" id="st-k2"></div><div class="v" id="st-2"></div></div>
+      <div class="stat"><div class="k" id="st-k3"></div><div class="v" id="st-3"></div></div>
+    </div>
+    <p class="msg" id="sim-msg"></p>
+  </div>
+  <div class="est" id="sim-est"></div>
+  <p class="key" id="sim-key"></p>
+  <div class="pager"><button class="btn" type="button" data-go="ma">← La mà</button><button class="btn primary" type="button" data-go="practica">Següent: Practica →</button></div>
+</section>
+
+<!-- ===== 4 PRACTICA ===== -->
+<section class="mod" data-key="practica" hidden>
+  <p class="eyebrow">Mòdul 4 · Exercicis</p>
+  <h2>Practica</h2>
+  <p class="lead">Mira l'esquema, col·loca la mà i tria la resposta. Cada exercici és nou.</p>
+  <div class="segs" style="margin-top:0">
+    <div class="grp"><span>Exercicis de</span><div class="seg" role="group" aria-label="Tipus d'exercicis"><button type="button" data-pm="esq">Mà esquerra</button><button type="button" data-pm="dre">Mà dreta</button><button type="button" data-pm="mix">Barrejats</button></div></div>
+  </div>
+  <div class="pr-grid">
+    <div class="fig pr-fig"><svg id="pr-svg" viewBox="0 0 360 320" role="img" aria-label="Esquema de l'exercici"></svg></div>
+    <div class="pr-side">
+      <p class="pill info" id="pr-tag"></p>
+      <h3 id="pr-q" style="margin-top:.4em"></h3>
+      <div class="pr-ans" id="pr-ans" role="group" aria-label="Respostes"></div>
+      <div class="msg" id="pr-fb"></div>
+      <div class="row" style="margin-top:12px"><button class="btn primary" type="button" id="pr-next">Nou exercici →</button><span class="pill info" id="pr-score">0 de 0</span></div>
+    </div>
+  </div>
+  <p class="key">Primer posa l'índex en el sentit del camp (de N cap a S). Després col·loca el dit que coneixes. El dit que queda et dona la resposta.</p>
+  <div class="pager"><button class="btn" type="button" data-go="simulador">← Simulador</button><span></span></div>
+</section>
+</main>
+</div>
+
+<script>
+(function(){
+"use strict";
+const $=id=>document.getElementById(id);
+const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+const PI=Math.PI;
+function arrowPts(x1,y1,x2,y2,w){const dx=x2-x1,dy=y2-y1,L=Math.hypot(dx,dy)||1,ux=dx/L,uy=dy/L,nx=-uy,ny=ux,h=w/2,hh=h+5,hl=Math.min(w+8,L*.6),bx=x2-ux*hl,by=y2-uy*hl;
+  return [[x1+nx*h,y1+ny*h],[bx+nx*h,by+ny*h],[bx+nx*hh,by+ny*hh],[x2,y2],[bx-nx*hh,by-ny*hh],[bx-nx*h,by-ny*h],[x1-nx*h,y1-ny*h]].map(q=>q[0].toFixed(1)+','+q[1].toFixed(1)).join(' ');}
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+const F=v=>v.toFixed(1);
+const visible=el=>el&&el.offsetParent!==null;
+
+/* ---------- navegació i mode ---------- */
+const mods=[...document.querySelectorAll('.mod')],keys=mods.map(m=>m.dataset.key);
+function show(key,scroll){if(!keys.includes(key))key='fenomens';mods.forEach(m=>m.hidden=m.dataset.key!==key);
+  document.querySelectorAll('.side button').forEach(b=>b.setAttribute('aria-current',b.dataset.go===key?'true':'false'));
+  try{history.replaceState(null,'','#'+key)}catch(e){}
+  if(scroll)window.scrollTo({top:0,behavior:reduce?'auto':'smooth'});}
+document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>show(b.dataset.go,true)));
+function setMode(m){document.body.classList.toggle('classe',m==='classe');$('mode-classe').setAttribute('aria-pressed',m==='classe');$('mode-estudi').setAttribute('aria-pressed',m!=='classe');store.set('rm-mode',m);}
+$('mode-classe').addEventListener('click',()=>setMode('classe'));$('mode-estudi').addEventListener('click',()=>setMode('estudi'));
+setMode(store.get('rm-mode')==='classe'?'classe':'estudi');
+
+/* ---------- 3D: rotació i projecció ortogonal ---------- */
+function makeView(cx,cy,yawDeg,pitchDeg){return {cx,cy,yaw:yawDeg*PI/180,pitch:pitchDeg*PI/180};}
+function rot(v,p){const cy=Math.cos(v.yaw),sy=Math.sin(v.yaw),cp=Math.cos(v.pitch),sp=Math.sin(v.pitch);
+  const x=p[0]*cy+p[2]*sy,z=-p[0]*sy+p[2]*cy,y=p[1];return [x,y*cp-z*sp,y*sp+z*cp];}
+function prj(v,p){const r=rot(v,p);return [v.cx+r[0],v.cy-r[1],r[2]];}
+const ps=a=>a.map(q=>F(q[0])+','+F(q[1])).join(' ');
+function boxPrims(v,x0,x1,y0,y1,z0,z1,fill,stroke){
+  const faces=[[[x1,y0,z0],[x1,y1,z0],[x1,y1,z1],[x1,y0,z1],[1,0,0]],[[x0,y0,z1],[x0,y1,z1],[x0,y1,z0],[x0,y0,z0],[-1,0,0]],
+    [[x0,y1,z0],[x0,y1,z1],[x1,y1,z1],[x1,y1,z0],[0,1,0]],[[x0,y0,z1],[x0,y0,z0],[x1,y0,z0],[x1,y0,z1],[0,-1,0]],
+    [[x0,y0,z1],[x1,y0,z1],[x1,y1,z1],[x0,y1,z1],[0,0,1]],[[x1,y0,z0],[x0,y0,z0],[x0,y1,z0],[x1,y1,z0],[0,0,-1]]];
+  const out=[];faces.forEach(f=>{const n=rot(v,f[4]);if(n[2]<=0.01)return;const P=f.slice(0,4).map(q=>prj(v,q));
+    const shade=n[1]>0.3?'.0':(Math.abs(n[0])>0.5?'.06':'.12');
+    out.push({d:P.reduce((a,q)=>a+q[2],0)/4-400,s:`<polygon points="${ps(P)}" style="fill:${fill};stroke:${stroke}" stroke-width="1.5" stroke-linejoin="round"/><polygon points="${ps(P)}" style="fill:var(--fg)" opacity="${shade}"/>`});});
+  return out;}
+function arrow3(v,a,b,col,w,label,lcol){const A=prj(v,a),B=prj(v,b);let s=`<polygon style="fill:${col}" points="${arrowPts(A[0],A[1],B[0],B[1],w)}"/>`;
+  if(label){const dx=B[0]-A[0],dy=B[1]-A[1],L=Math.hypot(dx,dy)||1;s+=`<text class="sv-l" style="fill:${lcol||col}" x="${F(B[0]+dx/L*16)}" y="${F(B[1]+dy/L*16+5)}" text-anchor="middle">${label}</text>`;}
+  return {d:(A[2]+B[2])/2,s};}
+function render(svg,prims,extra){prims.sort((a,b)=>a.d-b.d);svg.innerHTML=prims.map(p=>p.s).join('')+(extra||'');}
+
+/* ---------- la mà (capsules) ---------- */
+// dirs: {p:[...], i:[...], c:[...]} vectors unitaris del polze, índex i cor
+function handPrims(v,o,dirs,scale){const out=[],sc=scale||1,add=(a,b,w)=>{const A=prj(v,a),B=prj(v,b);
+    out.push({d:(A[2]+B[2])/2-1,s:`<line x1="${F(A[0])}" y1="${F(A[1])}" x2="${F(B[0])}" y2="${F(B[1])}" style="stroke:var(--skin-d)" stroke-width="${w+3}" stroke-linecap="round"/><line x1="${F(A[0])}" y1="${F(A[1])}" x2="${F(B[0])}" y2="${F(B[1])}" style="stroke:var(--skin)" stroke-width="${w}" stroke-linecap="round"/>`});};
+  const pt=(d,k)=>[o[0]+d[0]*k*sc,o[1]+d[1]*k*sc,o[2]+d[2]*k*sc];
+  const pm=(a,b,k)=>[o[0]+(a[0]*k[0]+b[0]*k[1])*sc,o[1]+(a[1]*k[0]+b[1]*k[1])*sc,o[2]+(a[2]*k[0]+b[2]*k[1])*sc];
+  // palmell: banda gruixuda entre l'arrel de l'índex i el canell (oposat al polze)
+  const wrist=[-dirs.i[0]*0.2-dirs.p[0]*0.55,-dirs.i[1]*0.2-dirs.p[1]*0.55,-dirs.i[2]*0.2-dirs.p[2]*0.55];
+  add(pt(wrist,40),pt(dirs.i,10),40);
+  add(pm(dirs.i,dirs.p,[-0.05,-0.42]).map((x,j)=>x),pm(dirs.i,dirs.p,[0.12,0.05]),42);
+  // anular i petit plegats (en el sentit del cor, curts)
+  add(pm(dirs.i,dirs.p,[0.08,-0.30]),pm(dirs.c,dirs.p,[0.42,-0.34]),15);
+  add(pm(dirs.i,dirs.p,[0.02,-0.48]),pm(dirs.c,dirs.p,[0.36,-0.52]),13);
+  add(pt([0,0,0],0),pt(dirs.c,62),16);   // cor
+  add(pm(dirs.i,dirs.p,[0.05,0.08]),pt(dirs.i,78),16); // índex
+  add(pm(dirs.i,dirs.p,[-0.18,0.05]),pt(dirs.p,64),18);  // polze
+  return out;}
+
+/* ---------- estat global: quina mà ---------- */
+const G={hand:store.get('rm-hand')==='dre'?'dre':'esq'};
+const subs=[];
+function setHand(h){G.hand=h;store.set('rm-hand',h);$('hand-esq').setAttribute('aria-pressed',h==='esq');$('hand-dre').setAttribute('aria-pressed',h==='dre');
+  document.body.classList.toggle('dre',h==='dre');subs.forEach(f=>f());}
+$('hand-esq').addEventListener('click',()=>setHand('esq'));$('hand-dre').addEventListener('click',()=>setHand('dre'));
+
+/* =========================================================
+   MÒDUL 2 · LA MÀ
+   ========================================================= */
+const TX={
+ esq:{title:'La regla de la mà esquerra',lead:'Serveix per als <b>motors</b>. Si saps el sentit del camp <b class="c-b">B</b> i del corrent <b class="c-i">I</b>, et diu cap on surt empès el conductor: la força <b class="c-f">F</b>.',
+  steps:['Estira l’<b>índex</b> en el sentit del camp <b class="c-b">B</b> (de N cap a S).','Posa el <b>cor</b> (dit del mig) perpendicular a l’índex, en el sentit del corrent <b class="c-i">I</b>.','Aixeca el <b>polze</b>, perpendicular als altres dos: assenyala la força <b class="c-f">F</b> que rep el conductor.'],
+  key:'Mà esquerra: índex → B, cor → I, polze → F.',lab:{p:'F · polze',i:'B · índex',c:'I · cor'}},
+ dre:{title:'La regla de la mà dreta',lead:'Serveix per als <b>generadors</b>. Si saps el sentit del camp <b class="c-b">B</b> i del moviment del conductor <b class="c-f">v</b>, et diu el sentit de la fem i del corrent induït <b class="c-i">I</b>.',
+  steps:['Estira l’<b>índex</b> en el sentit del camp <b class="c-b">B</b> (de N cap a S).','Posa el <b>polze</b> en el sentit del moviment del conductor <b class="c-f">v</b>.','El <b>cor</b> (dit del mig), perpendicular als altres dos, assenyala el sentit de la fem i del corrent induït <b class="c-i">I</b>.'],
+  key:'Mà dreta: índex → B, polze → v, cor → I (fem induïda).',lab:{p:'v · polze',i:'B · índex',c:'I · cor'}}};
+// posició canònica: índex cap a la dreta (+x), polze amunt (+y); el cor surt de la física:
+// esquerra: F = I×B  ⇒ I = +z (cap a tu);  dreta: I ∝ v×B ⇒ I = −z (cap endins)
+function canon(h){return {i:[1,0,0],p:[0,1,0],c:[0,0,h==='esq'?1:-1]};}
+let handYaw=-30;
+function drawHand(){const t=TX[G.hand];$('ma-title').textContent=t.title;$('ma-lead').innerHTML=t.lead;$('ma-steps').innerHTML=t.steps.map(x=>'<li>'+x+'</li>').join('');$('ma-key').textContent=t.key;
+  const v=makeView(320,195,handYaw,16),d=canon(G.hand),o=[0,-10,0];
+  const prims=handPrims(v,o,d,1.15);
+  const tip=(u,k)=>[o[0]+u[0]*k,o[1]+u[1]*k,o[2]+u[2]*k];
+  prims.push(arrow3(v,tip(d.i,92),tip(d.i,175),'var(--cb)',7,t.lab.i));
+  prims.push(arrow3(v,tip(d.p,78),tip(d.p,160),'var(--accent)',7,t.lab.p));
+  prims.push(arrow3(v,tip(d.c,74),tip(d.c,160),'var(--work)',7,t.lab.c));
+  render($('hand-svg'),prims,`<text class="sv-t" x="20" y="30">${G.hand==='esq'?'Mà esquerra':'Mà dreta'}</text><text class="sv-s" x="20" y="345">Gira la vista per veure que els tres dits són perpendiculars.</text>`);
+  $('hand-yawo').textContent=handYaw+'°';}
+$('hand-yaw').addEventListener('input',e=>{handYaw=+e.target.value;drawHand()});
+subs.push(drawHand);
+
+/* =========================================================
+   MÒDUL 3 · SIMULADOR
+   ========================================================= */
+const S={b:1,i:1,vv:1,ry:0,yaw:-30,hand:true,t:0};
+const dirTxt=y=>y>0?'amunt':y<0?'avall':'—';
+const zTxt=z=>z>0?'⊙ cap a tu':z<0?'⊗ cap endins':'—';
+function physics(){ // vectors en coordenades del món: x dreta, y amunt, z cap a l'observador
+  const B=[S.b,0,0];
+  if(G.hand==='esq'){const Iz=S.i,Fy=Iz*S.b;return {B,I:[0,0,Iz],P:[0,Fy,0],Iz,Py:Fy};}
+  const vy=S.vv,Iz=-vy*S.b;return {B,I:[0,0,Iz],P:[0,vy,0],Iz,Py:vy};}
+function galvSvg(cx,cy,r,val,label){const a=Math.max(-1,Math.min(1,val))*58*PI/180,px=cx,py=cy+r*.45,len=r*1.15;let t='';
+  for(let i=-4;i<=4;i++){const g=i*14.5*PI/180,r1=r*.98,r2=i===0?r*.72:r*.84;t+=`<line x1="${F(px+Math.sin(g)*r2)}" y1="${F(py-Math.cos(g)*r2)}" x2="${F(px+Math.sin(g)*r1)}" y2="${F(py-Math.cos(g)*r1)}" stroke="var(--muted)" stroke-width="${i===0?2:1.2}"/>`;}
+  return `<circle cx="${cx}" cy="${cy}" r="${r}" style="fill:var(--surface);stroke:var(--fg)" stroke-width="2"/>${t}<line x1="${px}" y1="${py}" x2="${F(px+Math.sin(a)*len)}" y2="${F(py-Math.cos(a)*len)}" style="stroke:var(--bad)" stroke-width="2.4" stroke-linecap="round"/><circle cx="${px}" cy="${py}" r="3.5" style="fill:var(--fg)"/><text class="sv-s" x="${cx}" y="${cy+r+18}" text-anchor="middle">${label}</text>`;}
+function drawSim(){
+  const v=makeView(300,215,S.yaw,18),ph=physics(),esq=G.hand==='esq',prims=[];
+  const nLeft=S.b>0;
+  prims.push(...boxPrims(v,-210,-125,-85,85,-95,95,nLeft?'var(--hot-soft)':'var(--cold-soft)',nLeft?'var(--hot)':'var(--cold)'));
+  prims.push(...boxPrims(v,125,210,-85,85,-95,95,nLeft?'var(--cold-soft)':'var(--hot-soft)',nLeft?'var(--cold)':'var(--hot)'));
+  // línies de camp
+  for(const y of [-55,55])for(const z of [-60,60]){const a=prj(v,[-123,y,z]),b=prj(v,[123,y,z]),m1=prj(v,[S.b*-40,y,z]),m2=prj(v,[S.b*-20,y,z]);
+    prims.push({d:(a[2]+b[2])/2-200,s:`<line x1="${F(a[0])}" y1="${F(a[1])}" x2="${F(b[0])}" y2="${F(b[1])}" style="stroke:var(--cb)" stroke-width="1.3" stroke-dasharray="6 5" opacity=".7"/><polygon style="fill:var(--cb)" opacity=".8" points="${arrowPts(m1[0],m1[1],m2[0],m2[1],2.5)}"/>`});}
+  // conductor
+  const ry=S.ry,on=esq?S.i!==0:S.vv!==0;
+  const seg=14;for(let k=0;k<seg;k++){const z0=-150+300*k/seg,z1=-150+300*(k+1)/seg,a=prj(v,[0,ry,z0]),b=prj(v,[0,ry,z1]);
+    prims.push({d:(a[2]+b[2])/2,s:`<line x1="${F(a[0])}" y1="${F(a[1])}" x2="${F(b[0])}" y2="${F(b[1])}" style="stroke:var(--cu)" stroke-width="13" stroke-linecap="round"/>`});}
+  if(on&&ph.Iz!==0)for(const z of [-115,115]){prims.push(arrow3(v,[0,ry+14,z-18*ph.Iz],[0,ry+14,z+18*ph.Iz],'var(--work)',5));}
+  // vectors al centre del conductor
+  const o=[0,ry+46,0],tip=(u,k)=>[o[0]+u[0]*k,o[1]+u[1]*k,o[2]+u[2]*k];
+  const dB=[S.b,0,0],dI=[0,0,ph.Iz||0],dP=[0,ph.Py||0,0];
+  if(S.hand&&on){prims.push(...handPrims(v,o,{i:dB,p:dP,c:dI},0.72));}
+  const lab=TX[G.hand].lab;
+  prims.push(arrow3(v,tip(dB,S.hand&&on?62:8),tip(dB,S.hand&&on?108:92),'var(--cb)',6,lab.i));
+  if(on){prims.push(arrow3(v,tip(dI,S.hand&&on?50:8),tip(dI,S.hand&&on?120:95),'var(--work)',6,lab.c));
+         prims.push(arrow3(v,tip(dP,S.hand&&on?50:8),tip(dP,S.hand&&on?110:90),'var(--accent)',6,lab.p));}
+  if(on||!S.hand){const a=prj(v,[0,ry+7,0]),b2=prj(v,[0,ry+40,0]);prims.push({d:a[2]+1,s:`<line x1="${F(a[0])}" y1="${F(a[1])}" x2="${F(b2[0])}" y2="${F(b2[1])}" style="stroke:var(--muted)" stroke-width="1.2" stroke-dasharray="3 3"/>`});}
+  // etiquetes dels pols
+  const lN=prj(v,[nLeft?-168:168,100,0]),lS=prj(v,[nLeft?168:-168,100,0]);
+  let ex=`<text class="sv-pole tx-hot" x="${F(lN[0])}" y="${F(lN[1])}" text-anchor="middle">N</text><text class="sv-pole tx-cold" x="${F(lS[0])}" y="${F(lS[1])}" text-anchor="middle">S</text>`;
+  ex+=esq?`<g><rect x="520" y="352" width="96" height="52" rx="8" style="fill:var(--surface);stroke:var(--line)"/><line x1="550" y1="366" x2="550" y2="390" style="stroke:var(--fg)" stroke-width="2.4"/><line x1="560" y1="372" x2="560" y2="384" style="stroke:var(--fg)" stroke-width="4"/><text class="sv-s" x="574" y="383">${S.i?'Pila':'Sense pila'}</text></g>`
+     :galvSvg(568,368,22,on?ph.Iz*0.8:0,'Galvanòmetre');
+  render($('sim-svg'),prims,ex);
+  $('sim-yawo').textContent=S.yaw+'°';
+  // panell
+  $('st-b').textContent=S.b>0?'→ cap a la dreta':'← cap a l’esquerra';
+  if(esq){$('st-k2').textContent='Corrent I (cor)';$('st-2').textContent=S.i?zTxt(ph.Iz):'sense corrent';$('st-2').className='v c-i';
+    $('st-k3').textContent='Força F (polze)';$('st-3').textContent=S.i?dirTxt(ph.Py):'cap';$('st-3').className='v c-f';
+    $('sim-msg').innerHTML=!S.i?'<span class="pill info">Sense corrent</span> No hi ha força: el conductor no es mou.':`<span class="pill ok">El conductor surt empès ${dirTxt(ph.Py)}</span> Índex (B) ${S.b>0?'cap a la dreta':'cap a l’esquerra'}, cor (I) ${ph.Iz>0?'cap a tu':'cap endins'}: el polze (F) assenyala ${dirTxt(ph.Py)}.`;}
+  else{$('st-k2').textContent='Moviment v (polze)';$('st-2').textContent=S.vv?dirTxt(S.vv):'quiet';$('st-2').className='v c-f';
+    $('st-k3').textContent='Corrent induït I (cor)';$('st-3').textContent=S.vv?zTxt(ph.Iz):'cap';$('st-3').className='v c-i';
+    $('sim-msg').innerHTML=!S.vv?'<span class="pill info">Conductor quiet</span> No talla línies de camp: no hi ha fem ni corrent.':`<span class="pill ok">Corrent induït ${zTxt(ph.Iz)}</span> Índex (B) ${S.b>0?'cap a la dreta':'cap a l’esquerra'}, polze (v) ${dirTxt(S.vv)}: el cor (I) assenyala ${ph.Iz>0?'cap a tu':'cap endins'}.`;}
+}
+function syncSim(){const esq=G.hand==='esq';$('g-i').hidden=!esq;$('g-v').hidden=esq;
+  document.querySelectorAll('[data-b]').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.b===S.b));
+  document.querySelectorAll('[data-i]').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.i===S.i));
+  document.querySelectorAll('[data-v]').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.v===S.vv));
+  $('sim-hand').setAttribute('aria-pressed',S.hand);
+  $('sim-lead').innerHTML=esq?'El conductor està connectat a una <b>pila</b>. Quan hi circula corrent, el camp de l’imant l’empeny. Canvia el corrent o els pols i mira cap on es mou.':'Ara no hi ha pila: <b>movem nosaltres</b> el conductor. Mira quin corrent s’hi indueix; el mesura el galvanòmetre connectat als extrems.';
+  $('sim-est').innerHTML=esq?'<ul><li>Si inverteixes el <b>corrent</b>, la força s’inverteix.</li><li>Si intercanvies els <b>pols</b>, la força també s’inverteix.</li><li>Si inverteixes les dues coses, la força no canvia.</li></ul><p>És el principi del <b>motor elèctric</b>: un corrent dins d’un camp produeix moviment.</p>':'<ul><li>Si canvies el sentit del <b>moviment</b>, el corrent induït s’inverteix.</li><li>Si intercanvies els <b>pols</b>, també s’inverteix.</li><li>Si el conductor és quiet, no hi ha corrent.</li></ul><p>És el principi del <b>generador</b>: el moviment dins d’un camp produeix corrent. Ho pots veure a l’artefacte «Generadors i dinamo».</p>';
+  $('sim-key').textContent=esq?'La força sobre un conductor és perpendicular al camp i al corrent. Mà esquerra: índex B, cor I, polze F.':'La fem induïda és perpendicular al camp i al moviment. Mà dreta: índex B, polze v, cor I.';
+  drawSim();}
+document.querySelectorAll('[data-b]').forEach(b=>b.addEventListener('click',()=>{S.b=+b.dataset.b;syncSim()}));
+document.querySelectorAll('[data-i]').forEach(b=>b.addEventListener('click',()=>{S.i=+b.dataset.i;syncSim()}));
+document.querySelectorAll('[data-v]').forEach(b=>b.addEventListener('click',()=>{S.vv=+b.dataset.v;syncSim()}));
+$('sim-hand').addEventListener('click',()=>{S.hand=!S.hand;syncSim()});
+$('sim-yaw').addEventListener('input',e=>{S.yaw=+e.target.value;drawSim()});
+subs.push(()=>{S.ry=0;syncSim()});
+function simStep(dt){const ph=physics();
+  if(G.hand==='esq'){const target=S.i?45*ph.Py:0;S.ry+=(target-S.ry)*Math.min(1,dt*2.5);}
+  else if(S.vv){S.ry+=S.vv*35*dt;if(S.ry>50)S.ry=-50;if(S.ry<-50)S.ry=50;}
+  drawSim();}
+
+/* =========================================================
+   MÒDUL 4 · PRACTICA (vista plana: x dreta, y amunt, z cap a tu)
+   ========================================================= */
+const D={R:[1,0],L:[-1,0],U:[0,1],D:[0,-1]};
+const DN={R:'cap a la dreta',L:'cap a l’esquerra',U:'amunt',D:'avall'};
+const AR={R:'→',L:'←',U:'↑',D:'↓'};
+const P={mode:null,ex:null,ok:0,tot:0,answered:false};
+function newEx(){const m=P.mode==='mix'?(Math.random()<.5?'esq':'dre'):P.mode;const ks=Object.keys(D),b=ks[Math.floor(Math.random()*4)];
+  if(m==='esq'){const iz=Math.random()<.5?1:-1,B=D[b];const f=[-iz*B[1],iz*B[0]]; // F = I×B amb I=(0,0,iz)
+    const fk=ks.find(k=>D[k][0]===f[0]&&D[k][1]===f[1]);P.ex={m,b,iz,ans:fk};}
+  else{const perp=(b==='R'||b==='L')?['U','D']:['R','L'],vk=perp[Math.floor(Math.random()*2)],V=D[vk],B=D[b];
+    const z=V[0]*B[1]-V[1]*B[0];P.ex={m,b,vk,ans:z>0?'O':'X'};}
+  P.answered=false;drawEx();}
+function drawEx(){const e=P.ex,cx=180,cy=160,B=D[e.b];let h='';
+  // pols
+  const pole=(sx,sy,lab,cls)=>{const w=Math.abs(B[0])?44:300,hh=Math.abs(B[0])?220:40;return `<rect x="${F(cx+sx-w/2)}" y="${F(cy+sy-hh/2)}" width="${w}" height="${hh}" rx="6" class="${cls}"/><text class="sv-pole ${cls==='sv-hot'?'tx-hot':'tx-cold'}" style="font-size:30px" x="${F(cx+sx)}" y="${F(cy+sy+11)}" text-anchor="middle">${lab}</text>`;};
+  const dx=B[0]*150,dy=-B[1]*130;h+=pole(-dx,-dy,'N','sv-hot')+pole(dx,dy,'S','sv-cold');
+  for(let k=-2;k<=2;k++){if(k===0)continue;const o=k*34;let x1,y1,x2,y2;
+    if(B[0]){x1=cx-120*B[0];x2=cx+120*B[0];y1=y2=cy+o;}else{y1=cy+100*B[1];y2=cy-100*B[1];x1=x2=cx+o;}
+    h+=`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" style="stroke:var(--cb)" stroke-width="1.3" stroke-dasharray="5 4"/><polygon style="fill:var(--cb)" points="${arrowPts((x1+x2)/2-(x2-x1)*.08,(y1+y2)/2-(y2-y1)*.08,(x1+x2)/2+(x2-x1)*.08,(y1+y2)/2+(y2-y1)*.08,2.5)}"/>`;}
+  h+=`<text class="sv-l" style="fill:var(--cb)" x="${F(cx+(B[0]?0:52))}" y="${F(cy+(B[0]?-48:5))}" text-anchor="middle">B</text>`;
+  h+=`<circle cx="${cx}" cy="${cy}" r="20" style="fill:var(--surface);stroke:var(--fg)" stroke-width="2.5"/>`;
+  if(e.m==='esq'){h+=e.iz>0?`<circle cx="${cx}" cy="${cy}" r="6" style="fill:var(--work)"/>`:`<line x1="${cx-9}" y1="${cy-9}" x2="${cx+9}" y2="${cy+9}" style="stroke:var(--work)" stroke-width="3.5"/><line x1="${cx-9}" y1="${cy+9}" x2="${cx+9}" y2="${cy-9}" style="stroke:var(--work)" stroke-width="3.5"/>`;
+    h+=`<text class="sv-l" style="fill:var(--work);font-size:18px" x="${cx+26}" y="${cy+34}">I</text>`;}
+  else{const V=D[e.vk];h+=`<polygon style="fill:var(--accent)" points="${arrowPts(cx+V[0]*26,cy-V[1]*26,cx+V[0]*80,cy-V[1]*80,6)}"/><text class="sv-l" style="fill:var(--accent)" x="${F(cx+V[0]*80+(V[0]?0:16))}" y="${F(cy-V[1]*80+(V[1]?(V[1]>0?-8:20):-10))}" text-anchor="middle">v</text>`;}
+  if(P.answered&&e.m==='esq'){const A=D[e.ans];h+=`<polygon style="fill:var(--ok)" points="${arrowPts(cx+A[0]*26,cy-A[1]*26,cx+A[0]*84,cy-A[1]*84,7)}"/><text class="sv-l" style="fill:var(--ok)" x="${F(cx+A[0]*84+(A[0]?0:16))}" y="${F(cy-A[1]*84+(A[1]?(A[1]>0?-8:20):-10))}" text-anchor="middle">F</text>`;}
+  if(P.answered&&e.m==='dre'){h+=e.ans==='O'?`<circle cx="${cx}" cy="${cy}" r="6" style="fill:var(--ok)"/>`:`<line x1="${cx-9}" y1="${cy-9}" x2="${cx+9}" y2="${cy+9}" style="stroke:var(--ok)" stroke-width="3.5"/><line x1="${cx-9}" y1="${cy+9}" x2="${cx+9}" y2="${cy-9}" style="stroke:var(--ok)" stroke-width="3.5"/>`;}
+  $('pr-svg').innerHTML=h;
+  $('pr-tag').textContent=e.m==='esq'?'Mà esquerra · motor':'Mà dreta · generador';
+  $('pr-q').innerHTML=e.m==='esq'?`El corrent ${e.iz>0?'surt de la pantalla (⊙)':'entra a la pantalla (⊗)'}. Cap on va la força <span class="c-f">F</span>?`:`El conductor es mou ${DN[e.vk]}. Quin sentit té el corrent induït <span class="c-i">I</span>?`;
+  const opts=e.m==='esq'?['U','D','L','R'].map(k=>[k,AR[k]+' '+DN[k]]):[['O','⊙ cap a tu'],['X','⊗ cap endins']];
+  $('pr-ans').innerHTML=opts.map(o=>`<button class="btn" type="button" data-a="${o[0]}">${o[1]}</button>`).join('');
+  $('pr-ans').querySelectorAll('[data-a]').forEach(b=>b.addEventListener('click',()=>answer(b.dataset.a,b)));
+  if(!P.answered)$('pr-fb').innerHTML='';
+  $('pr-score').textContent=P.ok+' de '+P.tot+' correctes';}
+function answer(a,btn){if(P.answered)return;const e=P.ex,ok=a===e.ans;P.answered=true;P.tot++;if(ok)P.ok++;
+  const bn=DN[e.b];
+  const why=e.m==='esq'?`Índex (B) ${bn}, cor (I) ${e.iz>0?'cap a tu':'cap endins'} → el polze (F) assenyala ${DN[e.ans]}.`
+    :`Índex (B) ${bn}, polze (v) ${DN[e.vk]} → el cor (I) assenyala ${e.ans==='O'?'cap a tu (⊙)':'cap endins (⊗)'}.`;
+  drawEx();
+  $('pr-ans').querySelectorAll('[data-a]').forEach(b=>{b.disabled=true;if(b.dataset.a===e.ans)b.classList.add('a-ok');else if(b.dataset.a===a)b.classList.add('a-bad');});
+  $('pr-fb').innerHTML=(ok?'<span class="pill ok">Correcte</span> ':'<span class="pill bad">No és aquesta</span> ')+why;}
+function setPM(m){P.mode=m;document.querySelectorAll('[data-pm]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.pm===m));newEx();}
+document.querySelectorAll('[data-pm]').forEach(b=>b.addEventListener('click',()=>setPM(b.dataset.pm)));
+$('pr-next').addEventListener('click',newEx);
+subs.push(()=>{if(P.mode!=='mix')setPM(G.hand)});
+
+/* ---------- inici i bucle ---------- */
+setHand(G.hand);
+let last=performance.now();
+function loop(now){const dt=Math.min(0.05,(now-last)/1000);last=now;if(visible($('sim-svg'))&&!reduce)simStep(dt);requestAnimationFrame(loop);}
+requestAnimationFrame(loop);
+show((location.hash||'').slice(1),false);
+})();
+</script>
+
+<script>
+(function(){
+  var emb=false;try{emb=window.self!==window.top}catch(e){emb=true}
+  if(emb)document.body.classList.add('embed');
+  var d=document,root=d.documentElement;
+  if(d.fullscreenEnabled&&root.requestFullscreen){
+    var b=d.createElement('button');b.type='button';b.className='btn';b.id='fs-btn';b.textContent='⛶ Pantalla completa';
+    b.addEventListener('click',function(){if(d.fullscreenElement){d.exitFullscreen().catch(function(){})}else{root.requestFullscreen().catch(function(){})}});
+    d.addEventListener('fullscreenchange',function(){b.textContent=d.fullscreenElement?'✕ Surt de pantalla completa':'⛶ Pantalla completa'});
+    var seg=d.querySelector('.top .seg');if(seg)seg.parentNode.insertBefore(b,seg);
+  }else if(emb){
+    var a=d.createElement('a');a.className='btn';a.href='https://tecnolyd.github.io/artefactes/regles-ma.html';a.target='_blank';a.rel='noopener';a.textContent='⛶ Obre a pantalla completa';
+    var seg2=d.querySelector('.top .seg');if(seg2)seg2.parentNode.insertBefore(a,seg2);
+  }
+  var br=d.querySelector('.brand');if(br){var v=d.createElement('span');v.className='ver';v.textContent='v1';br.appendChild(v);}
+})();
+</script>
+
+</html>
