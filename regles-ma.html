@@ -236,7 +236,7 @@ main{max-width:none}
 .btn.a-ok{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)} .btn.a-bad{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
 .btn:disabled{cursor:default}
 #ma-steps li{margin:.35em 0}
-.hand-wrap{max-width:440px;margin:0 auto}.hand-wrap svg{display:block;width:100%;height:auto}
+.hand-wrap{max-width:520px;margin:0 auto}.hand-wrap svg{display:block;width:100%;height:auto}
 .sk{fill:var(--skin);stroke:var(--skin-d);stroke-width:2.2;stroke-linejoin:round;stroke-linecap:round}
 .ln{fill:none;stroke:var(--skin-d);stroke-width:1.6;stroke-linecap:round}
 .sv-cap{text-align:center;color:var(--muted);font-family:var(--f-display);margin:.2em 0 0}
@@ -298,30 +298,7 @@ main{max-width:none}
   <h2 id="ma-title">La regla de la mà esquerra</h2>
   <p class="lead" id="ma-lead"></p>
   <div class="fig">
-    <div class="hand-wrap"><svg id="hand-svg" viewBox="-80 -80 460 420" role="img" aria-label="Mà amb l'índex amunt, el polze cap a un costat i el dit del cor cap a l'observador"><defs><g id="hand-g">
-  <!-- índex, cap amunt -->
-  <path class="sk" d="M146 168 L146 52 C146 34 172 34 172 52 L174 170 Z"/>
-  <path class="ln" d="M149 92 C154 95 164 95 169 92"/>
-  <path class="ln" d="M148 128 C154 132 165 132 171 128"/>
-  <path class="ln" d="M151 46 C155 41 163 41 167 46" style="stroke-width:1.2"/>
-  <!-- palmell i canell -->
-  <path class="sk" d="M140 150 C124 152 112 170 112 196 C112 226 118 250 130 268 L134 318 L194 318 L192 270 C206 252 212 222 208 196 C206 176 196 158 176 152 Z"/>
-  <!-- anular i petit plegats -->
-  <path class="sk" d="M116 196 C102 196 98 214 112 220 C122 224 136 222 140 212 C142 200 130 194 116 196 Z"/>
-  <path class="sk" d="M118 222 C104 224 102 242 116 246 C126 249 138 246 140 236 C141 226 130 220 118 222 Z"/>
-  <path class="ln" d="M126 205 C130 207 133 210 134 214"/>
-  <path class="ln" d="M127 231 C131 233 134 236 135 240"/>
-  <!-- cor, cap a l'observador (en escorç, amunt a l'esquerra) -->
-  <path class="sk" d="M146 178 C132 172 108 150 96 136 C86 124 98 110 110 118 C124 128 148 148 158 160 C164 170 156 182 146 178 Z"/>
-  <ellipse cx="101" cy="124" rx="8" ry="6.5" transform="rotate(40 101 124)" style="fill:var(--nail);stroke:var(--skin-d);stroke-width:1.3"/>
-  <path class="ln" d="M126 136 C122 141 121 146 123 150"/>
-  <!-- polze, cap a la dreta -->
-  <path class="sk" d="M200 176 C222 166 252 162 270 164 C288 166 290 186 274 190 C254 194 230 198 208 206 C198 208 192 188 200 176 Z"/>
-  <path class="ln" d="M240 168 C238 175 238 184 241 192"/>
-  <ellipse cx="279" cy="176" rx="6" ry="8" style="fill:var(--nail);stroke:var(--skin-d);stroke-width:1.3"/>
-  <!-- puny de la màniga -->
-  <path d="M128 296 L198 296 L200 320 L126 320 Z" style="fill:var(--accent)"/>
-</g></defs><g id="hand-use"></g><g id="hand-lab"></g></svg></div>
+    <div class="hand-wrap"><svg id="hand-svg" viewBox="0 0 460 380" role="img" aria-label="Tres vectors perpendiculars: un per a cada dit de la mà"></svg></div>
     <p class="sv-cap" id="hand-cap"></p>
   </div>
   <ol id="ma-steps"></ol>
@@ -443,14 +420,26 @@ const TX={
 // esquerra: F = I×B  ⇒ I = +z (cap a tu);  dreta: I ∝ v×B ⇒ I = −z (cap endins)
 function canon(h){return {i:[1,0,0],p:[0,1,0],c:[0,0,h==='esq'?1:-1]};}
 function drawHand(){const t=TX[G.hand],esq=G.hand==='esq';$('ma-title').textContent=t.title;$('ma-lead').innerHTML=t.lead;$('ma-steps').innerHTML=t.steps.map(x=>'<li>'+x+'</li>').join('');$('ma-key').textContent=t.key;
-  $('hand-use').innerHTML=`<use href="#hand-g"${esq?' transform="translate(300,0) scale(-1,1)"':''}/>`;
-  const X=x=>esq?300-x:x;let L='';
-  const ar=(x1,y1,x2,y2,col,lab,ax,ay,anc)=>{L+=`<polygon style="fill:${col}" points="${arrowPts(X(x1),y1,X(x2),y2,8)}"/><text class="sv-l" style="fill:${col};font-size:20px" x="${X(ax)}" y="${ay}" text-anchor="${anc}">${lab}</text>`;};
-  ar(159,24,159,-46,'var(--cb)',t.lab.i,159,-56,'middle');
-  ar(294,177,350,177,'var(--accent)',t.lab.p,330,212,'middle');
-  ar(90,108,52,72,'var(--work)',t.lab.c,40,58,'middle');
-  $('hand-lab').innerHTML=L;
-  $('hand-cap').textContent=(esq?'Mà esquerra':'Mà dreta')+' · el dit del cor surt de la pantalla, cap a tu (⊙)';}
+  // origen i direccions: x dreta, y amunt, z cap a tu (dibuixat en diagonal avall a l'esquerra)
+  const O=[230,215],sx=esq?-1:1,L=150,zx=-0.62,zy=0.5;
+  const P=(x,y,z)=>[O[0]+x+z*zx,O[1]-y+z*zy];
+  let h='';
+  // cantonada de capsa: cares tènues que donen sensació de 3D
+  const face=(a,b,c,d)=>`<polygon points="${[a,b,c,d].map(q=>q[0].toFixed(1)+','+q[1].toFixed(1)).join(' ')}" style="fill:var(--accent-soft);stroke:var(--line)" stroke-width="1" opacity=".75"/>`;
+  const k=70;
+  h+=face(P(0,0,0),P(sx*k,0,0),P(sx*k,k,0),P(0,k,0));
+  h+=face(P(0,0,0),P(0,k,0),P(0,k,k),P(0,0,k));
+  h+=face(P(0,0,0),P(sx*k,0,0),P(sx*k,0,k),P(0,0,k));
+  const ar=(to,col,big,small,lx,ly,anc)=>{const a=P(0,0,0),b=to;h+=`<polygon style="fill:${col}" points="${arrowPts(a[0],a[1],b[0],b[1],10)}"/>`+
+    `<text class="sv-l" style="fill:${col};font-size:22px" x="${lx}" y="${ly}" text-anchor="${anc}">${big}</text><text class="sv-s" style="font-size:15px" x="${lx}" y="${ly+20}" text-anchor="${anc}">${small}</text>`;};
+  const ti=P(0,L,0),tp=P(sx*L,0,0),tc=P(0,0,L*1.05);
+  const nm={p:esq?'F':'v',pn:esq?'força':'moviment',c:'I',cn:esq?'corrent':'fem i corrent induït'};
+  ar(ti,'var(--cb)','Índex · B','camp magnètic',ti[0],ti[1]-34,'middle');
+  ar(tp,'var(--accent)','Polze · '+nm.p,nm.pn,tp[0]+(esq?-6:6),tp[1]+34,esq?'start':'end');
+  ar(tc,'var(--work)','Cor · I',nm.cn+' · cap a tu ⊙',tc[0]+20,tc[1]+32,'middle');
+  h+=`<circle cx="${O[0]}" cy="${O[1]}" r="6" style="fill:var(--fg)"/>`;
+  $('hand-svg').innerHTML=h;
+  $('hand-cap').textContent=(esq?'Mà esquerra':'Mà dreta')+' · Fes-ho amb la teva mà: els tres dits han de quedar perpendiculars, com les arestes d’una cantonada.';}
 subs.push(drawHand);
 
 /* =========================================================
@@ -591,7 +580,7 @@ show((location.hash||'').slice(1),false);
     var a=d.createElement('a');a.className='btn';a.href='https://tecnolyd.github.io/artefactes/regles-ma.html';a.target='_blank';a.rel='noopener';a.textContent='⛶ Obre a pantalla completa';
     var seg2=d.querySelector('.top .seg');if(seg2)seg2.parentNode.insertBefore(a,seg2);
   }
-  var br=d.querySelector('.brand');if(br){var v=d.createElement('span');v.className='ver';v.textContent='v2';br.appendChild(v);}
+  var br=d.querySelector('.brand');if(br){var v=d.createElement('span');v.className='ver';v.textContent='v3';br.appendChild(v);}
 })();
 </script>
 
