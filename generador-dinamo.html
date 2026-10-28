@@ -220,9 +220,10 @@ svg .hlmode [data-part].on{opacity:1}
   <button type="button" data-go="parts"><b>2</b>Parts del generador</button>
   <button type="button" data-go="alternador"><b>3</b>Corrent altern</button>
   <button type="button" data-go="dinamo"><b>4</b>Dinamo: de CA a CC</button>
-  <button type="button" data-go="real"><b>5</b>La dinamo real</button>
-  <button type="button" data-go="energia"><b>6</b>Mecànica → elèctrica</button>
-  <button type="button" data-go="quiz"><b>7</b>Autoavaluació</button>
+  <button type="button" data-go="colector"><b>5</b>El col·lector de prop</button>
+  <button type="button" data-go="real"><b>6</b>La dinamo real</button>
+  <button type="button" data-go="energia"><b>7</b>Mecànica → elèctrica</button>
+  <button type="button" data-go="quiz"><b>8</b>Autoavaluació</button>
 </nav>
 
 <main>
@@ -263,7 +264,7 @@ svg .hlmode [data-part].on{opacity:1}
   </table></div>
   <div class="cards">
     <div class="card"><h4>Llei de Faraday</h4><p>Es genera una fem induïda sempre que <b>varia el flux magnètic</b> que travessa un circuit. Com més ràpida és la variació, més gran és ε.</p></div>
-    <div class="card"><h4>Llei de Lenz</h4><p>El corrent induït té un sentit tal que <b>s'oposa a la causa que el produeix</b>. Ho veuràs al mòdul 6: per això costa fer girar un generador.</p></div>
+    <div class="card"><h4>Llei de Lenz</h4><p>El corrent induït té un sentit tal que <b>s'oposa a la causa que el produeix</b>. Ho veuràs al mòdul 7: per això costa fer girar un generador.</p></div>
   </div>
   <p class="key">Quan un conductor talla les línies d'un camp magnètic, s'hi indueix una fem ε. Sense moviment, o movent-se paral·lel al camp, no n'hi ha.</p>
   <div class="pager"><span></span><button class="btn primary" type="button" data-go="parts">Següent: Parts del generador →</button></div>
@@ -344,12 +345,32 @@ svg .hlmode [data-part].on{opacity:1}
     </tbody>
   </table></div>
   <p class="key">El col·lector de delgues inverteix la connexió de l'espira cada mitja volta, just quan ε = 0. Així rectifica: converteix la CA de l'espira en CC a la sortida.</p>
-  <div class="pager"><button class="btn" type="button" data-go="alternador">← Corrent altern</button><button class="btn primary" type="button" data-go="real">Següent: La dinamo real →</button></div>
+  <div class="pager"><button class="btn" type="button" data-go="alternador">← Corrent altern</button><button class="btn primary" type="button" data-go="colector">Següent: El col·lector de prop →</button></div>
+</section>
+
+<!-- ===== 5 COL·LECTOR DE PROP ===== -->
+<section class="mod" data-key="colector" hidden>
+  <p class="eyebrow">Mòdul 5 · Vista frontal</p>
+  <h2>El col·lector de delgues, de prop</h2>
+  <p class="lead">Mirem la dinamo de cara, en la direcció de l'eix. A l'esquerra, l'espira entre els pols; a la dreta, el col·lector ampliat amb les dues escombretes. Cada delga té el color del costat de l'espira on està soldada.</p>
+  <div id="sim-col"></div>
+  <div class="est">
+    <h3>Què has de mirar</h3>
+    <ul>
+      <li>Els <b>signes de les delgues</b> (+ i −) canvien cada mitja volta, igual que ε dins l'espira.</li>
+      <li>Les <b>escombretes no es mouen</b>. Quan una delga canvia de signe, ja ha passat a tocar l'altra escombreta.</li>
+      <li>Per això l'escombreta esquerra sempre toca la delga que en aquell moment és <b>+</b>, i la dreta, la que és <b>−</b>.</li>
+      <li>L'intercanvi es fa a l'espai aïllant entre delgues, just quan ε = 0.</li>
+    </ul>
+    <p>Amb 4 delgues i 2 espires, les escombretes connecten sempre amb l'espira que té més ε. Per això la tensió ja no baixa fins a zero.</p>
+  </div>
+  <p class="key">Les delgues giren i les escombretes són fixes: cada mitja volta s'intercanvien, just quan ε = 0. Així l'escombreta + sempre és la mateixa i el corrent exterior no canvia de sentit.</p>
+  <div class="pager"><button class="btn" type="button" data-go="dinamo">← Dinamo</button><button class="btn primary" type="button" data-go="real">Següent: La dinamo real →</button></div>
 </section>
 
 <!-- ===== 5 DINAMO REAL ===== -->
 <section class="mod" data-key="real" hidden>
-  <p class="eyebrow">Mòdul 5 · Espires i excitació</p>
+  <p class="eyebrow">Mòdul 6 · Espires i excitació</p>
   <h2>La dinamo real</h2>
   <p class="lead">Amb una sola espira, la CC té molts alts i baixos. Les dinamos reals tenen moltes bobines i un col·lector amb moltes delgues. A més, l'inductor sol ser un <b>electroimant</b>.</p>
   <div id="sim-real"></div>
@@ -359,12 +380,12 @@ svg .hlmode [data-part].on{opacity:1}
   </div>
   <div class="est note"><strong>Excitació independent.</strong> Al simulador, el corrent d'excitació ve d'una font externa (excitació independent). En moltes dinamos, l'inductor s'alimenta amb el corrent que genera la mateixa dinamo (autoexcitació).</div>
   <p class="key">Una dinamo real té moltes espires i delgues perquè la CC sigui més constant. Amb electroimant, el corrent d'excitació permet regular la fem.</p>
-  <div class="pager"><button class="btn" type="button" data-go="dinamo">← Dinamo</button><button class="btn primary" type="button" data-go="energia">Següent: Mecànica → elèctrica →</button></div>
+  <div class="pager"><button class="btn" type="button" data-go="colector">← El col·lector de prop</button><button class="btn primary" type="button" data-go="energia">Següent: Mecànica → elèctrica →</button></div>
 </section>
 
 <!-- ===== 6 ENERGIA ===== -->
 <section class="mod" data-key="energia" hidden>
-  <p class="eyebrow">Mòdul 6 · Simulador complet</p>
+  <p class="eyebrow">Mòdul 7 · Simulador complet</p>
   <h2>De l'energia mecànica a l'elèctrica</h2>
   <p class="lead">L'energia elèctrica no surt del no-res: la paga qui fa girar la manovella. Obre i tanca l'interruptor i mira com canvia l'esforç per fer-la girar.</p>
   <div id="sim-full"></div>
@@ -388,7 +409,7 @@ svg .hlmode [data-part].on{opacity:1}
 
 <!-- ===== 7 QUIZ ===== -->
 <section class="mod" data-key="quiz" hidden>
-  <p class="eyebrow">Mòdul 7 · Comprova-ho</p>
+  <p class="eyebrow">Mòdul 8 · Comprova-ho</p>
   <h2>Autoavaluació</h2>
   <p class="lead">Preguntes sobre la inducció, l'alternador i la dinamo.</p>
   <div class="quiz" id="quiz"></div>
@@ -497,7 +518,7 @@ const pl=(pts,st,w,extra)=>`<polyline points="${ps(pts)}" style="fill:none;strok
 const lbl=(x,y,t,lx,ly,anchor)=>`<line class="leader" x1="${lx}" y1="${ly}" x2="${(x+(anchor==='end'?-1:1)*(t.length*7.6+5)).toFixed(1)}" y2="${y-5}"/><circle cx="${lx}" cy="${ly}" r="2.5" style="fill:var(--muted)"/><text class="sv-l" x="${x}" y="${y}" text-anchor="${anchor||'start'}">${t}</text>`;
 
 const PARTS={
-  inductor:['Inductor','Crea el camp magnètic. Aquí són els pols N i S d’un imant permanent; també pot ser un electroimant (mòdul 5). A la dinamo, l’inductor és fix: forma part de l’estator.'],
+  inductor:['Inductor','Crea el camp magnètic. Aquí són els pols N i S d’un imant permanent; també pot ser un electroimant (mòdul 6). A la dinamo, l’inductor és fix: forma part de l’estator.'],
   induit:['Induït','És la bobina on s’indueix la fem ε. Aquí n’hi ha una sola espira (costats a i b). A la dinamo, l’induït gira: és el rotor.'],
   eix:['Eix i manovella','Per aquí entra l’energia mecànica. En lloc d’una manovella, pot ser una turbina, un motor o la roda d’una bicicleta.'],
   col:['Col·lector','Gira solidari amb l’espira. Pot ser de dos anells (alternador) o d’un anell partit en delgues aïllades (dinamo). Canvia-ho amb el botó i compara.'],
@@ -714,6 +735,103 @@ makeSim($('sim-din'),{id:'sd',col:'delgues',labels:true,controls:['labels','col'
 makeSim($('sim-real'),{id:'sr',col:'delgues',controls:['labels','N','exc']});
 makeSim($('sim-full'),{id:'sf',col:'delgues',controls:['labels','col','N','exc','switch','energy']});
 
+/* =========================================================
+   VISTA FRONTAL: espira + col·lector de delgues ampliat
+   ========================================================= */
+function makeColl(host){
+  const id='cc',s={th:PI/2,N:1,speed:1,slow:true,play:!reduce,t:0,buf:[],host};
+  host.innerHTML=`<div class="fig simfig"><div class="svgwrap"><svg id="cc-m" viewBox="0 0 640 360" role="img" aria-label="Vista frontal de l'espira entre els pols i del col·lector de delgues amb les escombretes"></svg></div>`+
+   `<div class="gtitle"><b>Gràfica ε–t</b><span class="lg"><i></i>tensió a les escombretes</span><span class="lg"><i class="dash"></i>ε dins l'espira</span></div>`+
+   `<svg id="cc-g" viewBox="0 0 640 175" role="img" aria-label="Gràfica de la fem en funció del temps"></svg></div>`+
+   `<div class="row"><button class="btn primary" type="button" id="cc-play"></button><button class="btn" type="button" id="cc-step">Pas a pas (+45°)</button><button class="btn" type="button" id="cc-slow" aria-pressed="true">Càmera lenta</button></div>`+
+   `<div class="controls"><label class="ctl" for="cc-sp"><span>Velocitat de gir</span><input id="cc-sp" type="range" min="0.5" max="2" step="0.25" value="1"><output id="cc-spo"></output></label></div>`+
+   `<div class="segs"><div class="grp"><span>Col·lector</span><div class="seg" role="group" aria-label="Nombre de delgues"><button type="button" data-cn="1">2 delgues · 1 espira</button><button type="button" data-cn="2">4 delgues · 2 espires</button></div></div></div>`+
+   `<p class="msg" id="cc-msg"></p>`;
+  const CX=165,CY=170,RE=70,KX2=468,KY2=170,RO=64,RI=38,G=0.09;
+  const amp=()=>s.speed/2;
+  const outN=th=>{let m=0;for(let k=0;k<s.N;k++)m=Math.max(m,Math.abs(Math.cos(th+k*PI/s.N)));return m};
+  const activeK=()=>{let b=0,m=-1;for(let k=0;k<s.N;k++){const v=Math.abs(Math.cos(s.th+k*PI/s.N));if(v>m+1e-9){m=v;b=k}}return b};
+  const Q=(cx,cy,r,a)=>[cx+r*Math.cos(a),cy-r*Math.sin(a)];
+  function sample(){s.buf.push({t:s.t,e:amp()*Math.cos(s.th),v:amp()*outN(s.th)});while(s.buf.length&&s.t-s.buf[0].t>4.2)s.buf.shift();}
+  function gapDist(a){ // distància angular de l'angle a a l'espai aïllant més proper
+    let best=9;for(let m=0;m<2*s.N;m++){const g=s.th+m*PI/s.N+PI/(2*s.N);let d=Math.abs(((a-g)%TAU+TAU)%TAU);d=Math.min(d,TAU-d);best=Math.min(best,d)}return best;}
+  function draw(){
+    const th=s.th,N=s.N,ak=activeK(),A=amp(),out=A*outN(th),I=out;let h='';
+    // ---- esquerra: espira entre els pols
+    h+=`<text class="sv-t" x="${CX}" y="26" text-anchor="middle">L'espira, vista de cara</text>`;
+    h+=`<rect x="18" y="66" width="56" height="208" rx="6" class="sv-hot"/><text class="sv-pole tx-hot" x="46" y="184" text-anchor="middle">N</text>`;
+    h+=`<rect x="256" y="66" width="56" height="208" rx="6" class="sv-cold"/><text class="sv-pole tx-cold" x="284" y="184" text-anchor="middle">S</text>`;
+    for(let i=0;i<6;i++){const y=88+i*33;h+=`<line x1="76" y1="${y}" x2="254" y2="${y}" stroke="var(--muted)" stroke-width="1" stroke-dasharray="4 4"/><polygon class="fl-neu" points="${arrowPts(100,y,114,y,2)}"/><polygon class="fl-neu" points="${arrowPts(222,y,236,y,2)}"/>`;}
+    let arc=[];for(let a=62;a<=118;a+=4)arc.push(Q(CX,CY,100,a*PI/180));
+    const a1=arc[arc.length-2],a2=arc[arc.length-1];
+    h+=pl(arc,'var(--accent)',2.5)+`<polygon style="fill:var(--accent)" points="${arrowPts(a1[0],a1[1],a2[0]+(a2[0]-a1[0])*2,a2[1]+(a2[1]-a1[1])*2,3)}"/>`;
+    for(let k=0;k<N;k++){const t=th+k*PI/N,act=k===ak,op=act?1:.3,pa=Q(CX,CY,RE,t),pb=Q(CX,CY,RE,t+PI),e=Math.cos(t);
+      h+=`<g opacity="${op}"><line x1="${F(pa[0])}" y1="${F(pa[1])}" x2="${F(pb[0])}" y2="${F(pb[1])}" style="stroke:var(--cu)" stroke-width="3"/>`;
+      for(const [p,sd,sg] of [[pa,'a',1],[pb,'b',-1]]){
+        h+=`<circle cx="${F(p[0])}" cy="${F(p[1])}" r="14" style="fill:var(--s${sd}-soft);stroke:var(--s${sd})" stroke-width="2.5"/>`;
+        if(act&&Math.abs(e)>0.05){const into=e*sg>0,x=p[0],y=p[1];
+          h+=into?`<line x1="${F(x-6)}" y1="${F(y-6)}" x2="${F(x+6)}" y2="${F(y+6)}" style="stroke:var(--work)" stroke-width="3"/><line x1="${F(x-6)}" y1="${F(y+6)}" x2="${F(x+6)}" y2="${F(y-6)}" style="stroke:var(--work)" stroke-width="3"/>`:`<circle cx="${F(x)}" cy="${F(y)}" r="4.5" style="fill:var(--work)"/>`;}
+        if(act){const lp=Q(CX,CY,RE+26,t+(sd==='b'?PI:0));h+=`<text class="sv-t" style="fill:var(--s${sd})" x="${F(lp[0])}" y="${F(lp[1]+5)}" text-anchor="middle">${sd}</text>`;}
+      }
+      h+=`</g>`;}
+    h+=`<circle cx="${CX}" cy="${CY}" r="5" style="fill:var(--muted)"/>`;
+    h+=`<text class="sv-s" x="${CX}" y="300" text-anchor="middle">⊗ corrent cap endins · ⊙ cap enfora</text>`;
+    // ---- dreta: col·lector ampliat
+    h+=`<text class="sv-t" x="${KX2}" y="26" text-anchor="middle">El col·lector, ampliat</text>`;
+    for(let m=0;m<2*N;m++){const k=m%N,sd=m<N?'a':'b',ctr=th+k*PI/N+(sd==='b'?PI:0),hw=PI/(2*N),act=k===ak,a0=ctr-hw+G,a1=ctr+hw-G;
+      const o0=Q(KX2,KY2,RO,a0),o1=Q(KX2,KY2,RO,a1),i1=Q(KX2,KY2,RI,a1),i0=Q(KX2,KY2,RI,a0);
+      const fill=act?`var(--s${sd}-soft)`:'var(--bg)',st=act?`var(--s${sd})`:'var(--muted)';
+      h+=`<path d="M${F(o0[0])} ${F(o0[1])} A${RO} ${RO} 0 0 0 ${F(o1[0])} ${F(o1[1])} L${F(i1[0])} ${F(i1[1])} A${RI} ${RI} 0 0 1 ${F(i0[0])} ${F(i0[1])} Z" style="fill:${fill};stroke:${st}" stroke-width="2"/>`;
+      if(act){const ek=Math.cos(th+k*PI/N),sign=Math.abs(ek)<0.05?'0':((sd==='b')===(ek>0)?'+':'−'),lp=Q(KX2,KY2,(RO+RI)/2,ctr);
+        h+=`<text class="sv-t" style="fill:var(--s${sd})" x="${F(lp[0])}" y="${F(lp[1]+6)}" text-anchor="middle">${sd} ${sign}</text>`;}}
+    h+=`<circle cx="${KX2}" cy="${KY2}" r="${RI-8}" style="fill:var(--surface);stroke:var(--muted)" stroke-width="1.5"/><circle cx="${KX2}" cy="${KY2}" r="6" style="fill:var(--muted)"/><text class="sv-s" x="${KX2}" y="${KY2+22}" text-anchor="middle">eix</text>`;
+    // escombretes
+    const commL=gapDist(PI)<G+0.07,commR=gapDist(0)<G+0.07,comm=commL||commR;
+    const brush=(x0,dir,on,sign)=>{const xw=x0+dir*34,xh=xw+dir*22;let b='';
+      b+=`<rect x="${F(Math.min(x0,xw))}" y="${KY2-13}" width="34" height="26" rx="3" style="fill:var(--gr);stroke:${on?'var(--work)':'var(--gr)'}" stroke-width="${on?3:1}"/>`;
+      let z=`M${xw} ${KY2}`;for(let i=1;i<=6;i++)z+=` L${F(xw+dir*i*22/6)} ${KY2+(i%2?-7:7)}`;
+      b+=`<path d="${z}" style="fill:none;stroke:var(--muted)" stroke-width="1.6"/><rect x="${F(Math.min(xh,xh+dir*8))}" y="${KY2-16}" width="8" height="32" style="fill:var(--muted)"/>`;
+      b+=`<text class="sv-pole" style="font-size:26px;fill:var(--work)" x="${F(x0+dir*17)}" y="${KY2-22}" text-anchor="middle">${sign}</text>`;return b;};
+    h+=brush(KX2-RO+1,-1,commL,'+')+brush(KX2+RO-1,1,commR,'−');
+    h+=`<text class="sv-s" x="${KX2}" y="${KY2-RO-14}" text-anchor="middle">Escombretes fixes · delgues que giren</text>`;
+    // circuit exterior
+    const xl=KX2-RO-64,xr=KX2+RO+64,yb=322,glow=Math.min(1,I*1.6);
+    h+=pl([[xl,KY2],[xl,yb],[xr,yb],[xr,KY2]],'var(--fg)',2);
+    const bx=xr,by=250;
+    h+=`<circle cx="${bx}" cy="${by}" r="26" style="fill:var(--work)" opacity="${(glow*.35).toFixed(2)}"/><circle cx="${bx}" cy="${by}" r="12" style="fill:var(--surface);stroke:var(--fg)" stroke-width="2"/><circle cx="${bx}" cy="${by}" r="12" style="fill:var(--work)" opacity="${(glow*.85).toFixed(2)}"/><path d="M${bx-6} ${by+4} l3 -8 l3 8 l3 -8 l3 8" style="fill:none;stroke:var(--fg)" stroke-width="1.4"/>`;
+    h+=galv(KX2,yb,20,I,'');
+    if(I>0.03){const w=3+Math.min(5,I*6);
+      h+=`<polygon class="fl-work" points="${arrowPts(xl,232,xl,262,w)}"/><polygon class="fl-work" points="${arrowPts(xl+30,yb,xl+60,yb,w)}"/><polygon class="fl-work" points="${arrowPts(xr-60,yb,xr-30,yb,w)}"/><polygon class="fl-work" points="${arrowPts(xr,300,xr,284,w)}"/>`;}
+    $('cc-m').innerHTML=h;
+    // missatge
+    const t=th+ak*PI/N,ek=Math.cos(t),left=ek<0?'a':'b',right=left==='a'?'b':'a';
+    let m;
+    if(comm)m='<span class="pill info">Canvi de delga</span> Les escombretes passen per l’espai aïllant entre dues delgues. Just ara '+(N===1?'ε = 0':'les dues espires tenen la mateixa ε')+' i la connexió s’intercanvia.';
+    else m=`<span class="pill ok">L’escombreta + toca la delga ${left}</span> La delga ${left} és ara el pol positiu de l’espira${N>1?' '+(ak+1):''}, i la delga ${right}, el negatiu.`;
+    $('cc-msg').innerHTML=m;
+  }
+  function graph(){const X0=46,X1=626,Y0=86,AMP=72,W=4;let g='';
+    g+=`<line x1="${X0}" y1="${Y0}" x2="${X1}" y2="${Y0}" stroke="var(--muted)" stroke-width="1"/><line x1="${X0}" y1="${Y0-AMP-6}" x2="${X0}" y2="${Y0+AMP+6}" stroke="var(--muted)" stroke-width="1"/>`+
+      `<line x1="${X0}" y1="${Y0-AMP}" x2="${X1}" y2="${Y0-AMP}" stroke="var(--line)" stroke-dasharray="3 4"/><line x1="${X0}" y1="${Y0+AMP}" x2="${X1}" y2="${Y0+AMP}" stroke="var(--line)" stroke-dasharray="3 4"/>`+
+      `<text class="sv-m" x="${X0-8}" y="${Y0+4}" text-anchor="end">0</text><text class="sv-m" x="${X0-8}" y="${Y0-AMP+12}" text-anchor="end">+</text><text class="sv-m" x="${X0-8}" y="${Y0+AMP-2}" text-anchor="end">−</text><text class="sv-m" x="${X1}" y="${Y0+18}" text-anchor="end">t</text>`;
+    const xs=b=>X1-(s.t-b.t)/W*(X1-X0);
+    if(s.buf.length>1){let pe='',pv='';s.buf.forEach(b=>{const x=xs(b);if(x<X0)return;pe+=(pe?'L':'M')+F(x)+' '+F(Y0-b.e*AMP);pv+=(pv?'L':'M')+F(x)+' '+F(Y0-b.v*AMP)});
+      g+=`<path d="${pe}" style="fill:none;stroke:var(--muted)" stroke-width="1.6" stroke-dasharray="5 4"/><path d="${pv}" style="fill:none;stroke:var(--work)" stroke-width="3" stroke-linejoin="round"/>`;
+      const lb=s.buf[s.buf.length-1];g+=`<circle cx="${X1}" cy="${F(Y0-lb.v*AMP)}" r="4.5" style="fill:var(--work)"/>`;}
+    $('cc-g').innerHTML=g;}
+  function sync(){$('cc-play').textContent=s.play?'⏸ Atura':'▶ Engega';$('cc-slow').setAttribute('aria-pressed',s.slow);$('cc-spo').textContent=fmt(s.speed,2)+' v/s';
+    host.querySelectorAll('[data-cn]').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.cn===s.N));}
+  const adv=d=>{s.th+=TAU*s.speed*d;s.t+=d;};
+  s.tick=dt=>{if(s.play){const d=dt*(s.slow?0.2:1),n=Math.max(1,Math.ceil(d/0.008));for(let i=0;i<n;i++){adv(d/n);sample()}}draw();graph();};
+  $('cc-play').addEventListener('click',()=>{s.play=!s.play;sync()});
+  $('cc-step').addEventListener('click',()=>{s.play=false;const tot=(PI/4)/(TAU*s.speed);for(let i=0;i<24;i++){adv(tot/24);sample()}s.th=Math.round(s.th/(PI/4))*(PI/4);sync();draw();graph()});
+  $('cc-slow').addEventListener('click',()=>{s.slow=!s.slow;sync()});
+  $('cc-sp').addEventListener('input',e=>{s.speed=+e.target.value;sync()});
+  host.querySelectorAll('[data-cn]').forEach(b=>b.addEventListener('click',()=>{s.N=+b.dataset.cn;sync();draw()}));
+  sync();draw();graph();sims.push(s);return s;
+}
+makeColl($('sim-col'));
+
 /* parts: ressaltar */
 const sp=sims[0];
 document.querySelectorAll('[data-part-btn]').forEach(b=>b.addEventListener('click',()=>{const p=b.dataset.partBtn;sp.setHL(p);
@@ -770,7 +888,7 @@ show((location.hash||'').slice(1),false);
     var a=d.createElement('a');a.className='btn';a.href='https://tecnolyd.github.io/artefactes/generador-dinamo.html';a.target='_blank';a.rel='noopener';a.textContent='⛶ Obre a pantalla completa';
     var seg2=d.querySelector('.top .seg');if(seg2)seg2.parentNode.insertBefore(a,seg2);
   }
-  var br=d.querySelector('.brand');if(br){var v=d.createElement('span');v.className='ver';v.textContent='v1';br.appendChild(v);}
+  var br=d.querySelector('.brand');if(br){var v=d.createElement('span');v.className='ver';v.textContent='v2';br.appendChild(v);}
 })();
 </script>
 
