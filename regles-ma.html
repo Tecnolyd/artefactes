@@ -223,9 +223,9 @@ main{max-width:none}
 
 /* ---- específic: regles de la mà ----
    Colors: camp B = blau (fred), corrent I = ambre (treball), força F / moviment v = accent */
-:root{--cb:var(--cold);--skin:#f2cfae;--skin-d:#c99a76}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--skin:#c9a283;--skin-d:#8d6a50}}
-:root[data-theme="dark"]{--skin:#c9a283;--skin-d:#8d6a50}
+:root{--cb:var(--cold);--skin:#f2cfae;--skin-d:#b9845f;--nail:#f7e1cf}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--skin:#d8b08c;--skin-d:#8d6a50;--nail:#ecd2bd}}
+:root[data-theme="dark"]{--skin:#d8b08c;--skin-d:#8d6a50;--nail:#ecd2bd}
 .c-b{color:var(--cb)} .c-i{color:var(--work)} .c-f{color:var(--accent)}
 .fin{font-family:var(--f-display);font-weight:700}
 .hl-esq{background:var(--accent-soft)} body.dre .hl-esq{background:transparent} body.dre .hl-dre{background:var(--accent-soft)}
@@ -236,6 +236,10 @@ main{max-width:none}
 .btn.a-ok{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)} .btn.a-bad{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
 .btn:disabled{cursor:default}
 #ma-steps li{margin:.35em 0}
+.hand-wrap{max-width:440px;margin:0 auto}.hand-wrap svg{display:block;width:100%;height:auto}
+.sk{fill:var(--skin);stroke:var(--skin-d);stroke-width:2.2;stroke-linejoin:round;stroke-linecap:round}
+.ln{fill:none;stroke:var(--skin-d);stroke-width:1.6;stroke-linecap:round}
+.sv-cap{text-align:center;color:var(--muted);font-family:var(--f-display);margin:.2em 0 0}
 .sv-l{paint-order:stroke;stroke:var(--surface);stroke-width:5px;stroke-linejoin:round}
 @media (max-width:760px){.pr-grid{grid-template-columns:minmax(0,1fr)}}
 </style>
@@ -294,10 +298,31 @@ main{max-width:none}
   <h2 id="ma-title">La regla de la mà esquerra</h2>
   <p class="lead" id="ma-lead"></p>
   <div class="fig">
-    <div class="svgwrap"><svg id="hand-svg" viewBox="0 0 640 360" role="img" aria-label="Mà amb els tres dits perpendiculars, cadascun assenyalant una magnitud"></svg></div>
-    <div class="controls">
-      <label class="ctl" for="hand-yaw"><span>Gira la vista</span><input id="hand-yaw" type="range" min="-80" max="80" step="1" value="-30"><output id="hand-yawo"></output></label>
-    </div>
+    <div class="hand-wrap"><svg id="hand-svg" viewBox="-80 -80 460 420" role="img" aria-label="Mà amb l'índex amunt, el polze cap a un costat i el dit del cor cap a l'observador"><defs><g id="hand-g">
+  <!-- índex, cap amunt -->
+  <path class="sk" d="M146 168 L146 52 C146 34 172 34 172 52 L174 170 Z"/>
+  <path class="ln" d="M149 92 C154 95 164 95 169 92"/>
+  <path class="ln" d="M148 128 C154 132 165 132 171 128"/>
+  <path class="ln" d="M151 46 C155 41 163 41 167 46" style="stroke-width:1.2"/>
+  <!-- palmell i canell -->
+  <path class="sk" d="M140 150 C124 152 112 170 112 196 C112 226 118 250 130 268 L134 318 L194 318 L192 270 C206 252 212 222 208 196 C206 176 196 158 176 152 Z"/>
+  <!-- anular i petit plegats -->
+  <path class="sk" d="M116 196 C102 196 98 214 112 220 C122 224 136 222 140 212 C142 200 130 194 116 196 Z"/>
+  <path class="sk" d="M118 222 C104 224 102 242 116 246 C126 249 138 246 140 236 C141 226 130 220 118 222 Z"/>
+  <path class="ln" d="M126 205 C130 207 133 210 134 214"/>
+  <path class="ln" d="M127 231 C131 233 134 236 135 240"/>
+  <!-- cor, cap a l'observador (en escorç, amunt a l'esquerra) -->
+  <path class="sk" d="M146 178 C132 172 108 150 96 136 C86 124 98 110 110 118 C124 128 148 148 158 160 C164 170 156 182 146 178 Z"/>
+  <ellipse cx="101" cy="124" rx="8" ry="6.5" transform="rotate(40 101 124)" style="fill:var(--nail);stroke:var(--skin-d);stroke-width:1.3"/>
+  <path class="ln" d="M126 136 C122 141 121 146 123 150"/>
+  <!-- polze, cap a la dreta -->
+  <path class="sk" d="M200 176 C222 166 252 162 270 164 C288 166 290 186 274 190 C254 194 230 198 208 206 C198 208 192 188 200 176 Z"/>
+  <path class="ln" d="M240 168 C238 175 238 184 241 192"/>
+  <ellipse cx="279" cy="176" rx="6" ry="8" style="fill:var(--nail);stroke:var(--skin-d);stroke-width:1.3"/>
+  <!-- puny de la màniga -->
+  <path d="M128 296 L198 296 L200 320 L126 320 Z" style="fill:var(--accent)"/>
+</g></defs><g id="hand-use"></g><g id="hand-lab"></g></svg></div>
+    <p class="sv-cap" id="hand-cap"></p>
   </div>
   <ol id="ma-steps"></ol>
   <p class="key" id="ma-key"></p>
@@ -318,7 +343,6 @@ main{max-width:none}
       <div class="grp"><span>Imant</span><div class="seg" role="group" aria-label="Posició dels pols"><button type="button" data-b="1">N a l'esquerra</button><button type="button" data-b="-1">N a la dreta</button></div></div>
       <div class="grp" id="g-i"><span>Corrent</span><div class="seg" role="group" aria-label="Sentit del corrent"><button type="button" data-i="1">Cap a tu ⊙</button><button type="button" data-i="-1">Cap endins ⊗</button><button type="button" data-i="0">Desconnectat</button></div></div>
       <div class="grp" id="g-v" hidden><span>Moviment del conductor</span><div class="seg" role="group" aria-label="Moviment del conductor"><button type="button" data-v="1">Amunt</button><button type="button" data-v="-1">Avall</button><button type="button" data-v="0">Quiet</button></div></div>
-      <div class="grp"><span>Mostra</span><div class="seg" role="group" aria-label="Què es mostra"><button type="button" id="sim-hand" aria-pressed="true">La mà</button></div></div>
     </div>
     <div class="stats">
       <div class="stat"><div class="k">Camp B (índex)</div><div class="v c-b" id="st-b"></div></div>
@@ -398,24 +422,6 @@ function arrow3(v,a,b,col,w,label,lcol){const A=prj(v,a),B=prj(v,b);let s=`<poly
   return {d:(A[2]+B[2])/2,s};}
 function render(svg,prims,extra){prims.sort((a,b)=>a.d-b.d);svg.innerHTML=prims.map(p=>p.s).join('')+(extra||'');}
 
-/* ---------- la mà (capsules) ---------- */
-// dirs: {p:[...], i:[...], c:[...]} vectors unitaris del polze, índex i cor
-function handPrims(v,o,dirs,scale){const out=[],sc=scale||1,add=(a,b,w)=>{const A=prj(v,a),B=prj(v,b);
-    out.push({d:(A[2]+B[2])/2-1,s:`<line x1="${F(A[0])}" y1="${F(A[1])}" x2="${F(B[0])}" y2="${F(B[1])}" style="stroke:var(--skin-d)" stroke-width="${w+3}" stroke-linecap="round"/><line x1="${F(A[0])}" y1="${F(A[1])}" x2="${F(B[0])}" y2="${F(B[1])}" style="stroke:var(--skin)" stroke-width="${w}" stroke-linecap="round"/>`});};
-  const pt=(d,k)=>[o[0]+d[0]*k*sc,o[1]+d[1]*k*sc,o[2]+d[2]*k*sc];
-  const pm=(a,b,k)=>[o[0]+(a[0]*k[0]+b[0]*k[1])*sc,o[1]+(a[1]*k[0]+b[1]*k[1])*sc,o[2]+(a[2]*k[0]+b[2]*k[1])*sc];
-  // palmell: banda gruixuda entre l'arrel de l'índex i el canell (oposat al polze)
-  const wrist=[-dirs.i[0]*0.2-dirs.p[0]*0.55,-dirs.i[1]*0.2-dirs.p[1]*0.55,-dirs.i[2]*0.2-dirs.p[2]*0.55];
-  add(pt(wrist,40),pt(dirs.i,10),40);
-  add(pm(dirs.i,dirs.p,[-0.05,-0.42]).map((x,j)=>x),pm(dirs.i,dirs.p,[0.12,0.05]),42);
-  // anular i petit plegats (en el sentit del cor, curts)
-  add(pm(dirs.i,dirs.p,[0.08,-0.30]),pm(dirs.c,dirs.p,[0.42,-0.34]),15);
-  add(pm(dirs.i,dirs.p,[0.02,-0.48]),pm(dirs.c,dirs.p,[0.36,-0.52]),13);
-  add(pt([0,0,0],0),pt(dirs.c,62),16);   // cor
-  add(pm(dirs.i,dirs.p,[0.05,0.08]),pt(dirs.i,78),16); // índex
-  add(pm(dirs.i,dirs.p,[-0.18,0.05]),pt(dirs.p,64),18);  // polze
-  return out;}
-
 /* ---------- estat global: quina mà ---------- */
 const G={hand:store.get('rm-hand')==='dre'?'dre':'esq'};
 const subs=[];
@@ -436,23 +442,21 @@ const TX={
 // posició canònica: índex cap a la dreta (+x), polze amunt (+y); el cor surt de la física:
 // esquerra: F = I×B  ⇒ I = +z (cap a tu);  dreta: I ∝ v×B ⇒ I = −z (cap endins)
 function canon(h){return {i:[1,0,0],p:[0,1,0],c:[0,0,h==='esq'?1:-1]};}
-let handYaw=-30;
-function drawHand(){const t=TX[G.hand];$('ma-title').textContent=t.title;$('ma-lead').innerHTML=t.lead;$('ma-steps').innerHTML=t.steps.map(x=>'<li>'+x+'</li>').join('');$('ma-key').textContent=t.key;
-  const v=makeView(320,195,handYaw,16),d=canon(G.hand),o=[0,-10,0];
-  const prims=handPrims(v,o,d,1.15);
-  const tip=(u,k)=>[o[0]+u[0]*k,o[1]+u[1]*k,o[2]+u[2]*k];
-  prims.push(arrow3(v,tip(d.i,92),tip(d.i,175),'var(--cb)',7,t.lab.i));
-  prims.push(arrow3(v,tip(d.p,78),tip(d.p,160),'var(--accent)',7,t.lab.p));
-  prims.push(arrow3(v,tip(d.c,74),tip(d.c,160),'var(--work)',7,t.lab.c));
-  render($('hand-svg'),prims,`<text class="sv-t" x="20" y="30">${G.hand==='esq'?'Mà esquerra':'Mà dreta'}</text><text class="sv-s" x="20" y="345">Gira la vista per veure que els tres dits són perpendiculars.</text>`);
-  $('hand-yawo').textContent=handYaw+'°';}
-$('hand-yaw').addEventListener('input',e=>{handYaw=+e.target.value;drawHand()});
+function drawHand(){const t=TX[G.hand],esq=G.hand==='esq';$('ma-title').textContent=t.title;$('ma-lead').innerHTML=t.lead;$('ma-steps').innerHTML=t.steps.map(x=>'<li>'+x+'</li>').join('');$('ma-key').textContent=t.key;
+  $('hand-use').innerHTML=`<use href="#hand-g"${esq?' transform="translate(300,0) scale(-1,1)"':''}/>`;
+  const X=x=>esq?300-x:x;let L='';
+  const ar=(x1,y1,x2,y2,col,lab,ax,ay,anc)=>{L+=`<polygon style="fill:${col}" points="${arrowPts(X(x1),y1,X(x2),y2,8)}"/><text class="sv-l" style="fill:${col};font-size:20px" x="${X(ax)}" y="${ay}" text-anchor="${anc}">${lab}</text>`;};
+  ar(159,24,159,-46,'var(--cb)',t.lab.i,159,-56,'middle');
+  ar(294,177,350,177,'var(--accent)',t.lab.p,330,212,'middle');
+  ar(90,108,52,72,'var(--work)',t.lab.c,40,58,'middle');
+  $('hand-lab').innerHTML=L;
+  $('hand-cap').textContent=(esq?'Mà esquerra':'Mà dreta')+' · el dit del cor surt de la pantalla, cap a tu (⊙)';}
 subs.push(drawHand);
 
 /* =========================================================
    MÒDUL 3 · SIMULADOR
    ========================================================= */
-const S={b:1,i:1,vv:1,ry:0,yaw:-30,hand:true,t:0};
+const S={b:1,i:1,vv:1,ry:0,yaw:-30,hand:false,t:0};
 const dirTxt=y=>y>0?'amunt':y<0?'avall':'—';
 const zTxt=z=>z>0?'⊙ cap a tu':z<0?'⊗ cap endins':'—';
 function physics(){ // vectors en coordenades del món: x dreta, y amunt, z cap a l'observador
@@ -478,7 +482,6 @@ function drawSim(){
   // vectors al centre del conductor
   const o=[0,ry+46,0],tip=(u,k)=>[o[0]+u[0]*k,o[1]+u[1]*k,o[2]+u[2]*k];
   const dB=[S.b,0,0],dI=[0,0,ph.Iz||0],dP=[0,ph.Py||0,0];
-  if(S.hand&&on){prims.push(...handPrims(v,o,{i:dB,p:dP,c:dI},0.72));}
   const lab=TX[G.hand].lab;
   prims.push(arrow3(v,tip(dB,S.hand&&on?62:8),tip(dB,S.hand&&on?108:92),'var(--cb)',6,lab.i));
   if(on){prims.push(arrow3(v,tip(dI,S.hand&&on?50:8),tip(dI,S.hand&&on?120:95),'var(--work)',6,lab.c));
@@ -504,7 +507,6 @@ function syncSim(){const esq=G.hand==='esq';$('g-i').hidden=!esq;$('g-v').hidden
   document.querySelectorAll('[data-b]').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.b===S.b));
   document.querySelectorAll('[data-i]').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.i===S.i));
   document.querySelectorAll('[data-v]').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.v===S.vv));
-  $('sim-hand').setAttribute('aria-pressed',S.hand);
   $('sim-lead').innerHTML=esq?'El conductor està connectat a una <b>pila</b>. Quan hi circula corrent, el camp de l’imant l’empeny. Canvia el corrent o els pols i mira cap on es mou.':'Ara no hi ha pila: <b>movem nosaltres</b> el conductor. Mira quin corrent s’hi indueix; el mesura el galvanòmetre connectat als extrems.';
   $('sim-est').innerHTML=esq?'<ul><li>Si inverteixes el <b>corrent</b>, la força s’inverteix.</li><li>Si intercanvies els <b>pols</b>, la força també s’inverteix.</li><li>Si inverteixes les dues coses, la força no canvia.</li></ul><p>És el principi del <b>motor elèctric</b>: un corrent dins d’un camp produeix moviment.</p>':'<ul><li>Si canvies el sentit del <b>moviment</b>, el corrent induït s’inverteix.</li><li>Si intercanvies els <b>pols</b>, també s’inverteix.</li><li>Si el conductor és quiet, no hi ha corrent.</li></ul><p>És el principi del <b>generador</b>: el moviment dins d’un camp produeix corrent. Ho pots veure a l’artefacte «Generadors i dinamo».</p>';
   $('sim-key').textContent=esq?'La força sobre un conductor és perpendicular al camp i al corrent. Mà esquerra: índex B, cor I, polze F.':'La fem induïda és perpendicular al camp i al moviment. Mà dreta: índex B, polze v, cor I.';
@@ -512,7 +514,6 @@ function syncSim(){const esq=G.hand==='esq';$('g-i').hidden=!esq;$('g-v').hidden
 document.querySelectorAll('[data-b]').forEach(b=>b.addEventListener('click',()=>{S.b=+b.dataset.b;syncSim()}));
 document.querySelectorAll('[data-i]').forEach(b=>b.addEventListener('click',()=>{S.i=+b.dataset.i;syncSim()}));
 document.querySelectorAll('[data-v]').forEach(b=>b.addEventListener('click',()=>{S.vv=+b.dataset.v;syncSim()}));
-$('sim-hand').addEventListener('click',()=>{S.hand=!S.hand;syncSim()});
 $('sim-yaw').addEventListener('input',e=>{S.yaw=+e.target.value;drawSim()});
 subs.push(()=>{S.ry=0;syncSim()});
 function simStep(dt){const ph=physics();
@@ -590,7 +591,7 @@ show((location.hash||'').slice(1),false);
     var a=d.createElement('a');a.className='btn';a.href='https://tecnolyd.github.io/artefactes/regles-ma.html';a.target='_blank';a.rel='noopener';a.textContent='⛶ Obre a pantalla completa';
     var seg2=d.querySelector('.top .seg');if(seg2)seg2.parentNode.insertBefore(a,seg2);
   }
-  var br=d.querySelector('.brand');if(br){var v=d.createElement('span');v.className='ver';v.textContent='v1';br.appendChild(v);}
+  var br=d.querySelector('.brand');if(br){var v=d.createElement('span');v.className='ver';v.textContent='v2';br.appendChild(v);}
 })();
 </script>
 
