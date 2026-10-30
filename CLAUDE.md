@@ -23,7 +23,7 @@ Guia per continuar fent artefactes en una conversa nova. Llegeix-la sencera aban
 | maquines-termiques.html | Màquines de combustió interna (v6.1) | 2n BAT → Termodinàmica |
 | forces-moments.html | Forces i moments | 1r BAT i 2n BAT → Estàtica (mateix fitxer) |
 | circumferencia-unitat.html | Raons trigonomètriques | Eines matemàtiques |
-| generador-dinamo.html | Generadors i dinamo (v6, autoavaluació a Google Forms: autoavaluacio-generador-dinamo.gs) | 1r BAT → Màquines elèctriques |
+| generador-dinamo.html | Generadors i dinamo (v7, autoavaluació a Google Forms: autoavaluacio-generador-dinamo.gs) | 1r BAT → Màquines elèctriques |
 | regles-ma.html | Regles de la mà esquerra i dreta (v4, pendent foto de la mà) | 1r BAT → Màquines elèctriques |
 
 Pendent: **Lleis de Kirchhoff** (1r BAT → Electricitat).

@@ -248,12 +248,13 @@ main{max-width:none}
   <p class="lead">Un generador transforma <b style="color:var(--accent)">energia mecànica</b> en <b style="color:var(--work)">energia elèctrica</b>. Ho aconsegueix amb la <b>inducció electromagnètica</b>: quan un conductor es mou dins d'un camp magnètic i en talla les línies, hi apareix una <b>força electromotriu induïda, ε</b>.</p>
   <div class="fig">
     <div class="svgwrap ind-svg"><svg id="ind-svg" viewBox="0 0 640 340" role="img" aria-label="Conductor que es mou entre els pols d'un imant, amb un galvanòmetre que indica la fem induïda"></svg></div>
-    <div class="row" style="margin-top:10px" role="group" aria-label="Moviment del conductor">
+    <div class="segs" style="margin-top:10px"><div class="grp" style="width:100%"><span>Com es mou el conductor? Tria un moviment</span></div></div>
+    <div class="row" style="margin-top:4px" role="group" aria-label="Com es mou el conductor">
       <button class="btn" type="button" data-im="quiet">Quiet</button>
-      <button class="btn" type="button" data-im="up">Amunt</button>
-      <button class="btn" type="button" data-im="down">Avall</button>
-      <button class="btn" type="button" data-im="osc">Amunt i avall</button>
-      <button class="btn" type="button" data-im="par">Paral·lel al camp</button>
+      <button class="btn" type="button" data-im="up">↑ Puja</button>
+      <button class="btn" type="button" data-im="down">↓ Baixa</button>
+      <button class="btn" type="button" data-im="osc">↕ Puja i baixa</button>
+      <button class="btn" type="button" data-im="par">↔ De costat (paral·lel al camp)</button>
     </div>
     <div class="controls">
       <label class="ctl" for="ind-v"><span>Rapidesa del moviment</span><input id="ind-v" type="range" min="0.5" max="2" step="0.25" value="1"><output id="ind-vo">mitjana</output></label>
@@ -261,6 +262,7 @@ main{max-width:none}
     <p class="msg" id="ind-msg"></p>
   </div>
   <div class="est">
+    <p>Amb els botons tries com es mou el conductor i comproves quan s'indueix corrent: <b>puja</b> o <b>baixa</b> (talla línies de camp), <b>queda quiet</b> o es mou <b>de costat</b>, paral·lel a les línies (no en talla cap).</p>
     <p>El conductor es veu de cara: és un fil perpendicular a la pantalla. Els seus extrems estan connectats a un <b>galvanòmetre</b> de zero central, que indica el sentit i la intensitat del corrent.</p>
     <ul>
       <li><b>⊗</b> el corrent entra a la pantalla · <b>⊙</b> el corrent surt de la pantalla.</li>
@@ -920,7 +922,7 @@ show((location.hash||'').slice(1),false);
     var a=d.createElement('a');a.className='btn';a.href='https://tecnolyd.github.io/artefactes/generador-dinamo.html';a.target='_blank';a.rel='noopener';a.textContent='⛶ Obre a pantalla completa';
     var seg2=d.querySelector('.top .seg');if(seg2)seg2.parentNode.insertBefore(a,seg2);
   }
-  var br=d.querySelector('.brand');if(br){var v=d.createElement('span');v.className='ver';v.textContent='v6';br.appendChild(v);}
+  var br=d.querySelector('.brand');if(br){var v=d.createElement('span');v.className='ver';v.textContent='v7';br.appendChild(v);}
 })();
 </script>
 
