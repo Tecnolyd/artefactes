@@ -421,21 +421,21 @@ const TX={
 function canon(h){return {i:[1,0,0],p:[0,1,0],c:[0,0,h==='esq'?1:-1]};}
 function drawHand(){const t=TX[G.hand],esq=G.hand==='esq';$('ma-title').textContent=t.title;$('ma-lead').innerHTML=t.lead;$('ma-steps').innerHTML=t.steps.map(x=>'<li>'+x+'</li>').join('');$('ma-key').textContent=t.key;
   // origen i direccions: x dreta, y amunt, z cap a tu (dibuixat en diagonal avall a l'esquerra)
-  const O=[230,215],sx=esq?-1:1,L=150,zx=-0.62,zy=0.5;
+  const O=[230,215],ix=esq?1:-1,L=150,zx=-0.62,zy=0.5;
   const P=(x,y,z)=>[O[0]+x+z*zx,O[1]-y+z*zy];
   let h='';
   // cantonada de capsa: cares tènues que donen sensació de 3D
   const face=(a,b,c,d)=>`<polygon points="${[a,b,c,d].map(q=>q[0].toFixed(1)+','+q[1].toFixed(1)).join(' ')}" style="fill:var(--accent-soft);stroke:var(--line)" stroke-width="1" opacity=".75"/>`;
   const k=70;
-  h+=face(P(0,0,0),P(sx*k,0,0),P(sx*k,k,0),P(0,k,0));
+  h+=face(P(0,0,0),P(ix*k,0,0),P(ix*k,k,0),P(0,k,0));
   h+=face(P(0,0,0),P(0,k,0),P(0,k,k),P(0,0,k));
-  h+=face(P(0,0,0),P(sx*k,0,0),P(sx*k,0,k),P(0,0,k));
+  h+=face(P(0,0,0),P(ix*k,0,0),P(ix*k,0,k),P(0,0,k));
   const ar=(to,col,big,small,lx,ly,anc)=>{const a=P(0,0,0),b=to;h+=`<polygon style="fill:${col}" points="${arrowPts(a[0],a[1],b[0],b[1],10)}"/>`+
     `<text class="sv-l" style="fill:${col};font-size:22px" x="${lx}" y="${ly}" text-anchor="${anc}">${big}</text><text class="sv-s" style="font-size:15px" x="${lx}" y="${ly+20}" text-anchor="${anc}">${small}</text>`;};
-  const ti=P(0,L,0),tp=P(sx*L,0,0),tc=P(0,0,L*1.05);
+  const tp=P(0,L,0),ti=P(ix*L,0,0),tc=P(0,0,L*1.05);
   const nm={p:esq?'F':'v',pn:esq?'força':'moviment',c:'I',cn:esq?'corrent':'fem i corrent induït'};
-  ar(ti,'var(--cb)','Índex · B','camp magnètic',ti[0],ti[1]-34,'middle');
-  ar(tp,'var(--accent)','Polze · '+nm.p,nm.pn,tp[0]+(esq?-6:6),tp[1]+34,esq?'start':'end');
+  ar(tp,'var(--accent)','Polze · '+nm.p,nm.pn,tp[0],tp[1]-34,'middle');
+  ar(ti,'var(--cb)','Índex · B','camp magnètic',ti[0]+(esq?6:-6),ti[1]-42,esq?'end':'start');
   ar(tc,'var(--work)','Cor · I',nm.cn+' · cap a tu ⊙',tc[0]+20,tc[1]+32,'middle');
   h+=`<circle cx="${O[0]}" cy="${O[1]}" r="6" style="fill:var(--fg)"/>`;
   $('hand-svg').innerHTML=h;
@@ -580,7 +580,7 @@ show((location.hash||'').slice(1),false);
     var a=d.createElement('a');a.className='btn';a.href='https://tecnolyd.github.io/artefactes/regles-ma.html';a.target='_blank';a.rel='noopener';a.textContent='⛶ Obre a pantalla completa';
     var seg2=d.querySelector('.top .seg');if(seg2)seg2.parentNode.insertBefore(a,seg2);
   }
-  var br=d.querySelector('.brand');if(br){var v=d.createElement('span');v.className='ver';v.textContent='v3';br.appendChild(v);}
+  var br=d.querySelector('.brand');if(br){var v=d.createElement('span');v.className='ver';v.textContent='v4';br.appendChild(v);}
 })();
 </script>
 
