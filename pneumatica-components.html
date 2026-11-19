@@ -1,0 +1,954 @@
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>[hidden]{display:none!important}body{margin:0}</style>
+<title>Components pneumàtics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+<style>
+/* Layout: quadern d'enginyeria — barra lateral de mòduls + pàgina central; calent (Th) i fred (Tc) codificats en color a tot arreu */
+:root{
+  --bg:#f3f5f8; --surface:#ffffff; --fg:#18202b; --muted:#566273; --line:#d6dce4;
+  --accent:#23395d; --accent-soft:#e3e9f3;
+  --hot:#bf4329; --hot-soft:#f8e2db; --cold:#2a66a8; --cold-soft:#dde9f6;
+  --work:#a46f12; --work-soft:#f6ead0; --ok:#2c7a4b; --ok-soft:#dcefe3; --bad:#b0291c; --bad-soft:#f8dedb;
+  --f-display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --f-body:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#11151b; --surface:#191f27; --fg:#e5e9ef; --muted:#9aa5b4; --line:#2b3440;
+  --accent:#a9c1e6; --accent-soft:#1f2b3d;
+  --hot:#f08a6f; --hot-soft:#3b211b; --cold:#72a9e8; --cold-soft:#18283b;
+  --work:#e3b450; --work-soft:#382c13; --ok:#6cc690; --ok-soft:#17301f; --bad:#f08478; --bad-soft:#3a1c19;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#11151b; --surface:#191f27; --fg:#e5e9ef; --muted:#9aa5b4; --line:#2b3440;
+  --accent:#a9c1e6; --accent-soft:#1f2b3d;
+  --hot:#f08a6f; --hot-soft:#3b211b; --cold:#72a9e8; --cold-soft:#18283b;
+  --work:#e3b450; --work-soft:#382c13; --ok:#6cc690; --ok-soft:#17301f; --bad:#f08478; --bad-soft:#3a1c19;
+  color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:17px;line-height:1.6}
+body.classe{font-size:20px}
+body.classe .est{display:none!important}
+h1,h2,h3,.ui{font-family:var(--f-display)}
+h2{font-size:2.2em;line-height:1.05;margin:.1em 0 .35em;font-weight:700;text-wrap:balance;letter-spacing:.005em}
+h3{font-size:1.35em;margin:1.6em 0 .4em;font-weight:600;text-wrap:balance}
+p{margin:.6em 0}
+.mono,.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line);padding:10px 16px;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.brand{font-family:var(--f-display);font-weight:700;font-size:1.3rem;letter-spacing:.02em}
+.brand span{color:var(--hot)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.seg button{font-family:var(--f-display);font-size:1rem;font-weight:600;border:0;background:transparent;color:var(--muted);padding:6px 16px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--surface)}
+.shell{display:grid;grid-template-columns:230px minmax(0,1fr);gap:28px;max-width:1240px;margin:0 auto;padding-inline:16px;padding-block:24px 48px}
+.side{position:sticky;top:76px;align-self:start;display:flex;flex-direction:column;gap:2px}
+.side button{display:flex;gap:10px;align-items:baseline;text-align:left;font-family:var(--f-display);font-size:1.08rem;font-weight:500;color:var(--muted);background:none;border:0;border-radius:8px;padding:8px 10px;cursor:pointer}
+.side button b{font-family:var(--f-mono);font-size:.8rem;font-weight:500;color:var(--muted);min-width:1.4em}
+.side button:hover{background:var(--accent-soft);color:var(--fg)}
+.side button[aria-current="true"]{background:var(--accent-soft);color:var(--fg);font-weight:700}
+.side button[aria-current="true"] b{color:var(--hot)}
+main{min-width:0;max-width:900px}
+body.classe main{max-width:1180px}
+.eyebrow{font-family:var(--f-display);text-transform:uppercase;letter-spacing:.12em;font-size:.85rem;color:var(--hot);font-weight:600;margin:0}
+.lead{font-size:1.12em;color:var(--fg);max-width:65ch}
+.est p,.est li{max-width:68ch}
+.fig{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;margin:18px 0}
+.fig svg{display:block;width:100%;height:auto}
+.svgwrap{overflow-x:auto}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.controls{display:grid;gap:10px;margin-top:12px}
+.ctl{display:grid;grid-template-columns:minmax(120px,190px) minmax(0,1fr) 92px;gap:10px;align-items:center;font-family:var(--f-display);font-size:1.05rem}
+.ctl output{font-family:var(--f-mono);font-size:.95rem;text-align:right}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:14px}
+.stat{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg)}
+.stat .k{font-family:var(--f-display);font-size:.95rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.stat .v{font-family:var(--f-mono);font-size:1.35em;font-variant-numeric:tabular-nums}
+.stat.hot .v{color:var(--hot)} .stat.cold .v{color:var(--cold)} .stat.work .v{color:var(--work)}
+.pill{display:inline-block;font-family:var(--f-display);font-weight:600;font-size:.95rem;border-radius:999px;padding:3px 12px}
+.pill.ok{background:var(--ok-soft);color:var(--ok)} .pill.bad{background:var(--bad-soft);color:var(--bad)} .pill.info{background:var(--accent-soft);color:var(--accent)}
+.msg{margin-top:10px;min-height:1.6em}
+.key{border:1px solid var(--line);background:var(--accent-soft);border-radius:12px;padding:14px 18px;margin:24px 0;font-style:italic;font-size:1.06em}
+.key::before{content:"Frase resum";display:block;font-style:normal;font-family:var(--f-display);text-transform:uppercase;letter-spacing:.1em;font-size:.8rem;color:var(--accent);font-weight:700;margin-bottom:4px}
+.note{border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin:16px 0;background:var(--surface)}
+.note strong{font-family:var(--f-display);font-size:1.08em}
+.tbl{overflow-x:auto;margin:14px 0;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:.93em}
+th,td{padding:8px 12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{font-family:var(--f-display);font-size:1.02em;font-weight:600;background:var(--bg)}
+tr:last-child td{border-bottom:0}
+td.h{color:var(--hot);font-weight:600} td.c{color:var(--cold);font-weight:600}
+.eq{font-family:var(--f-mono);font-size:1.05em;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 14px;display:inline-block;margin:6px 0}
+.btn{font-family:var(--f-display);font-weight:600;font-size:1.02rem;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:8px;padding:7px 14px;cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--surface);border-color:var(--accent)}
+.btn[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent)}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.pager{display:flex;justify-content:space-between;gap:12px;margin-top:40px;padding-top:16px;border-top:1px solid var(--line);flex-wrap:wrap}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:12px 0}
+.card{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--surface)}
+.card h4{font-family:var(--f-display);font-size:1.15em;margin:0 0 4px}
+.tag{font-family:var(--f-display);font-weight:600;font-size:.9rem}
+.tag.ok{color:var(--ok)} .tag.bad{color:var(--bad)}
+.stepper{display:flex;flex-wrap:wrap;gap:6px}
+.stagecard{margin-top:14px}
+.stagecard dl{display:grid;grid-template-columns:minmax(110px,170px) minmax(0,1fr);gap:6px 14px;margin:8px 0}
+.stagecard dt{font-family:var(--f-display);font-weight:600;color:var(--muted)}
+.stagecard dd{margin:0}
+.bar{display:flex;height:44px;border-radius:8px;overflow:hidden;border:1px solid var(--line);margin-top:10px}
+.bar div{display:flex;align-items:center;justify-content:center;font-family:var(--f-mono);font-size:.85rem;white-space:nowrap;overflow:hidden;transition:flex-basis .25s}
+.seg-w{background:var(--work-soft);color:var(--work)} .seg-p{background:var(--bad-soft);color:var(--bad)} .seg-c{background:var(--cold-soft);color:var(--cold)}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:8px;font-family:var(--f-display);font-size:1rem}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.gauge{position:relative;height:28px;border-radius:999px;background:var(--bg);border:1px solid var(--line);margin:22px 0 30px}
+.gauge .fill{position:absolute;inset:0 auto 0 0;border-radius:999px;background:var(--work-soft);border-right:3px solid var(--work)}
+.gauge .mark{position:absolute;top:-8px;bottom:-8px;width:3px;background:var(--hot)}
+.gauge .mlabel{position:absolute;top:32px;transform:translateX(-50%);font-family:var(--f-display);font-size:.9rem;color:var(--hot);white-space:nowrap}
+.field{display:grid;gap:4px;font-family:var(--f-display);font-size:1rem}
+.field input{font-family:var(--f-mono);font-size:1rem;padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);width:100%}
+.err{color:var(--bad);font-size:13px;min-height:1.2em;font-family:var(--f-display)}
+.quiz{display:grid;gap:14px}
+.q{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:var(--surface)}
+.q h4{font-family:var(--f-display);font-size:1.2em;margin:0 0 8px;font-weight:600}
+.q label{display:flex;gap:10px;align-items:flex-start;padding:6px 8px;border-radius:8px;cursor:pointer}
+.q label:hover{background:var(--bg)}
+.q label.right{background:var(--ok-soft)} .q label.wrong{background:var(--bad-soft)}
+.q .fb{margin-top:8px}
+.reveal{margin-top:8px}
+/* svg */
+.sv-t{fill:var(--fg);font-family:var(--f-display);font-size:16px;font-weight:600}
+.sv-s{fill:var(--muted);font-family:var(--f-display);font-size:14px}
+.sv-m{fill:var(--fg);font-family:var(--f-mono);font-size:13px}
+.sv-hot{fill:var(--hot-soft);stroke:var(--hot);stroke-width:1.2}
+.sv-cold{fill:var(--cold-soft);stroke:var(--cold);stroke-width:1.2}
+.sv-neu{fill:var(--bg);stroke:var(--muted);stroke-width:1.2}
+.sv-pipe{fill:none;stroke:var(--muted);stroke-width:2}
+.sv-front{fill:none;stroke:var(--muted);stroke-width:1;stroke-dasharray:6 5}
+.fl-hot{fill:var(--hot)} .fl-cold{fill:var(--cold)} .fl-work{fill:var(--work)} .fl-neu{fill:var(--muted)}
+.tx-hot{fill:var(--hot)} .tx-cold{fill:var(--cold)} .tx-work{fill:var(--work)}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+@media (max-width:820px){
+  .shell{grid-template-columns:minmax(0,1fr);gap:12px;padding-block:12px 40px}
+  .side{position:static;flex-direction:row;overflow-x:auto;gap:4px;padding-bottom:6px}
+  .side button{white-space:nowrap}
+  .ctl{grid-template-columns:minmax(0,1fr) 84px}
+  .ctl input{grid-column:1 / -1;grid-row:2}
+  h2{font-size:1.9em}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+.soon{display:flex;gap:10px;align-items:baseline;font-family:var(--f-display);font-size:1.08rem;color:var(--muted);opacity:.6;padding:8px 10px}
+.soon b{font-family:var(--f-mono);font-size:.8rem;min-width:1.4em}
+.soon i{font-style:normal;font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;margin-left:auto}
+a.btn{text-decoration:none;display:inline-block}
+.info4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:16px 0}
+.i4{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:12px;text-align:center}
+.i4 h4{font-family:var(--f-display);font-size:1.3em;margin:0}
+.i4n{font-family:var(--f-display);font-weight:700;font-size:2.2em;line-height:1}
+.i4 svg{width:100%;max-width:150px;height:auto;margin:6px auto;display:block}
+.i4v{font-family:var(--f-display);font-weight:700;font-size:1.2em;margin:4px 0}
+.i4s{font-size:.9em;color:var(--muted);margin:0}
+@media (max-width:820px){.info4{grid-template-columns:repeat(2,minmax(0,1fr))}.soon{white-space:nowrap}}
+
+@media (max-width:1040px){.shell{grid-template-columns:minmax(0,1fr);gap:12px}.side{position:static;flex-direction:row;overflow-x:auto;gap:4px;padding-bottom:6px}.side button,.soon{white-space:nowrap}main{max-width:none}}
+body.embed{font-size:16px}
+body.embed.classe{font-size:19px}
+body.embed .top{padding:6px 12px}
+body.embed .shell{max-width:none;padding-block:12px 32px}
+body.embed main,body.embed.classe main{max-width:none}
+body.embed h2{font-size:1.9em}
+body.embed .lead,body.embed .est p,body.embed .est li{max-width:none}
+:fullscreen body,body:fullscreen{overflow:auto}
+body.embed .shell{grid-template-columns:minmax(0,1fr);gap:12px}body.embed .side{position:static;flex-direction:row;overflow-x:auto;gap:4px;padding-bottom:6px}body.embed .side button,body.embed .soon{white-space:nowrap}
+.ver{font-family:var(--f-mono);font-size:.75rem;color:var(--muted);margin-left:8px}
+.chip{display:inline-block;padding:3px 10px;border-radius:999px;font-family:var(--f-display);font-weight:600;font-size:.95rem;border:1px solid var(--line);color:var(--muted)}.chip.on{background:var(--ok-soft);color:var(--ok);border-color:transparent}
+/* menú de mòduls sempre a dalt; versió ben visible */
+.shell{grid-template-columns:minmax(0,1fr);gap:12px;max-width:1180px}
+.side{position:static;flex-direction:row;overflow-x:auto;gap:4px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+.side button{white-space:nowrap}
+main{max-width:none}
+@media (min-width:821px){.side{flex-wrap:wrap;overflow:visible}}
+.ver{font-family:var(--f-mono);font-size:.8rem;color:var(--accent);background:var(--accent-soft);border-radius:999px;padding:2px 9px;margin-left:10px;vertical-align:3px}
+/* ---- específic: components pneumàtics ----
+   Colors com al llibre: aire a pressió = blau (--air), conductes sense pressió = gris,
+   cos de les vàlvules = beix (--body), èmbol = beix fosc (--piston), peces mòbils = acer */
+:root{--air:#2f95d6;--air-soft:#cfe8f8;--empty:#eef1f5;--body:#f6dcb8;--body-d:#c49a68;--piston:#efc493;--steel:#6f7a88;--steel-l:#c3cad3}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--air:#5fb6ee;--air-soft:#173246;--empty:#202833;--body:#3f3326;--body-d:#8b7152;--piston:#a9845a;--steel:#9aa5b4;--steel-l:#5b6673}}
+:root[data-theme="dark"]{--air:#5fb6ee;--air-soft:#173246;--empty:#202833;--body:#3f3326;--body-d:#8b7152;--piston:#a9845a;--steel:#9aa5b4;--steel-l:#5b6673}
+.c-air{color:var(--air)}
+.legend i.lg-air,.lg-air{display:inline-block;width:26px;height:0;border-top:4px solid var(--air);vertical-align:4px;margin-right:6px}
+.legend i.lg-off,.lg-off{display:inline-block;width:26px;height:0;border-top:3px solid var(--muted);vertical-align:4px;margin-right:6px}
+.legend i.lg-pil,.lg-pil{display:inline-block;width:26px;height:0;border-top:3px dashed var(--air);vertical-align:4px;margin-right:6px}
+.legend span{display:inline-flex;align-items:center;color:var(--muted)}
+.sim{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;margin:16px 0}
+.sim svg{display:block;width:100%;height:auto;touch-action:none}
+.sim .row{margin-top:10px}
+.status{margin-top:10px;font-size:1.02em;min-height:3.2em}
+.status b{font-family:var(--f-display);font-size:1.08em}
+.hold{touch-action:none;user-select:none;-webkit-user-select:none}
+.hold[aria-pressed="true"]{background:var(--air-soft);border-color:var(--air);color:var(--fg)}
+.vpick{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.vpick .btn{font-family:var(--f-mono);font-weight:500}
+.vinfo{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:12px}
+.steps{margin:10px 0 0;padding-left:1.4em;font-family:var(--f-mono);font-size:.98em}
+.steps li{margin:.45em 0}
+.steps .lbl{font-family:var(--f-display);font-size:1.02em;color:var(--muted);display:block}
+.steps .res{color:var(--accent);font-weight:500}
+.calc{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:18px;align-items:start}
+.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.field small{color:var(--muted);font-family:var(--f-display)}
+.acts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:12px 0}
+.act{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:8px 10px;text-align:center}
+.act svg{width:100%;max-width:140px;height:auto;display:block;margin:0 auto}
+.act span{font-family:var(--f-display);font-size:1.02rem}
+.actgrp{font-family:var(--f-display);text-transform:uppercase;letter-spacing:.08em;font-size:.85rem;color:var(--muted);margin:14px 0 0}
+.cvlist{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0}
+.vgrid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:14px;align-items:start}
+.vgrid h4,.panel-t{font-family:var(--f-display);font-size:.9rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 4px;font-weight:600}
+.vgrid .one{grid-column:1 / -1}
+.cvtxt h3{margin-top:.6em}
+.truth{width:auto;min-width:220px}
+.truth td,.truth th{text-align:center;font-family:var(--f-mono)}
+.truth tr.on td{background:var(--air-soft);font-weight:600}
+.meter{height:14px;border-radius:999px;background:var(--bg);border:1px solid var(--line);overflow:hidden;margin-top:4px}
+.meter div{height:100%;background:var(--air);transition:width .2s}
+.bk{fill:var(--body);stroke:var(--body-d);stroke-width:1.5}
+.sv-fg{fill:var(--fg);font-family:var(--f-display);font-size:15px;font-weight:600}
+.sv-num{fill:var(--fg);font-family:var(--f-mono);font-size:13px}
+.sv-mut{fill:var(--muted);font-family:var(--f-display);font-size:13px}
+.part-hl{opacity:.25;transition:opacity .2s}
+.hlmode .part-hl.on{opacity:1}
+svg:not(.hlmode) .part-hl{opacity:1}
+.partlbl{display:none}
+.hlmode .partlbl.on{display:inline}
+@media (max-width:760px){.vgrid,.calc{grid-template-columns:minmax(0,1fr)}.fields{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+.sim>svg,.sim .two svg{max-width:720px;margin-inline:auto}
+#parts-svg,#cyl-svg{max-width:780px}
+#mono-svg,#bi-svg{max-width:420px}
+.vinfo .v{font-size:1.05em}
+</style>
+<header class="top">
+  <div class="brand">Components <span>pneumàtics</span></div>
+  <div class="row">
+    <div class="seg" role="group" aria-label="Mode de visualització">
+      <button id="mode-estudi" type="button" aria-pressed="true">Mode estudi</button>
+      <button id="mode-classe" type="button" aria-pressed="false">Mode classe</button>
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+<nav class="side" aria-label="Mòduls">
+  <button type="button" data-go="cilindres"><b>1</b>Cilindres</button>
+  <button type="button" data-go="distribuidores"><b>2</b>Vàlvules distribuïdores</button>
+  <button type="button" data-go="comandaments"><b>3</b>Comandaments i orificis</button>
+  <button type="button" data-go="control"><b>4</b>Vàlvules de control</button>
+</nav>
+
+<main>
+<!-- ===== 1 CILINDRES ===== -->
+<section class="mod" data-key="cilindres">
+  <p class="eyebrow">Mòdul 1 · Actuadors pneumàtics</p>
+  <h2>Cilindres pneumàtics</h2>
+  <p class="lead">Els <b>actuadors pneumàtics</b> o elements de treball transformen l'energia pneumàtica de l'aire comprimit en treball mecànic. Els <b>cilindres</b> ho fan amb un moviment rectilini d'empenta i tracció.</p>
+  <p class="est">Els actuadors pneumàtics es classifiquen en <i>cilindres</i>, <i>actuadors de gir</i> i <i>motors rotatius</i>. Aquí ens centrem en els cilindres.</p>
+  <div class="legend"><span><i class="lg-air"></i>aire a pressió</span><span><i class="lg-off"></i>sense pressió</span></div>
+
+  <h3>Les parts d'un cilindre</h3>
+  <p class="est">Un tub cilíndric tancat als extrems per dues tapes, dins del qual llisca un <b>èmbol</b> que separa dues cambres. L'èmbol va unit a una <b>tija</b> que surt per una de les tapes i permet aprofitar la força del cilindre.</p>
+  <div class="sim">
+    <svg id="parts-svg" viewBox="0 0 640 250" role="img" aria-label="Parts d'un cilindre pneumàtic"></svg>
+    <div class="partlist" id="parts-list"></div>
+    <div class="partbox" id="parts-box"><p class="sv-cap" style="text-align:left">Toca una part per veure-la destacada.</p></div>
+  </div>
+  <div class="cards">
+    <div class="card"><h4>Secció A</h4><p>És circular: <span class="mono">A = π · r²</span>. Com més gran és el diàmetre, més superfície empeny l'aire.</p></div>
+    <div class="card"><h4>Cursa Δx (l)</h4><p>És la distància entre les dues posicions extremes de l'èmbol: quant pot sortir la tija.</p></div>
+  </div>
+
+  <h3>Simple efecte i doble efecte</h3>
+  <div class="sim">
+    <div class="row">
+      <div class="seg" role="group" aria-label="Tipus de cilindre">
+        <button type="button" data-cyl="SE" aria-pressed="true">Simple efecte</button>
+        <button type="button" data-cyl="DE" aria-pressed="false">Doble efecte</button>
+      </div>
+    </div>
+    <svg id="cyl-svg" viewBox="0 0 640 230" role="img" aria-label="Simulació d'un cilindre"></svg>
+    <div class="row" id="cyl-ctl"></div>
+    <div class="status" id="cyl-status"></div>
+  </div>
+  <div class="cards">
+    <div class="card"><h4>Simple efecte</h4><p>L'aire només empeny en un sentit (l'avanç). El retorn el fa una <b>molla</b>. La cambra de la molla no rep aire a pressió: respira a l'atmosfera.</p></div>
+    <div class="card"><h4>Doble efecte</h4><p>L'aire empeny en tots dos sentits: entra per una cambra mentre l'altra es buida per la seva connexió.</p></div>
+  </div>
+  <p class="est note"><strong>Fixa-t'hi.</strong> La cambra anterior (la de la tija) té menys secció útil que la posterior, perquè la tija n'ocupa una part. Per això, amb la mateixa pressió, el cilindre fa menys força en retrocedir que en avançar.</p>
+
+  <h3>El treball d'un cilindre</h3>
+  <p>El cilindre transforma l'energia de l'aire comprimit en treball mecànic <i>W</i>:</p>
+  <p><span class="eq">W = F · Δx · η = p · A · l · η &nbsp;(J)</span></p>
+  <div class="est"><p><b>p</b>: pressió en Pa (1 Pa = 10⁻⁵ bar) · <b>A</b>: superfície de la secció interior en m² · <b>l</b>: cursa en m · <b>η</b>: rendiment (normalment entre 0,85 i 0,95).</p></div>
+  <div class="sim calc">
+    <div>
+      <div class="fields">
+        <label class="field">Pressió p (bar)<input id="w-p" inputmode="decimal" value="6"><small>pressió de treball</small></label>
+        <label class="field">Diàmetre D (mm)<input id="w-d" inputmode="decimal" value="50"><small>de l'èmbol</small></label>
+        <label class="field">Cursa l (mm)<input id="w-l" inputmode="decimal" value="200"><small>recorregut de la tija</small></label>
+        <label class="field">Rendiment η<input id="w-n" inputmode="decimal" value="0,9"><small>entre 0 i 1</small></label>
+      </div>
+      <p class="err" id="w-err"></p>
+      <div class="stats">
+        <div class="stat"><div class="k">Força teòrica F</div><div class="v" id="w-F">—</div></div>
+        <div class="stat work"><div class="k">Treball W</div><div class="v" id="w-W">—</div></div>
+      </div>
+    </div>
+    <ol class="steps" id="w-steps"></ol>
+  </div>
+  <p class="key">Un cilindre converteix la pressió de l'aire en força i moviment: com més pressió, més secció i més cursa, més treball. El rendiment η recorda que una part es perd en fregaments.</p>
+  <div class="pager"><span></span><button class="btn primary" type="button" data-go="distribuidores">Següent: Vàlvules distribuïdores →</button></div>
+</section>
+
+<!-- ===== 2 DISTRIBUÏDORES ===== -->
+<section class="mod" data-key="distribuidores" hidden>
+  <p class="eyebrow">Mòdul 2 · Vàlvules de control direccional</p>
+  <h2>Vàlvules distribuïdores</h2>
+  <p class="lead">Les vàlvules <b>distribuïdores</b> (o distribuïdors) governen l'arrencada, l'aturada i el sentit del flux de l'aire en un circuit pneumàtic.</p>
+  <div class="cards">
+    <div class="card"><h4>Cos</h4><p>Conté els conductes interns i els orificis.</p></div>
+    <div class="card"><h4>Part mòbil</h4><p>Amb el seu desplaçament fa les diferents connexions entre les vies.</p></div>
+    <div class="card"><h4>Elements d'accionament</h4><p>Permeten canviar l'estat (la posició) de la vàlvula.</p></div>
+  </div>
+
+  <h3>Com s'anomenen: vies / posicions</h3>
+  <p>Es designen amb <b>dues xifres</b>: la primera indica el nombre de <b>vies</b> (orificis) i la segona, el nombre de <b>posicions</b>. Una vàlvula <b>3/2</b> té tres vies i dues posicions.</p>
+  <p class="est">Normalment tenen dues posicions: la de <b>repòs</b> i la de <b>treball</b>. Algunes en tenen tres, amb una posició neutra central.</p>
+  <div class="sim">
+    <div class="vpick" id="vx-pick"></div>
+    <svg id="vx-svg" viewBox="0 0 520 250" role="img" aria-label="Símbol interactiu d'una vàlvula distribuïdora"></svg>
+    <div class="row" id="vx-ctl"></div>
+    <div class="row">
+      <button class="btn" type="button" id="vx-hv" aria-pressed="false">Compta les vies</button>
+      <button class="btn" type="button" id="vx-hp" aria-pressed="false">Compta les posicions</button>
+    </div>
+    <div class="vinfo">
+      <div class="stat"><div class="k">Nom</div><div class="v" id="vx-name">—</div></div>
+      <div class="stat"><div class="k">Posició actual</div><div class="v" id="vx-pos" style="font-size:1.1em">—</div></div>
+      <div class="stat"><div class="k">Connexions ara</div><div class="v" id="vx-con" style="font-size:1em">—</div></div>
+    </div>
+    <p class="status" id="vx-txt"></p>
+  </div>
+  <div class="legend"><span><i class="lg-air"></i>aire a pressió (camí des de P)</span><span><i class="lg-off"></i>sense pressió</span></div>
+
+  <h3>Com es llegeix el símbol</h3>
+  <ol>
+    <li>Cada <b>posició</b> es dibuixa amb una casella quadrada.</li>
+    <li>A dins, les <b>fletxes</b> indiquen les connexions entre orificis i el sentit de l'aire. Una <b>T</b> vol dir que aquell orifici queda tancat.</li>
+    <li>Els <b>conductes</b> exteriors es dibuixen a la casella que representa la posició de <b>repòs</b>.</li>
+    <li>Per llegir la posició de <b>treball</b>, imagina que l'altra casella es desplaça fins a quedar davant dels conductes. És el que veus a l'animació quan acciones la vàlvula.</li>
+  </ol>
+  <div class="cards">
+    <div class="card"><h4>NO · normalment oberta</h4><p>En repòs deixa passar l'aire de P cap a la sortida.</p></div>
+    <div class="card"><h4>NT · normalment tancada</h4><p>En repòs no deixa passar l'aire: P està tancada. Només passa quan l'acciones.</p></div>
+  </div>
+  <p class="key">Primer número: vies. Segon número: posicions. Els conductes es dibuixen a la casella de repòs; per llegir la de treball, imagina que l'altra casella s'hi desplaça al davant.</p>
+  <div class="pager"><button class="btn" type="button" data-go="cilindres">← Cilindres</button><button class="btn primary" type="button" data-go="comandaments">Següent: Comandaments i orificis →</button></div>
+</section>
+
+<!-- ===== 3 COMANDAMENTS ===== -->
+<section class="mod" data-key="comandaments" hidden>
+  <p class="eyebrow">Mòdul 3 · Comandaments i orificis</p>
+  <h2>Com s'accionen i com es numeren</h2>
+  <p class="lead">El tipus de <b>comandament</b> s'afegeix al símbol bàsic. És el que fa canviar de posició la vàlvula: pot ser manual, mecànic, pneumàtic, hidràulic o elèctric.</p>
+  <div id="acts"></div>
+
+  <h3>Monoestable i biestable</h3>
+  <div class="two">
+    <div class="sim">
+      <p class="panel-t">Monoestable · polsador i molla</p>
+      <svg id="mono-svg" viewBox="0 0 300 220" role="img" aria-label="Vàlvula 3/2 monoestable"></svg>
+      <div class="row"><button class="btn hold" type="button" id="mono-b" aria-pressed="false">Mantén premut el polsador</button></div>
+      <p class="status" id="mono-t"></p>
+    </div>
+    <div class="sim">
+      <p class="panel-t">Biestable · dos pilotatges</p>
+      <svg id="bi-svg" viewBox="0 0 360 250" role="img" aria-label="Vàlvula 5/2 biestable"></svg>
+      <div class="row"><button class="btn hold" type="button" id="bi-14" aria-pressed="false">Senyal a 14</button><button class="btn hold" type="button" id="bi-12" aria-pressed="false">Senyal a 12</button></div>
+      <p class="status" id="bi-t"></p>
+    </div>
+  </div>
+
+  <h3>On és cada orifici</h3>
+  <p>Cada orifici s'identifica amb un codi de números o de lletres:</p>
+  <div class="tbl"><table>
+    <thead><tr><th>Funció</th><th>Números</th><th>Lletres</th></tr></thead>
+    <tbody>
+      <tr><td>Alimentació de pressió</td><td class="mono">1</td><td class="mono">P</td></tr>
+      <tr><td>Sortides de treball</td><td class="mono">2, 4, 6…</td><td class="mono">A, B, C…</td></tr>
+      <tr><td>Escapament d'aire</td><td class="mono">3, 5, 7…</td><td class="mono">R, S, T…</td></tr>
+      <tr><td>Connexions de comandament</td><td class="mono">12, 14, 16…</td><td class="mono">X, Y, Z…</td></tr>
+    </tbody>
+  </table></div>
+  <p class="est">Els números dels pilotatges diuen què connecten: el senyal a <b>14</b> connecta l'orifici 1 amb el 4; el senyal a <b>12</b> connecta l'1 amb el 2.</p>
+
+  <h3>Exemple: cilindre de simple efecte amb una 3/2</h3>
+  <div class="sim">
+    <svg id="ex-svg" viewBox="0 0 520 330" role="img" aria-label="Comandament d'un cilindre de simple efecte amb una vàlvula 3/2"></svg>
+    <div class="row"><button class="btn hold" type="button" id="ex-b" aria-pressed="false">Mantén premut el polsador</button>
+      <div class="seg" role="group" aria-label="Nomenclatura"><button type="button" data-nom="num" aria-pressed="true">1 · 2 · 3</button><button type="button" data-nom="let" aria-pressed="false">P · A · R</button></div></div>
+    <p class="status" id="ex-t"></p>
+  </div>
+  <p class="key">Una vàlvula monoestable torna sola a la posició de repòs gràcies a la molla. Una biestable es queda en l'última posició fins que rep el senyal contrari: té memòria.</p>
+  <div class="pager"><button class="btn" type="button" data-go="distribuidores">← Vàlvules distribuïdores</button><button class="btn primary" type="button" data-go="control">Següent: Vàlvules de control →</button></div>
+</section>
+
+<!-- ===== 4 CONTROL ===== -->
+<section class="mod" data-key="control" hidden>
+  <p class="eyebrow">Mòdul 4 · Regulació, control i bloqueig</p>
+  <h2>Vàlvules de control</h2>
+  <p class="lead">Els elements de <b>regulació, control i bloqueig</b> permeten ajustar la velocitat dels actuadors, regular-ne la força o barrar el pas de l'aire en una part del circuit.</p>
+  <div class="cvlist" id="cv-list"></div>
+  <div class="sim">
+    <div class="vgrid">
+      <div id="cv-cutbox"><h4 id="cv-cut-t">Tall simplificat</h4><svg id="cv-cut" viewBox="0 0 360 240" role="img" aria-label="Tall de la vàlvula"></svg></div>
+      <div id="cv-symbox"><h4>Símbol</h4><svg id="cv-sym" viewBox="0 0 220 150" role="img" aria-label="Símbol de la vàlvula"></svg><div id="cv-extra"></div></div>
+    </div>
+    <div class="row" id="cv-ctl"></div>
+    <p class="status" id="cv-st"></p>
+  </div>
+  <div class="cvtxt" id="cv-txt"></div>
+  <div class="legend"><span><i class="lg-air"></i>aire a pressió</span><span><i class="lg-off"></i>sense pressió</span><span><i class="lg-pil"></i>pilotatge</span></div>
+  <p class="key">Les vàlvules de control no decideixen cap on va l'aire com les distribuïdores: el deixen passar en un sol sentit, el frenen, en limiten la pressió o combinen senyals (O, I).</p>
+  <div class="pager"><button class="btn" type="button" data-go="comandaments">← Comandaments i orificis</button><span></span></div>
+</section>
+</main>
+</div>
+
+<script>
+(function(){
+"use strict";
+const $=id=>document.getElementById(id);
+const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+const visible=el=>el&&el.offsetParent!==null;
+const AIR='var(--air)',MUT='var(--muted)',FG='var(--fg)';
+let T=0; // temps global (s) per animar el flux
+const f1=v=>(+v).toFixed(1);
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const approach=(v,t,rate,dt)=>{const d=t-v,s=rate*dt;return Math.abs(d)<=s?t:v+Math.sign(d)*s;};
+
+/* ---------- navegació i mode ---------- */
+const mods=[...document.querySelectorAll('.mod')],keys=mods.map(m=>m.dataset.key);
+function show(key,scroll){if(!keys.includes(key))key=keys[0];mods.forEach(m=>m.hidden=m.dataset.key!==key);
+  document.querySelectorAll('.side button').forEach(b=>b.setAttribute('aria-current',b.dataset.go===key?'true':'false'));
+  try{history.replaceState(null,'','#'+key)}catch(e){}
+  if(scroll)window.scrollTo({top:0,behavior:reduce?'auto':'smooth'});}
+document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>show(b.dataset.go,true)));
+function setMode(m){document.body.classList.toggle('classe',m==='classe');$('mode-classe').setAttribute('aria-pressed',m==='classe');$('mode-estudi').setAttribute('aria-pressed',m!=='classe');store.set('pn-mode',m);}
+$('mode-classe').addEventListener('click',()=>setMode('classe'));$('mode-estudi').addEventListener('click',()=>setMode('estudi'));
+setMode(store.get('pn-mode')==='classe'?'classe':'estudi');
+
+/* botó que s'ha de mantenir premut (ratolí, dit o teclat) */
+function holdBtn(btn,on){let st=false;const set=v=>{if(v===st)return;st=v;btn.setAttribute('aria-pressed',v);on(v);};
+  btn.addEventListener('pointerdown',e=>{e.preventDefault();try{btn.setPointerCapture(e.pointerId)}catch(_){}set(true);});
+  ['pointerup','pointercancel','lostpointercapture'].forEach(ev=>btn.addEventListener(ev,()=>set(false)));
+  btn.addEventListener('keydown',e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();set(true);}});
+  btn.addEventListener('keyup',e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();set(false);}});
+  btn.addEventListener('blur',()=>set(false));
+  return set;}
+function segGroup(sel,attr,cb){const bs=[...document.querySelectorAll(sel)];bs.forEach(b=>b.addEventListener('click',()=>{bs.forEach(x=>x.setAttribute('aria-pressed',x===b));cb(b.dataset[attr]);}));}
+
+/* ---------- primitives SVG ---------- */
+// conducte: línia base (blava si té pressió) + punts que es mouen si hi circula aire (dir = 1 en el sentit del traç, -1 al revés)
+function pipe(d,on,dir,w,speed){w=w||3;speed=speed==null?1:speed;
+  let s=`<path d="${d}" fill="none" stroke="${on?AIR:MUT}" stroke-width="${on?w+0.6:w*0.8}" stroke-linejoin="round" stroke-linecap="round"/>`;
+  if(on&&dir&&!reduce&&speed>0){const off=((-dir*T*30*speed)%14).toFixed(1);s+=`<path d="${d}" fill="none" stroke="var(--surface)" stroke-width="${(w*0.5).toFixed(1)}" stroke-dasharray="3 11" stroke-dashoffset="${off}" stroke-linecap="round" opacity=".9"/>`;}
+  return s;}
+function pilot(d,on,dir){let s=`<path d="${d}" fill="none" stroke="${on?AIR:MUT}" stroke-width="${on?2.4:1.6}" stroke-dasharray="6 4"/>`;
+  if(on&&dir&&!reduce){const off=((-dir*T*30)%10).toFixed(1);s+=`<path d="${d}" fill="none" stroke="var(--surface)" stroke-width="1.2" stroke-dasharray="2 8" stroke-dashoffset="${off}"/>`;}return s;}
+function head(x1,y1,x2,y2,col,sz){sz=sz||8;const dx=x2-x1,dy=y2-y1,L=Math.hypot(dx,dy)||1,ux=dx/L,uy=dy/L,nx=-uy,ny=ux;
+  const bx=x2-ux*sz,by=y2-uy*sz;return `<polygon points="${f1(x2)},${f1(y2)} ${f1(bx+nx*sz*.45)},${f1(by+ny*sz*.45)} ${f1(bx-nx*sz*.45)},${f1(by-ny*sz*.45)}" fill="${col}"/>`;}
+function arrow(x1,y1,x2,y2,col,w,sz){return `<line x1="${f1(x1)}" y1="${f1(y1)}" x2="${f1(x2-(x2-x1)*0.06)}" y2="${f1(y2-(y2-y1)*0.06)}" stroke="${col}" stroke-width="${w||2}"/>`+head(x1,y1,x2,y2,col,sz);}
+function spring(x1,x2,yc,h,n,col){let p=`M${f1(x1)},${f1(yc)}`;const step=(x2-x1)/n;for(let i=0;i<n;i++){p+=` L${f1(x1+step*(i+.25))},${f1(yc-h/2)} L${f1(x1+step*(i+.75))},${f1(yc+h/2)}`;}p+=` L${f1(x2)},${f1(yc)}`;
+  return `<path d="${p}" fill="none" stroke="${col||FG}" stroke-width="1.6" stroke-linejoin="round"/>`;}
+function vspring(xc,y1,y2,w,n,col){let p=`M${f1(xc)},${f1(y1)}`;const step=(y2-y1)/n;for(let i=0;i<n;i++){p+=` L${f1(xc-w/2)},${f1(y1+step*(i+.25))} L${f1(xc+w/2)},${f1(y1+step*(i+.75))}`;}p+=` L${f1(xc)},${f1(y2)}`;
+  return `<path d="${p}" fill="none" stroke="${col||'var(--steel)'}" stroke-width="2" stroke-linejoin="round"/>`;}
+const src=(x,y)=>`<circle cx="${x}" cy="${y}" r="7" fill="var(--surface)" stroke="${FG}" stroke-width="1.6"/><circle cx="${x}" cy="${y}" r="2.4" fill="${FG}"/>`;
+const exh=(x,y)=>`<polygon points="${x-7},${y} ${x+7},${y} ${x},${y+9}" fill="none" stroke="${FG}" stroke-width="1.5"/>`;
+const txt=(x,y,s,cls,anchor)=>`<text x="${x}" y="${y}" class="${cls||'sv-s'}" text-anchor="${anchor||'middle'}">${s}</text>`;
+function gauge(cx,cy,r,val,max,label){const a0=Math.PI*0.75,a1=Math.PI*2.25,a=a0+(a1-a0)*clamp(val/max,0,1);
+  const px=(ang,rr)=>[cx+Math.cos(ang)*rr,cy+Math.sin(ang)*rr];let ticks='';
+  for(let i=0;i<=max;i+=max>6?2:1){const ang=a0+(a1-a0)*i/max,[x1,y1]=px(ang,r-2),[x2,y2]=px(ang,r-7);ticks+=`<line x1="${f1(x1)}" y1="${f1(y1)}" x2="${f1(x2)}" y2="${f1(y2)}" stroke="${MUT}" stroke-width="1.2"/>`;}
+  const [nx,ny]=px(a,r-9);
+  return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="var(--surface)" stroke="${FG}" stroke-width="1.6"/>${ticks}<line x1="${cx}" y1="${cy}" x2="${f1(nx)}" y2="${f1(ny)}" stroke="var(--hot)" stroke-width="2.4" stroke-linecap="round"/><circle cx="${cx}" cy="${cy}" r="2.6" fill="${FG}"/>`+
+    txt(cx,cy+r+15,label,'sv-num');}
+
+/* ---------- cilindre (estil del llibre: èmbol beix, cambres blaves amb pressió) ---------- */
+// o:{x,y,L,H,type:'SE'|'DE',ext 0..1,post,ant (pressió),fPost,fAnt (+1 entra, -1 surt, 0),ports:true}
+function cylinder(o){const {x,y,L,H}=o,cap=8,pw=14,ext=clamp(o.ext,0,1);
+  const px=x+cap+ext*(L-2*cap-pw),rodH=Math.max(8,H*.22),rodLen=L-2*cap-pw+40;
+  let s='';
+  s+=`<rect x="${x+cap}" y="${y+2}" width="${f1(px-x-cap)}" height="${H-4}" fill="${o.post?'var(--air-soft)':'var(--empty)'}"/>`;
+  s+=`<rect x="${f1(px+pw)}" y="${y+2}" width="${f1(x+L-cap-px-pw)}" height="${H-4}" fill="${o.ant?'var(--air-soft)':'var(--empty)'}"/>`;
+  if(o.type==='SE'){const n=Math.max(4,Math.round(5+ext*-1));s+=spring(px+pw+2,x+L-cap-2,y+H/2,H-10,6,'var(--steel)');}
+  s+=`<rect x="${f1(px+pw)}" y="${f1(y+H/2-rodH/2)}" width="${f1(rodLen)}" height="${f1(rodH)}" fill="var(--steel-l)" stroke="var(--steel)" stroke-width="1.2"/>`;
+  s+=`<rect x="${f1(px)}" y="${y+2}" width="${pw}" height="${H-4}" fill="var(--piston)" stroke="var(--body-d)" stroke-width="1.2"/>`;
+  s+=`<rect x="${x}" y="${y}" width="${L}" height="${H}" fill="none" stroke="${FG}" stroke-width="2.2"/>`;
+  s+=`<rect x="${x}" y="${y}" width="${cap}" height="${H}" fill="var(--steel-l)" stroke="${FG}" stroke-width="1.5"/><rect x="${x+L-cap}" y="${y}" width="${cap}" height="${H}" fill="var(--steel-l)" stroke="${FG}" stroke-width="1.5"/>`;
+  s+=`<rect x="${f1(px+pw)}" y="${f1(y+H/2-rodH/2)}" width="${f1(Math.max(0,x+L-px-pw))}" height="${f1(rodH)}" fill="var(--steel-l)" stroke="none"/>`;
+  s+=`<line x1="${f1(px+pw)}" y1="${f1(y+H/2-rodH/2)}" x2="${f1(px+pw+rodLen)}" y2="${f1(y+H/2-rodH/2)}" stroke="var(--steel)" stroke-width="1.2"/><line x1="${f1(px+pw)}" y1="${f1(y+H/2+rodH/2)}" x2="${f1(px+pw+rodLen)}" y2="${f1(y+H/2+rodH/2)}" stroke="var(--steel)" stroke-width="1.2"/><line x1="${f1(px+pw+rodLen)}" y1="${f1(y+H/2-rodH/2)}" x2="${f1(px+pw+rodLen)}" y2="${f1(y+H/2+rodH/2)}" stroke="var(--steel)" stroke-width="1.2"/>`;
+  if(o.type==='SE'){s+=`<line x1="${x+L-cap-16}" y1="${y-1}" x2="${x+L-cap-16}" y2="${y+3}" stroke="var(--surface)" stroke-width="5"/>`;}
+  return {svg:s,px,pw,rodEnd:px+pw+rodLen,portPost:x+cap+12,portAnt:x+L-cap-12};}
+// connexió d'una cambra amb fletxetes d'entrada/sortida
+function portFlow(xp,y1,y2,on,f){let s=pipe(`M${xp},${y2} L${xp},${y1}`,on,f>0?1:(f<0?-1:0),3);
+  if(f>0&&!reduce)s+=arrow(xp+14,y2-4,xp+14,y1+6,AIR,2,7);
+  if(f<0&&!reduce)s+=arrow(xp+14,y1+6,xp+14,y2-4,MUT,2,7);return s;}
+
+/* ---------- motor de símbols de vàlvules distribuïdores ---------- */
+const VDEF={
+  v22no:{name:'2/2 NO',full:'Distribuïdor 2/2 normalment obert',ports:{A:['t',.5],P:['b',.5]},boxes:[{c:[],t:['A','P']},{c:[['P','A']],t:[]}],rest:1},
+  v22nt:{name:'2/2 NT',full:'Distribuïdor 2/2 normalment tancat',ports:{A:['t',.5],P:['b',.5]},boxes:[{c:[['P','A']],t:[]},{c:[],t:['A','P']}],rest:1},
+  v32no:{name:'3/2 NO',full:'Distribuïdor 3/2 normalment obert',ports:{A:['t',.3],P:['b',.3],R:['b',.72]},boxes:[{c:[['A','R']],t:['P']},{c:[['P','A']],t:['R']}],rest:1},
+  v32nt:{name:'3/2 NT',full:'Distribuïdor 3/2 normalment tancat',ports:{A:['t',.3],P:['b',.3],R:['b',.72]},boxes:[{c:[['P','A']],t:['R']},{c:[['A','R']],t:['P']}],rest:1},
+  v42:{name:'4/2',full:'Distribuïdor 4/2',ports:{A:['t',.28],B:['t',.72],P:['b',.28],R:['b',.72]},boxes:[{c:[['P','B'],['A','R']],t:[]},{c:[['P','A'],['B','R']],t:[]}],rest:1},
+  v52:{name:'5/2',full:'Distribuïdor 5/2',ports:{A:['t',.3],B:['t',.7],R:['b',.14],P:['b',.5],S:['b',.86]},boxes:[{c:[['P','B'],['A','R']],t:['S']},{c:[['P','A'],['B','S']],t:['R']}],rest:1},
+  v53:{name:'5/3',full:'Distribuïdor 5/3 de centre tancat',ports:{A:['t',.3],B:['t',.7],R:['b',.14],P:['b',.5],S:['b',.86]},boxes:[{c:[['P','B'],['A','R']],t:['S']},{c:[],t:['A','B','R','P','S']},{c:[['P','A'],['B','S']],t:['R']}],rest:1}
+};
+const NUM={P:'1',A:'2',B:'4',R:'3',S:'5'};
+function activeIdx(pos){const r=Math.round(pos);return Math.abs(pos-r)<0.04?r:-1;}
+function pressPorts(def,pos){const a=activeIdx(pos),p={P:true};if(a<0)return p;def.boxes[a].c.forEach(c=>{if(c[0]==='P')p[c[1]]=true;});return p;}
+function conText(def,pos){const a=activeIdx(pos);if(a<0)return '…';const b=def.boxes[a];const L=[];
+  b.c.forEach(c=>L.push(c[0]+'→'+c[1]+(c[1]==='R'||c[1]==='S'?' (escapament)':'')));b.t.forEach(t=>L.push(t+' tancada'));return L.join(' · ')||'—';}
+/* accionaments: dibuixats a la vora x (side -1 esquerra, +1 dreta), centrats a y */
+function actSym(type,x,y,side,on){const k=side,c=on?AIR:FG;let s='';const X=d=>f1(x+k*d);
+  switch(type){
+    case 'polsador':s=`<line x1="${X(0)}" y1="${y}" x2="${X(14)}" y2="${y}" stroke="${FG}" stroke-width="1.6"/><line x1="${X(14)}" y1="${y-8}" x2="${X(14)}" y2="${y+8}" stroke="${FG}" stroke-width="1.6"/><path d="M${X(14)},${y-8} A8,8 0 0,${k<0?0:1} ${X(14)},${y+8}" fill="${on?'var(--air-soft)':'none'}" stroke="${FG}" stroke-width="1.6"/>`;break;
+    case 'manual':s=`<line x1="${X(0)}" y1="${y}" x2="${X(16)}" y2="${y}" stroke="${FG}" stroke-width="1.6"/><line x1="${X(16)}" y1="${y-8}" x2="${X(16)}" y2="${y+8}" stroke="${FG}" stroke-width="1.6"/>`;break;
+    case 'palanca':s=`<line x1="${X(0)}" y1="${y}" x2="${X(10)}" y2="${y}" stroke="${FG}" stroke-width="1.6"/><line x1="${X(10)}" y1="${y-8}" x2="${X(10)}" y2="${y+8}" stroke="${FG}" stroke-width="1.6"/><line x1="${X(10)}" y1="${y}" x2="${X(20)}" y2="${y-14}" stroke="${FG}" stroke-width="1.6"/><circle cx="${X(21)}" cy="${y-16}" r="3" fill="none" stroke="${FG}" stroke-width="1.4"/>`;break;
+    case 'pedal':s=`<line x1="${X(0)}" y1="${y}" x2="${X(10)}" y2="${y}" stroke="${FG}" stroke-width="1.6"/><line x1="${X(10)}" y1="${y-8}" x2="${X(10)}" y2="${y+8}" stroke="${FG}" stroke-width="1.6"/><path d="M${X(10)},${y+6} L${X(20)},${y-10} L${X(26)},${y-10}" fill="none" stroke="${FG}" stroke-width="1.6"/>`;break;
+    case 'palpador':s=`<line x1="${X(0)}" y1="${y}" x2="${X(12)}" y2="${y}" stroke="${FG}" stroke-width="1.6"/><path d="M${X(18)},${y-6} A6,6 0 0,${k<0?1:0} ${X(18)},${y+6}" fill="none" stroke="${FG}" stroke-width="1.6"/><line x1="${X(12)}" y1="${y}" x2="${X(12)}" y2="${y}" />`;break;
+    case 'molla':s=`<path d="M${X(0)},${y} `+[0,1,2,3,4,5].map(i=>`L${X(3+i*4)},${y+(i%2?6:-6)}`).join(' ')+` L${X(26)},${y}" fill="none" stroke="${FG}" stroke-width="1.5"/>`;break;
+    case 'rodet':s=`<line x1="${X(0)}" y1="${y}" x2="${X(12)}" y2="${y}" stroke="${FG}" stroke-width="1.6"/><circle cx="${X(19)}" cy="${y}" r="7" fill="${on?'var(--air-soft)':'none'}" stroke="${FG}" stroke-width="1.6"/><circle cx="${X(19)}" cy="${y}" r="1.8" fill="${FG}"/>`;break;
+    case 'rodetAb':s=`<line x1="${X(0)}" y1="${y}" x2="${X(10)}" y2="${y}" stroke="${FG}" stroke-width="1.6"/><line x1="${X(10)}" y1="${y}" x2="${X(18)}" y2="${y-10}" stroke="${FG}" stroke-width="1.6"/><circle cx="${X(21)}" cy="${y-14}" r="6" fill="none" stroke="${FG}" stroke-width="1.6"/><circle cx="${X(21)}" cy="${y-14}" r="1.6" fill="${FG}"/>`;break;
+    case 'pilot':{const bx=k<0?x-14:x;s=`<rect x="${bx}" y="${y-7}" width="14" height="14" fill="${on?'var(--air-soft)':'var(--surface)'}" stroke="${FG}" stroke-width="1.5"/><polygon points="${X(10)},${y-4} ${X(10)},${y+4} ${X(4)},${y}" fill="${c}"/>`;break;}
+    case 'electro':{const bx=k<0?x-14:x;s=`<rect x="${bx}" y="${y-9}" width="14" height="18" fill="none" stroke="${FG}" stroke-width="1.5"/><line x1="${bx}" y1="${y+9}" x2="${bx+14}" y2="${y-9}" stroke="${FG}" stroke-width="1.4"/>`;break;}
+    case 'electroPilot':{const bx1=k<0?x-14:x,bx2=k<0?x-30:x+16;s=`<rect x="${bx1}" y="${y-7}" width="14" height="14" fill="none" stroke="${FG}" stroke-width="1.5"/><polygon points="${X(10)},${y-4} ${X(10)},${y+4} ${X(4)},${y}" fill="${FG}"/><rect x="${bx2}" y="${y-9}" width="14" height="18" fill="none" stroke="${FG}" stroke-width="1.5"/><line x1="${bx2}" y1="${y+9}" x2="${bx2+14}" y2="${y-9}" stroke="${FG}" stroke-width="1.4"/>`;break;}
+    case 'pressio':s=`<polygon points="${X(4)},${y} ${X(14)},${y-6} ${X(14)},${y+6}" fill="none" stroke="${FG}" stroke-width="1.5"/><line x1="${X(14)}" y1="${y}" x2="${X(30)}" y2="${y}" stroke="${FG}" stroke-width="1.4" stroke-dasharray="4 3"/>`;break;
+    case 'depressio':s=`<polygon points="${X(14)},${y} ${X(4)},${y-6} ${X(4)},${y+6}" fill="none" stroke="${FG}" stroke-width="1.5"/><line x1="${X(14)}" y1="${y}" x2="${X(30)}" y2="${y}" stroke="${FG}" stroke-width="1.4" stroke-dasharray="4 3"/>`;break;
+  }return s;}
+// o:{x,y,S,pos,actL,actR (tipus o array),onL,onR,num (números en lloc de lletres),hl:'vies'|'pos',portLen,labels,exhaust}
+function valve(def,o){const S=o.S||56,n=def.boxes.length,pos=o.pos,a=activeIdx(pos),dx=(def.rest-pos)*S,pl=o.portLen==null?24:o.portLen;
+  const pp=pressPorts(def,pos);let s=`<g transform="translate(${f1(dx)},0)">`;
+  def.boxes.forEach((b,i)=>{const bx=o.x+i*S,by=o.y,act=i===a;
+    s+=`<rect x="${bx}" y="${by}" width="${S}" height="${S}" fill="${act?'var(--surface)':'var(--surface)'}" stroke="${FG}" stroke-width="1.8"/>`;
+    const P=k=>{const q=def.ports[k];return [bx+q[1]*S,q[0]==='t'?by+5:by+S-5];};
+    b.t.forEach(k=>{const q=def.ports[k],xx=bx+q[1]*S;if(q[0]==='t')s+=`<line x1="${f1(xx)}" y1="${by}" x2="${f1(xx)}" y2="${by+11}" stroke="${FG}" stroke-width="1.6"/><line x1="${f1(xx-6)}" y1="${by+11}" x2="${f1(xx+6)}" y2="${by+11}" stroke="${FG}" stroke-width="1.6"/>`;
+      else s+=`<line x1="${f1(xx)}" y1="${by+S}" x2="${f1(xx)}" y2="${by+S-11}" stroke="${FG}" stroke-width="1.6"/><line x1="${f1(xx-6)}" y1="${by+S-11}" x2="${f1(xx+6)}" y2="${by+S-11}" stroke="${FG}" stroke-width="1.6"/>`;});
+    b.c.forEach(c=>{const [x1,y1]=P(c[0]),[x2,y2]=P(c[1]);const live=act&&c[0]==='P';const col=live?AIR:FG;
+      if(live)s+=pipe(`M${f1(x1)},${f1(y1)} L${f1(x2-(x2-x1)*.08)},${f1(y2-(y2-y1)*.08)}`,true,1,2.2);else s+=`<line x1="${f1(x1)}" y1="${f1(y1)}" x2="${f1(x2-(x2-x1)*.08)}" y2="${f1(y2-(y2-y1)*.08)}" stroke="${col}" stroke-width="1.7"/>`;
+      s+=head(x1,y1,x2,y2,col,8);});
+    if(o.hl==='pos')s+=`<circle cx="${bx+S/2}" cy="${by-16}" r="11" fill="var(--hot)"/>`+txt(bx+S/2,by-11.5,String(i+1),'sv-fg').replace('sv-fg"','sv-fg" style="fill:#fff;font-size:14px"');
+  });
+  const ym=o.y+S/2,L=[].concat(o.actL||[]),R=[].concat(o.actR||[]);let xl=o.x,xr=o.x+n*S;
+  L.forEach((t,i)=>{s+=actSym(t,xl,ym,-1,o.onL&&i===L.length-1);xl-=(t==='molla'?26:(t==='electroPilot'?30:16));});
+  R.forEach((t,i)=>{s+=actSym(t,xr,ym,1,o.onR&&i===R.length-1);xr+=(t==='molla'?26:(t==='electroPilot'?30:16));});
+  s+='</g>';
+  // conductes exteriors (fixos, a la casella de repòs)
+  ['P','A','B','R','S'].filter(k=>def.ports[k]).forEach((k,i)=>{const q=def.ports[k],xx=o.x+def.rest*S+q[1]*S,on=!!pp[k];
+    const lbl=o.num?NUM[k]:k;
+    if(q[0]==='t'){s+=pipe(`M${f1(xx)},${o.y} L${f1(xx)},${o.y-pl}`,on,0,2.4);if(o.labels!==false)s+=txt(f1(xx+10),o.y-6,lbl,'sv-num','start');}
+    else{s+=pipe(`M${f1(xx)},${o.y+S} L${f1(xx)},${o.y+S+pl}`,on,0,2.4);
+      if(k==='P'&&o.src!==false)s+=src(xx,o.y+S+pl+7);else if(k!=='P')s+=exh(xx,o.y+S+pl);
+      if(o.labels!==false)s+=txt(f1(xx+(k==='P'?11:8)),o.y+S+16,lbl,'sv-num','start');}
+    if(o.hl==='vies'){const yy=q[0]==='t'?o.y-pl-14:o.y+S+pl+(k==='P'?26:22);s+=`<circle cx="${f1(xx)}" cy="${yy}" r="10" fill="var(--hot)"/><text x="${f1(xx)}" y="${yy+4.5}" text-anchor="middle" class="sv-fg" style="fill:#fff;font-size:13px">${i+1}</text>`;}
+  });
+  return {svg:s,pp,a,portX:k=>o.x+def.rest*S+def.ports[k][1]*S};}
+
+/* ---------- format de números (coma decimal) ---------- */
+const SUP={'-':'⁻','0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹'};
+function trimz(s){return s.indexOf('.')>=0?s.replace(/0+$/,'').replace(/\.$/,''):s;}
+function grp(s){const [i,d]=s.split('.');const g=i.replace(/\B(?=(\d{3})+(?!\d))/g,' ');return d?g+','+d:g;}
+function fmt(v){if(!isFinite(v))return '—';if(v===0)return '0';const a=Math.abs(v),neg=v<0?'−':'';
+  if(a>=0.01&&a<1e7){const dec=a>=1000?0:a>=100?1:a>=10?2:a>=1?3:4;return neg+grp(trimz(a.toFixed(dec)));}
+  let e=Math.floor(Math.log10(a)),m=a/Math.pow(10,e);if(+m.toFixed(3)>=10){m/=10;e++;}
+  return neg+trimz(m.toFixed(3)).replace('.',',')+'·10'+String(e).split('').map(c=>SUP[c]).join('');}
+const num=s=>{s=String(s).trim().replace(/\s/g,'').replace(',','.');return s===''||isNaN(+s)?NaN:+s;};
+
+/* ======================= MÒDUL 1 ======================= */
+/* --- parts del cilindre --- */
+const PARTS=[
+  ['tub','Tub cilíndric','El cos del cilindre: un tub tancat pels dos extrems.'],
+  ['tapes','Tapes','Tanquen el tub pels extrems. Per una de les tapes surt la tija.'],
+  ['embol','Èmbol','Peça que llisca dins del tub i separa les dues cambres. L\'aire l\'empeny.'],
+  ['tija','Tija','Barra unida a l\'èmbol que surt per la tapa i transmet la força a l\'exterior.'],
+  ['post','Cambra posterior','Cambra del costat contrari a la tija. Quan s\'hi fica aire, la tija avança.'],
+  ['ant','Cambra anterior','Cambra del costat de la tija. Té menys secció útil perquè la tija n\'ocupa una part.'],
+  ['D','Diàmetre D','Diàmetre interior del tub. Determina la secció: A = π · r², amb r = D/2.'],
+  ['cursa','Cursa Δx','Distància entre les dues posicions extremes de l\'èmbol: el recorregut de la tija.']];
+let partSel=null;
+function drawParts(){const x=80,y=70,L=300,H=90,cap=10,pw=16,px=x+cap+64,rodH=22,rodEnd=x+L+40,cursa=L-2*cap-pw-64;
+  const g=(k,inner)=>`<g class="part-hl${partSel===k?' on':''}" data-p="${k}">${inner}</g>`;let s='';
+  s+=g('post',`<rect x="${x+cap}" y="${y+2}" width="${px-x-cap}" height="${H-4}" fill="var(--air-soft)"/>`);
+  s+=g('ant',`<rect x="${px+pw}" y="${y+2}" width="${x+L-cap-px-pw}" height="${H-4}" fill="var(--air-soft)"/>`);
+  s+=g('tija',`<rect x="${px+pw}" y="${y+H/2-rodH/2}" width="${rodEnd-px-pw}" height="${rodH}" fill="var(--steel-l)" stroke="var(--steel)" stroke-width="1.2"/>`);
+  s+=g('embol',`<rect x="${px}" y="${y+2}" width="${pw}" height="${H-4}" fill="var(--piston)" stroke="var(--body-d)" stroke-width="1.2"/>`);
+  s+=g('tub',`<rect x="${x}" y="${y}" width="${L}" height="${H}" fill="none" stroke="${FG}" stroke-width="2.4"/>`);
+  s+=g('tapes',`<rect x="${x}" y="${y}" width="${cap}" height="${H}" fill="var(--steel-l)" stroke="${FG}" stroke-width="1.5"/><rect x="${x+L-cap}" y="${y}" width="${cap}" height="${H}" fill="var(--steel-l)" stroke="${FG}" stroke-width="1.5"/><rect x="${x+L-cap}" y="${y+H/2-rodH/2}" width="${cap}" height="${rodH}" fill="var(--steel-l)"/>`);
+  s+=g('D',`<line x1="${x-26}" y1="${y}" x2="${x-26}" y2="${y+H}" stroke="${FG}" stroke-width="1.3"/>${head(x-26,y+20,x-26,y,FG,8)}${head(x-26,y+H-20,x-26,y+H,FG,8)}<line x1="${x-34}" y1="${y}" x2="${x-4}" y2="${y}" stroke="${MUT}" stroke-width="1"/><line x1="${x-34}" y1="${y+H}" x2="${x-4}" y2="${y+H}" stroke="${MUT}" stroke-width="1"/>`+txt(x-42,y+H/2+6,'D','sv-fg'));
+  s+=g('cursa',`<rect x="${rodEnd}" y="${y+H/2-rodH/2}" width="${cursa}" height="${rodH}" fill="none" stroke="${MUT}" stroke-dasharray="5 4"/><line x1="${rodEnd}" y1="${y-26}" x2="${rodEnd+cursa}" y2="${y-26}" stroke="${FG}" stroke-width="1.3"/>${head(rodEnd+20,y-26,rodEnd,y-26,FG,8)}${head(rodEnd+cursa-20,y-26,rodEnd+cursa,y-26,FG,8)}<line x1="${rodEnd}" y1="${y-34}" x2="${rodEnd}" y2="${y+H/2}" stroke="${MUT}" stroke-width="1"/><line x1="${rodEnd+cursa}" y1="${y-34}" x2="${rodEnd+cursa}" y2="${y+H/2}" stroke="${MUT}" stroke-width="1"/>`+txt(rodEnd+cursa/2,y-34,'Cursa Δx','sv-fg'));
+  s+=txt((x+cap+px)/2,y+H+24,'cambra posterior','sv-mut')+txt((px+pw+x+L-cap)/2,y+H+24,'cambra anterior','sv-mut');
+  s+=txt(px+pw/2,y-8,'èmbol','sv-mut')+txt(x+L+30,y+H/2+30,'tija','sv-mut');
+  const svg=$('parts-svg');svg.innerHTML=s;svg.classList.toggle('hlmode',!!partSel);}
+$('parts-list').innerHTML=PARTS.map(p=>`<button class="btn" type="button" data-part="${p[0]}" aria-pressed="false">${p[1]}</button>`).join('');
+$('parts-list').querySelectorAll('[data-part]').forEach(b=>b.addEventListener('click',()=>{const k=b.dataset.part;partSel=partSel===k?null:k;
+  $('parts-list').querySelectorAll('[data-part]').forEach(x=>x.setAttribute('aria-pressed',x.dataset.part===partSel));
+  const p=PARTS.find(q=>q[0]===partSel);$('parts-box').innerHTML=p?`<h4>${p[1]}</h4><p>${p[2]}</p>`:'<p class="sv-cap" style="text-align:left">Toca una part per veure-la destacada.</p>';drawParts();}));
+drawParts();
+
+/* --- simulació simple / doble efecte --- */
+const CY={type:'SE',ext:0,se:false,de:'ant'};
+function cylCtl(){const c=$('cyl-ctl');
+  if(CY.type==='SE'){c.innerHTML='<button class="btn hold" type="button" id="cy-se" aria-pressed="false">Mantén premut: entra aire a la cambra posterior</button>';CY.se=false;holdBtn($('cy-se'),v=>CY.se=v);}
+  else{c.innerHTML='<div class="seg" role="group" aria-label="Cambra amb aire"><button type="button" data-de="post" aria-pressed="'+(CY.de==='post')+'">Aire a la cambra posterior</button><button type="button" data-de="ant" aria-pressed="'+(CY.de==='ant')+'">Aire a la cambra anterior</button></div>';
+    segGroup('[data-de]','de',v=>CY.de=v);}}
+segGroup('[data-cyl]','cyl',v=>{CY.type=v;cylCtl();});
+cylCtl();
+function stepCyl(dt){let tgt,post=false,ant=false;
+  if(CY.type==='SE'){post=CY.se;tgt=CY.se?1:0;}else{post=CY.de==='post';ant=CY.de==='ant';tgt=post?1:0;}
+  const prev=CY.ext;CY.ext=approach(CY.ext,tgt,0.7,dt);const mv=Math.sign(CY.ext-prev);
+  const x=40,y=40,L=280,H=80;const c=cylinder({x,y,L,H,type:CY.type,ext:CY.ext,post,ant});
+  let s=c.svg;
+  const fP=mv>0?1:(mv<0?-1:0);
+  s+=portFlow(c.portPost,y+H,y+H+70,post,CY.type==='SE'?(post?(mv>0?1:0):(mv<0?-1:0)):(post&&mv>0?1:(!post&&mv<0?-1:0)));
+  s+=txt(c.portPost,y+H+90,'connexió cambra posterior','sv-mut');
+  if(CY.type==='DE'){s+=portFlow(c.portAnt,y+H,y+H+70,ant,ant&&mv<0?1:(!ant&&mv>0?-1:0));s+=txt(c.portAnt,y+H+90,'connexió cambra anterior','sv-mut');}
+  else{s+=txt(x+L-34,y-10,'respiració a l\'atmosfera','sv-mut');}
+  $('cyl-svg').innerHTML=s;
+  let st;
+  if(CY.type==='SE'){st=CY.se?(CY.ext<1?'<b>Avanç.</b> L\'aire entra a la cambra posterior, empeny l\'èmbol i comprimeix la molla.':'<b>Tija fora.</b> Mentre hi hagi pressió, la tija es queda fora i la molla comprimida.')
+      :(CY.ext>0?'<b>Retrocés.</b> Ja no entra aire: la molla torna l\'èmbol enrere i l\'aire de la cambra surt per la mateixa connexió.':'<b>Repòs.</b> Sense aire, la molla manté la tija a dins.');}
+  else{st=CY.de==='post'?(CY.ext<1?'<b>Avanç.</b> L\'aire entra a la cambra posterior; l\'aire de la cambra anterior surt per la seva connexió.':'<b>Tija fora.</b> La cambra posterior és plena d\'aire a pressió.')
+      :(CY.ext>0?'<b>Retrocés.</b> L\'aire entra a la cambra anterior i empeny l\'èmbol enrere; la cambra posterior es buida.':'<b>Tija a dins.</b> La cambra anterior és plena d\'aire a pressió.');}
+  $('cyl-status').innerHTML=st;}
+
+/* --- calculadora del treball --- */
+function calcW(){const p=num($('w-p').value),D=num($('w-d').value),l=num($('w-l').value),n=num($('w-n').value);let err='';
+  if(!(p>0&&p<=50))err='La pressió ha de ser un número positiu (en bar).';else if(!(D>0&&D<=1000))err='El diàmetre ha de ser un número positiu (en mm).';
+  else if(!(l>0&&l<=5000))err='La cursa ha de ser un número positiu (en mm).';else if(!(n>0&&n<=1))err='El rendiment ha d\'estar entre 0 i 1 (per exemple, 0,9).';
+  $('w-err').textContent=err;if(err){$('w-steps').innerHTML='';$('w-F').textContent='—';$('w-W').textContent='—';return;}
+  const pPa=p*1e5,r=D/2000,A=Math.PI*r*r,lm=l/1000,F=pPa*A,W=pPa*A*lm*n;
+  const li=(lbl,body)=>`<li><span class="lbl">${lbl}</span>${body}</li>`;
+  $('w-steps').innerHTML=
+    li('Pressió en pascals','p = '+fmt(p)+' bar = '+fmt(p)+' · 10⁵ Pa = <span class="res">'+fmt(pPa)+' Pa</span>')+
+    li('Radi en metres','r = D / 2 = '+fmt(D/2)+' mm = <span class="res">'+fmt(r)+' m</span>')+
+    li('Secció de l\'èmbol','A = π · r² = π · '+fmt(r)+'² = <span class="res">'+fmt(A)+' m²</span>')+
+    li('Cursa en metres','l = '+fmt(l)+' mm = <span class="res">'+fmt(lm)+' m</span>')+
+    li('Força teòrica','F = p · A = '+fmt(pPa)+' · '+fmt(A)+' = <span class="res">'+fmt(F)+' N</span>')+
+    li('Treball','W = p · A · l · η = '+fmt(pPa)+' · '+fmt(A)+' · '+fmt(lm)+' · '+fmt(n)+' = <span class="res">'+fmt(W)+' J</span>');
+  $('w-F').textContent=fmt(F)+' N';$('w-W').textContent=fmt(W)+' J';}
+['w-p','w-d','w-l','w-n'].forEach(id=>$(id).addEventListener('input',calcW));calcW();
+
+/* ======================= MÒDUL 2 ======================= */
+const VX={k:'v32nt',pos:1,L:false,R:false,hl:null};
+const VXTXT={
+  v22no:'En repòs deixa passar l\'aire de P a A. Quan l\'acciones, tanca el pas.',
+  v22nt:'En repòs no deixa passar l\'aire. Quan l\'acciones, connecta P amb A. És com una aixeta.',
+  v32no:'En repòs P→A. Quan l\'acciones, P es tanca i A es buida per l\'escapament R.',
+  v32nt:'En repòs P està tancada i A va a l\'escapament. Quan l\'acciones, P→A. És la que governa un cilindre de simple efecte.',
+  v42:'Sempre hi ha una sortida amb pressió i l\'altra a escapament. En accionar-la, s\'intercanvien: serveix per a un cilindre de doble efecte.',
+  v52:'Com la 4/2, però cada sortida té el seu propi escapament (R i S). També governa cilindres de doble efecte.',
+  v53:'Té tres posicions. Al centre (repòs) tots els orificis queden tancats: el cilindre es queda aturat on sigui. Cada polsador porta a una de les posicions de treball.'};
+$('vx-pick').innerHTML=Object.keys(VDEF).map(k=>`<button class="btn" type="button" data-vx="${k}" aria-pressed="${k===VX.k}">${VDEF[k].name}</button>`).join('');
+function vxCtl(){const def=VDEF[VX.k],c=$('vx-ctl');VX.L=VX.R=false;
+  if(def.boxes.length===3){c.innerHTML='<button class="btn hold" type="button" id="vx-l" aria-pressed="false">Mantén premut el polsador esquerre</button><button class="btn hold" type="button" id="vx-r" aria-pressed="false">Mantén premut el polsador dret</button>';holdBtn($('vx-l'),v=>VX.L=v);holdBtn($('vx-r'),v=>VX.R=v);}
+  else{c.innerHTML='<button class="btn hold" type="button" id="vx-l" aria-pressed="false">Mantén premut el polsador</button>';holdBtn($('vx-l'),v=>VX.L=v);}
+  $('vx-txt').textContent=VXTXT[VX.k];
+  const n=def.boxes.length,v=Object.keys(def.ports).length;$('vx-name').textContent=def.name+' · '+v+' vies, '+n+' posicions';}
+$('vx-pick').querySelectorAll('[data-vx]').forEach(b=>b.addEventListener('click',()=>{VX.k=b.dataset.vx;VX.pos=VDEF[VX.k].rest;$('vx-pick').querySelectorAll('[data-vx]').forEach(x=>x.setAttribute('aria-pressed',x===b));vxCtl();}));
+[['vx-hv','vies'],['vx-hp','pos']].forEach(([id,m])=>$(id).addEventListener('click',()=>{VX.hl=VX.hl===m?null:m;$('vx-hv').setAttribute('aria-pressed',VX.hl==='vies');$('vx-hp').setAttribute('aria-pressed',VX.hl==='pos');}));
+vxCtl();
+function stepVX(dt){const def=VDEF[VX.k],n=def.boxes.length,S=66;let tgt=def.rest;
+  if(n===3)tgt=VX.L&&!VX.R?0:(VX.R&&!VX.L?2:1);else tgt=VX.L?0:1;
+  VX.pos=approach(VX.pos,tgt,6,dt);
+  const x0=260-n*S/2,act=n===3?['molla','polsador']:'polsador',actR=n===3?['molla','polsador']:'molla';
+  const r=valve(def,{x:x0,y:84,S,pos:VX.pos,actL:act,actR:actR,onL:VX.L,onR:VX.R,hl:VX.hl,portLen:30});
+  $('vx-svg').innerHTML=r.svg;
+  const a=activeIdx(VX.pos);
+  $('vx-pos').textContent=a<0?'canviant…':(n===3?(a===1?'Centre (repòs)':(a===0?'Treball (esquerra)':'Treball (dreta)')):(a===def.rest?'Repòs':'Treball'));
+  $('vx-con').textContent=conText(def,VX.pos);}
+
+/* ======================= MÒDUL 3 ======================= */
+const ACTS=[['Manuals',[['manual','Control manual general'],['polsador','Polsador'],['palanca','Palanca'],['pedal','Pedal']]],
+  ['Mecànics',[['palpador','Palpador mecànic'],['molla','Molla'],['rodet','Rodet'],['rodetAb','Rodet abatible']]],
+  ['Pneumàtics',[['pilot','Pilotatge pneumàtic directe'],['pressio','Comandament per pressió'],['depressio','Comandament per depressió']]],
+  ['Elèctrics',[['electro','Electroimant'],['electroPilot','Electroimant i vàlvula pilotada']]]];
+$('acts').innerHTML=ACTS.map(g=>`<p class="actgrp">${g[0]}</p><div class="acts">`+g[1].map(a=>`<div class="act"><svg viewBox="0 0 130 56" aria-hidden="true"><path d="M126,8 H70 V48 H126" fill="none" stroke="${FG}" stroke-width="1.8"/>${actSym(a[0],70,28,-1,false)}</svg><span>${a[1]}</span></div>`).join('')+'</div>').join('');
+
+const MONO={p:false,pos:1},BI={s14:false,s12:false,pos:1};
+holdBtn($('mono-b'),v=>MONO.p=v);holdBtn($('bi-14'),v=>BI.s14=v);holdBtn($('bi-12'),v=>BI.s12=v);
+function indicator(x,y,on,lbl){return `<circle cx="${x}" cy="${y}" r="11" fill="${on?AIR:'var(--empty)'}" stroke="${FG}" stroke-width="1.5"/>`+txt(x,y-17,lbl,'sv-num');}
+function stepMono(dt){MONO.pos=approach(MONO.pos,MONO.p?0:1,6,dt);const def=VDEF.v32nt,S=56;
+  const r=valve(def,{x:94,y:86,S,pos:MONO.pos,actL:'polsador',actR:'molla',onL:MONO.p,portLen:34});
+  const xa=r.portX('A');let s=r.svg+indicator(xa,38,!!r.pp.A,'A');
+  $('mono-svg').innerHTML=s;
+  $('mono-t').innerHTML=MONO.p?'<b>Premut:</b> P→A, l\'indicador s\'encén.':(MONO.pos<0.96?'<b>Tornant…</b> la molla la retorna.':'<b>Repòs:</b> P tancada i A a escapament. Deixa anar el polsador i torna sola.');}
+function stepBi(dt){if(BI.s14&&!BI.s12)BI.tgt=0;else if(BI.s12&&!BI.s14)BI.tgt=1;if(BI.tgt==null)BI.tgt=1;
+  BI.pos=approach(BI.pos,BI.tgt,6,dt);const def=VDEF.v52,S=80,x=70,y=78;
+  const r=valve(def,{x,y,S,pos:BI.pos,actL:'pilot',actR:'pilot',onL:BI.s14,onR:BI.s12,portLen:34});
+  let s=r.svg;const ym=y+S/2,xl=x+(def.rest-BI.pos)*S-14,xr=x+(def.rest-BI.pos)*S+2*S+14;
+  const dl=x-40,dr=x+3*S+16;
+  s+=pilot(`M${f1(xl)},${ym} L${dl},${ym} L${dl},${y+S+50}`,BI.s14,-1)+txt(dl,y+S+66,'14','sv-num');
+  s+=pilot(`M${f1(xr)},${ym} L${dr},${ym} L${dr},${y+S+50}`,BI.s12,-1)+txt(dr,y+S+66,'12','sv-num');
+  s+=indicator(r.portX('A'),38,!!r.pp.A,'A')+indicator(r.portX('B'),38,!!r.pp.B,'B');
+  $('bi-svg').innerHTML=s;const a=activeIdx(BI.pos);
+  $('bi-t').innerHTML=(BI.s14||BI.s12)?'<b>Senyal a '+(BI.s14?'14':'12')+':</b> la vàlvula canvia i connecta 1 amb '+(BI.s14?'4 (B)':'2 (A)')+'.':
+    '<b>Sense senyal:</b> es queda com estava ('+(a===0?'P→B':'P→A')+'). Té memòria.';}
+
+const EX={p:false,pos:1,ext:0,nom:'num'};holdBtn($('ex-b'),v=>EX.p=v);segGroup('[data-nom]','nom',v=>EX.nom=v);
+function stepEx(dt){EX.pos=approach(EX.pos,EX.p?0:1,6,dt);const def=VDEF.v32nt,S=56;
+  const r0=pressPorts(def,EX.pos);const prev=EX.ext;EX.ext=approach(EX.ext,r0.A?1:0,0.6,dt);const mv=Math.sign(EX.ext-prev);
+  const c=cylinder({x:60,y:30,L:210,H:66,type:'SE',ext:EX.ext,post:!!r0.A,ant:false});
+  const r=valve(def,{x:80,y:210,S,pos:EX.pos,actL:'polsador',actR:'molla',onL:EX.p,portLen:16,num:EX.nom==='num'});
+  const xa=r.portX('A');let s=c.svg+r.svg;
+  s+=pipe(`M${f1(xa)},${210-16} L${f1(xa)},150 L${f1(c.portPost)},150 L${f1(c.portPost)},${96}`,!!r0.A,mv>0?1:(mv<0?-1:0),3);
+  s+=txt(400,190,EX.ext>0.5?'Avanç':'Retrocés','sv-t').replace('sv-t"','sv-t" style="font-size:22px"');
+  $('ex-svg').innerHTML=s;
+  const L=EX.nom==='num'?['1','2','3']:['P','A','R'];
+  $('ex-t').innerHTML=EX.p?`<b>Polsador premut:</b> l'aire passa de ${L[0]} a ${L[1]}, entra a la cambra posterior i la tija avança.`:
+    (EX.ext>0?`<b>Polsador lliure:</b> la molla de la vàlvula la torna a repòs; l'aire del cilindre surt de ${L[1]} a ${L[2]} (escapament) i la molla del cilindre fa retrocedir la tija.`:`<b>Repòs:</b> ${L[0]} tancada, ${L[1]} connectada a l'escapament ${L[2]}. La tija és a dins.`);}
+
+/* ======================= MÒDUL 4 · VÀLVULES DE CONTROL ======================= */
+const ch=(x,y,w,h,on)=>`<rect x="${f1(x)}" y="${f1(y)}" width="${f1(w)}" height="${f1(h)}" fill="${on?'var(--air-soft)':'var(--empty)'}"/>`;
+function fl(d,dir,speed){if(!dir||reduce||speed===0)return '';speed=speed==null?1:speed;const off=((-dir*T*34*speed)%16).toFixed(1);
+  return `<path d="${d}" fill="none" stroke="${AIR}" stroke-width="3" stroke-dasharray="6 10" stroke-dashoffset="${off}" stroke-linecap="round"/>`;}
+const body=(x,y,w,h)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="4" class="bk"/>`;
+const ball=(cx,cy,r)=>`<circle cx="${f1(cx)}" cy="${f1(cy)}" r="${r}" fill="var(--steel-l)" stroke="var(--steel)" stroke-width="1.8"/>`;
+const lab=(x,y,s)=>txt(x,y,s,'sv-fg');
+// peces de símbol
+const sLine=(d,on,dir)=>pipe(d,on,dir||0,2.2);
+function seatV(xv,y,dirx,col){return `<path d="M${xv+dirx*12},${y-9} L${xv},${y} L${xv+dirx*12},${y+9}" fill="none" stroke="${col||FG}" stroke-width="1.6"/>`;}
+function throttle(cx,cy,w){return `<path d="M${cx-w/2},${cy-9} Q${cx},${cy-1} ${cx+w/2},${cy-9}" fill="none" stroke="${FG}" stroke-width="1.6"/><path d="M${cx-w/2},${cy+9} Q${cx},${cy+1} ${cx+w/2},${cy+9}" fill="none" stroke="${FG}" stroke-width="1.6"/>`+arrow(cx-w/2-4,cy+16,cx+w/2+4,cy-16,FG,1.5,7);}
+function adjSpring(x,y){return spring(x,x+26,y,12,5,FG)+arrow(x+2,y+12,x+26,y-12,FG,1.3,6);}
+
+const CV={};let cvK='anti',cvS={};
+CV.anti={name:'Vàlvula antiretorn',init:{dir:'0',b:0},
+  ctl:[{t:'seg',k:'dir',o:[['0','Sense aire'],['LR','Aire per 1'],['RL','Aire per 2']]}],
+  step(s,dt){s.b=approach(s.b,s.dir==='LR'?1:0,4,dt);},
+  cut(s){const lr=s.dir==='LR',rl=s.dir==='RL',cx=143+s.b*44;let h=body(20,60,320,120);
+    h+=ch(20,105,112,30,lr)+ch(130,80,120,80,lr||rl)+ch(248,105,92,30,lr||rl);
+    h+=fl(`M24,120 L130,120 Q${f1(cx)},68 250,120 L338,120`,lr?1:0);
+    h+=spring(cx+20,248,120,40,6,'var(--steel)')+ball(cx,120,20);
+    h+=lab(34,100,'1')+lab(326,100,'2');if(rl)h+=txt(108,152,'barrat','sv-mut');return h;},
+  sym(s){const lr=s.dir==='LR',on2=s.dir!=='0';return sLine('M15,75 L70,75',lr,lr?1:0)+sLine('M150,75 L205,75',on2,lr?1:0)+`<rect x="70" y="45" width="80" height="60" fill="none" stroke="${FG}" stroke-width="1.6"/>`+
+    `<line x1="70" y1="75" x2="88" y2="75" stroke="${FG}" stroke-width="1.6"/>`+seatV(88,75,1)+`<circle cx="${f1(104+s.b*6)}" cy="75" r="9" fill="var(--surface)" stroke="${FG}" stroke-width="1.6"/>`+spring(113+s.b*6,150,75,12,5,FG)+txt(22,66,'1','sv-num')+txt(198,66,'2','sv-num');},
+  st(s){return s.dir==='LR'?'<b>De 1 cap a 2:</b> l\'aire venç la força de la molla, separa la bola del seient i passa lliurement.':
+    s.dir==='RL'?'<b>De 2 cap a 1:</b> la pressió de l\'aire se suma a la força de la molla i prem la bola contra el seient. El pas queda barrat.':'<b>Sense aire:</b> la molla manté la bola contra el seient. És una vàlvula normalment tancada.';},
+  txt:'<h3>Vàlvula antiretorn</h3><p>És una vàlvula <b>unidireccional</b>: permet el pas de l\'aire en un únic sentit i n\'evita el pas en sentit invers. És normalment tancada, amb un con o una bola associats a una molla. En un sentit, l\'aire venç la força de la molla i passa; en el contrari, la força de la molla se suma a la pressió de l\'aire i barra el pas.</p>'};
+
+CV.antip={name:'Antiretorn pilotada',init:{dir:'0',x:false,b:0,pp:0},
+  ctl:[{t:'seg',k:'dir',o:[['0','Sense aire'],['LR','Aire per 1'],['RL','Aire per 2']]},{t:'tg',k:'x',l:'Pilotatge X'}],
+  step(s,dt){s.pp=approach(s.pp,s.x?1:0,3,dt);s.b=approach(s.b,(s.dir==='LR'||s.x)?1:0,4,dt);},
+  cut(s){const lr=s.dir==='LR',rl=s.dir==='RL',op=s.b>0.6,cx=143+s.b*44;const onL=lr||(rl&&op),onR=s.dir!=='0'&&(rl||op);let h=body(20,40,320,160);
+    h+=ch(78,135,24,65,onL)+ch(60,105,72,30,onL)+ch(130,80,120,80,onR||(lr&&op))+ch(248,105,92,30,onR)+ch(26,85,30,60,s.x)+ch(30,40,20,46,s.x);
+    h+=`<rect x="${f1(30+s.pp*8)}" y="88" width="8" height="54" fill="var(--piston)" stroke="var(--body-d)"/>`+`<rect x="${f1(38+s.pp*8)}" y="117" width="${f1(72+s.pp*50)}" height="6" fill="var(--steel)"/>`;
+    h+=fl(`M90,198 L90,120 L130,120 Q${f1(cx)},68 250,120 L338,120`,lr?1:(rl&&op?-1:0));
+    h+=fl('M40,42 L40,88',s.x?1:0,0.6);
+    h+=spring(cx+20,248,120,40,6,'var(--steel)')+ball(cx,120,20);
+    h+=lab(104,196,'1')+lab(326,100,'2')+lab(58,58,'X');return h;},
+  sym(s){const lr=s.dir==='LR',on2=s.dir!=='0',op=s.b>0.6,on1=lr||(s.dir==='RL'&&op),d=lr?1:(s.dir==='RL'&&op?-1:0);
+    return sLine('M15,85 L70,85',on1,d)+sLine('M150,85 L205,85',on2,d)+`<rect x="70" y="55" width="80" height="60" fill="none" stroke="${FG}" stroke-width="1.6"/>`+
+    `<line x1="70" y1="85" x2="88" y2="85" stroke="${FG}" stroke-width="1.6"/>`+seatV(88,85,1)+`<circle cx="${f1(104+s.b*6)}" cy="85" r="9" fill="var(--surface)" stroke="${FG}" stroke-width="1.6"/>`+spring(113+s.b*6,150,85,12,5,FG)+
+    pilot('M104,12 L104,74',s.x,1)+txt(116,22,'X','sv-num')+txt(22,76,'1','sv-num')+txt(198,76,'2','sv-num');},
+  st(s){if(s.dir==='RL')return s.x?'<b>De 2 cap a 1, amb pilotatge:</b> el senyal X empeny la bola i obre el pas en sentit invers.':'<b>De 2 cap a 1, sense pilotatge:</b> funciona com una antiretorn normal: barrat.';
+    if(s.dir==='LR')return '<b>De 1 cap a 2:</b> passa lliurement, com una antiretorn normal.';return s.x?'<b>Pilotatge actiu</b> sense aire als orificis: la vàlvula queda oberta.':'<b>Sense aire:</b> tancada.';},
+  txt:'<h3>Vàlvula antiretorn pilotada</h3><p>En condicions normals només deixa passar l\'aire en un sentit. Però mitjançant l\'acció d\'un <b>pilotatge extern</b> (X) pot permetre el pas en sentit invers.</p>'};
+
+CV.cabb={name:'Reguladora de cabal bidireccional',init:{dir:'LR',o:50},
+  ctl:[{t:'seg',k:'dir',o:[['0','Sense aire'],['LR','Aire per 1'],['RL','Aire per 2']]},{t:'rng',k:'o',l:'Obertura',min:0,max:100,step:1,u:'%'}],
+  step(){},
+  cut(s){const lr=s.dir==='LR',rl=s.dir==='RL',op=s.o>0,tipY=150-28*s.o/100;let h=body(20,70,320,120);
+    h+=ch(20,122,160,28,lr||(rl&&op))+ch(180,122,160,28,rl||(lr&&op));
+    h+=fl('M24,136 L180,136 L336,136',op?(lr?1:(rl?-1:0)):0,s.o/100);
+    h+=`<rect x="160" y="30" width="40" height="18" rx="3" fill="var(--steel-l)" stroke="var(--steel)"/><rect x="174" y="48" width="12" height="${f1(tipY-16-48)}" fill="var(--steel-l)" stroke="var(--steel)"/><polygon points="172,${f1(tipY-16)} 188,${f1(tipY-16)} 180,${f1(tipY)}" fill="var(--steel)"/>`;
+    h+=lab(34,116,'1')+lab(326,116,'2');return h;},
+  sym(s){const lr=s.dir==='LR',rl=s.dir==='RL',op=s.o>0,d=op?(lr?1:(rl?-1:0)):0;
+    return sLine('M15,75 L70,75',lr||(rl&&op),d)+sLine('M150,75 L205,75',rl||(lr&&op),d)+`<rect x="70" y="45" width="80" height="60" fill="none" stroke="${FG}" stroke-width="1.6"/><line x1="70" y1="75" x2="150" y2="75" stroke="${FG}" stroke-width="1" opacity=".0"/>`+throttle(110,75,40)+txt(22,66,'1','sv-num')+txt(198,66,'2','sv-num');},
+  extra(s){const q=s.dir==='0'?0:s.o;return `<p class="panel-t" style="margin-top:10px">Cabal que passa</p><div class="meter"><div style="width:${q}%"></div></div>`;},
+  st(s){if(s.dir==='0')return '<b>Sense aire.</b>';if(s.o===0)return '<b>Obertura 0 %:</b> l\'agulla tanca del tot el pas.';return '<b>Cabal regulat:</b> l\'agulla estreny el pas igual en tots dos sentits. Com més obertura, més cabal i més velocitat de l\'actuador.';},
+  txt:'<h3>Vàlvula reguladora de cabal bidireccional</h3><p>Les reguladores de cabal varien la <b>velocitat</b> dels actuadors perquè regulen el cabal d\'aire. Les <b>bidireccionals</b> regulen el pas de l\'aire en tots dos sentits.</p>'};
+
+CV.cabu={name:'Reguladora de cabal unidireccional',init:{dir:'LR',o:35,b:0},
+  ctl:[{t:'seg',k:'dir',o:[['0','Sense aire'],['LR','Aire per 1'],['RL','Aire per 2']]},{t:'rng',k:'o',l:'Obertura',min:0,max:100,step:1,u:'%'}],
+  step(s,dt){s.b=approach(s.b,s.dir==='LR'?1:0,4,dt);},
+  cut(s){const lr=s.dir==='LR',rl=s.dir==='RL',op=s.o>0,on=lr||(rl&&op),onR=s.dir!=='0',bx=170+s.b*30,tipY=80-20*s.o/100;let h=body(20,30,320,180);
+    h+=ch(20,90,90,60,on)+ch(250,90,90,60,onR);
+    h+=ch(95,60,20,32,on)+ch(95,60,90,20,on)+ch(180,60,90,20,onR)+ch(245,60,20,32,onR);
+    h+=ch(95,148,20,24,on)+ch(95,160,65,20,on)+ch(158,160,107,20,onR||(lr))+ch(245,148,20,24,onR);
+    h+=`<rect x="165" y="10" width="30" height="14" rx="3" fill="var(--steel-l)" stroke="var(--steel)"/><rect x="175" y="24" width="10" height="${f1(tipY-12-24)}" fill="var(--steel-l)" stroke="var(--steel)"/><polygon points="174,${f1(tipY-12)} 186,${f1(tipY-12)} 180,${f1(tipY)}" fill="var(--steel)"/>`;
+    h+=spring(bx+14,240,170,24,5,'var(--steel)')+ball(bx,170,14);
+    const d=lr?1:(rl?-1:0);h+=fl('M24,120 L105,120 L105,70 L255,70 L255,120 L336,120',op?d:0,s.o/100*(lr?0.35:1));if(lr)h+=fl('M105,120 L105,170 L255,170 L255,120',1,1);
+    h+=lab(34,84,'1')+lab(326,84,'2')+txt(180,206,'antiretorn','sv-mut')+txt(230,54,'estrangulació','sv-mut');return h;},
+  sym(s){const lr=s.dir==='LR',rl=s.dir==='RL',op=s.o>0,on1=lr||(rl&&op),on2=s.dir!=='0',d=lr?1:(rl&&op?-1:0);
+    return sLine('M15,75 L55,75',on1,d)+sLine('M165,75 L205,75',on2,d)+sLine('M55,75 L55,45 L165,45 L165,75',lr||(rl&&op),0)+sLine('M55,75 L55,105 L165,105 L165,75',lr||on2,0)+
+    throttle(110,45,34)+seatV(98,105,1)+`<circle cx="114" cy="105" r="8" fill="var(--surface)" stroke="${FG}" stroke-width="1.6"/>`+`<rect x="40" y="25" width="140" height="100" fill="none" stroke="${FG}" stroke-width="1" stroke-dasharray="4 3"/>`+txt(22,66,'1','sv-num')+txt(198,66,'2','sv-num');},
+  extra(s){const q=s.dir==='0'?0:(s.dir==='LR'?100:s.o);return `<p class="panel-t" style="margin-top:10px">Cabal que passa</p><div class="meter"><div style="width:${q}%"></div></div>`;},
+  st(s){return s.dir==='LR'?'<b>De 1 cap a 2:</b> l\'aire obre l\'antiretorn i circula lliurement, sense que l\'estrangulació el freni.':
+    s.dir==='RL'?(s.o>0?'<b>De 2 cap a 1:</b> l\'antiretorn queda tancat i tot l\'aire ha de passar per l\'estrangulació: el cabal queda regulat.':'<b>De 2 cap a 1 amb obertura 0 %:</b> l\'aire no pot passar.'):'<b>Sense aire.</b>';},
+  txt:'<h3>Vàlvula reguladora de cabal unidireccional</h3><p>Permet la <b>circulació lliure</b> de l\'aire en un sentit i, en el contrari, hi intercala una <b>estrangulació</b> que es pot regular a voluntat i que fixa el cabal. Porta incorporada una vàlvula antiretorn.</p>'};
+
+CV.regp={name:'Reguladora de pressió',init:{p1:6,pr:4,xs:0},
+  ctl:[{t:'rng',k:'p1',l:'Pressió d\'entrada p1',min:2,max:10,step:0.5,u:' bar'},{t:'rng',k:'pr',l:'Pressió regulada',min:1,max:8,step:0.5,u:' bar'}],
+  step(s,dt){s.xs=approach(s.xs,s.p1>s.pr?1:0,3,dt);},
+  cut(s){const p2=Math.min(s.p1,s.pr),xr=196+s.xs*16,xl=xr-76;let h=body(20,40,260,160);
+    h+=ch(168,150,24,50,true)+ch(100,110,150,40,true)+ch(218,40,24,72,true);
+    h+=fl('M180,198 L180,130 L230,130 L230,42',1,1-s.xs*0.6);
+    h+=`<rect x="${f1(xl)}" y="112" width="76" height="36" rx="3" fill="var(--steel-l)" stroke="var(--steel)" stroke-width="1.5"/>`+spring(46,xl,130,28,7,'var(--steel)');
+    h+=`<rect x="8" y="118" width="16" height="24" rx="3" fill="var(--steel-l)" stroke="var(--steel)"/><rect x="24" y="126" width="22" height="8" fill="var(--steel)"/>`;
+    h+=lab(180,226,'p1')+lab(258,36,'p2')+gauge(322,170,22,s.p1,10,'p1 = '+fmt(s.p1)+' bar')+gauge(322,66,22,p2,10,'p2 = '+fmt(p2)+' bar');return h;},
+  sym(s){return sLine('M85,140 L85,100',true,1)+sLine('M85,50 L85,10',true,1)+`<rect x="60" y="50" width="50" height="50" fill="none" stroke="${FG}" stroke-width="1.6"/>`+arrow(85,96,85,54,FG,1.6,8)+adjSpring(110,75)+pilot('M85,30 L45,30 L45,75 L60,75',true,0)+txt(97,146,'p1','sv-num')+txt(97,16,'p2','sv-num');},
+  st(s){const p2=Math.min(s.p1,s.pr);return s.p1>s.pr?`<b>p1 = ${fmt(s.p1)} bar &gt; ${fmt(s.pr)} bar:</b> la corredora redueix el pas i a la sortida només hi ha <b>${fmt(p2)} bar</b>.`:`<b>p1 = ${fmt(s.p1)} bar ≤ ${fmt(s.pr)} bar:</b> la vàlvula queda oberta i a la sortida hi ha la mateixa pressió.`;},
+  txt:'<h3>Vàlvula reguladora de pressió</h3><p>Redueix la pressió d\'entrada fins a un valor <b>inferior regulable</b> de sortida. Són vàlvules de dues vies <b>normalment obertes</b> gràcies a la força de la molla, que redueixen la pressió quan el valor de la sortida supera el de regulació, tot barrant el pas amb un pistó o una corredora.</p>'};
+
+CV.lim={name:'Limitadora de pressió',init:{p:4,tr:6,lift:0},
+  ctl:[{t:'rng',k:'p',l:'Pressió que arriba',min:0,max:10,step:0.5,u:' bar'},{t:'rng',k:'tr',l:'Pressió de tarat',min:2,max:9,step:0.5,u:' bar'}],
+  step(s,dt){s.lift=approach(s.lift,s.p>s.tr?1:0,4,dt);},
+  cut(s){const op=s.p>s.tr,dy=150-s.lift*16,ps=Math.min(s.p,s.tr);let h=body(90,40,180,160);
+    h+=ch(168,158,24,42,s.p>0)+ch(130,88,100,72,op)+ch(228,132,42,22,op);
+    h+=fl('M180,198 L180,143 L268,143',op?1:0,1);
+    h+=`<rect x="140" y="${f1(dy)}" width="80" height="10" rx="2" fill="var(--steel-l)" stroke="var(--steel)" stroke-width="1.5"/>`+vspring(180,92,dy,40,7);
+    h+=`<rect x="140" y="84" width="80" height="8" fill="var(--steel)"/><rect x="172" y="18" width="16" height="66" fill="var(--steel-l)" stroke="var(--steel)"/><rect x="160" y="12" width="40" height="12" rx="3" fill="var(--steel-l)" stroke="var(--steel)"/>`;
+    if(op&&!reduce)h+=arrow(276,143,312,143,AIR,2.4,9)+txt(306,166,'a l\'atmosfera','sv-mut');
+    h+=lab(198,226,'P')+lab(258,126,'A')+gauge(56,150,22,ps,10,fmt(ps)+' bar');return h;},
+  sym(s){const op=s.p>s.tr;return sLine('M100,145 L100,105',s.p>0,op?1:0)+sLine('M100,45 L100,22',op,op?1:0)+exh(100,13)+`<rect x="70" y="45" width="60" height="60" fill="none" stroke="${FG}" stroke-width="1.6"/>`+
+    arrow(112,100,112,50,op?AIR:FG,1.6,8)+adjSpring(130,75)+pilot('M100,125 L55,125 L55,75 L70,75',s.p>0,0)+txt(112,150,'P','sv-num');},
+  st(s){return s.p>s.tr?`<b>Supera el tarat (${fmt(s.tr)} bar):</b> la vàlvula obre l'orifici de sortida cap a l'atmosfera i deixa escapar aire. La pressió no pot pujar per sobre de ${fmt(s.tr)} bar.`:`<b>Per sota del tarat:</b> la molla manté la vàlvula tancada.`;},
+  txt:'<h3>Vàlvula limitadora de pressió</h3><p>També s\'anomena <b>vàlvula de seguretat</b>. Impedeix superar la pressió màxima permesa pel sistema: si la pressió puja per sobre del valor prefixat, la vàlvula obre cap a l\'atmosfera l\'orifici de sortida i deixa escapar aire fins que es restableix el valor nominal.</p>'};
+
+CV.esc={name:'Escapament ràpid',init:{p:'off',m:-1,e:0},
+  ctl:[{t:'seg',k:'p',o:[['on','Entra aire per P'],['off','Talla l\'aire de P']]}],
+  step(s,dt){if(s.p==='on'){s.m=approach(s.m,1,8,dt);s.e=approach(s.e,1,0.8,dt);}else if(s.e>0.001){s.m=approach(s.m,-1,8,dt);s.e=approach(s.e,0,2.2,dt);}},
+  cut(s){const on=s.p==='on',aOn=on||s.e>0.001,vent=!on&&s.e>0.001,xm=140+s.m*18;
+    const c=cylinder({x:118,y:14,L:120,H:40,type:'SE',ext:s.e,post:aOn,ant:false});let h=c.svg;const xp=c.portPost;
+    h+=body(40,110,260,100)+ch(40,150,76,22,on)+ch(115,128,50,68,aOn)+ch(164,150,136,22,vent)+ch(xp-12,110,24,20,aOn);
+    h+=pipe(`M${f1(xp)},110 L${f1(xp)},54`,aOn,on&&s.e<1?1:(vent?-1:0),3);
+    h+=fl(`M44,161 L${f1(xp)},161 L${f1(xp)},112`,on&&s.e<1?1:0)+fl(`M${f1(xp)},112 L${f1(xp)},161 L296,161`,vent?1:0,1.6);
+    h+=`<path d="M${f1(xm)},132 Q${f1(xm+s.m*12)},162 ${f1(xm)},192" fill="none" stroke="${FG}" stroke-width="4" stroke-linecap="round"/>`;
+    if(vent&&!reduce)h+=arrow(304,161,340,161,MUT,2.4,9);
+    h+=lab(52,144,'P')+lab(xp+16,104,'A')+lab(288,144,'R');return h;},
+  sym(s){const on=s.p==='on',aOn=on||s.e>0.001,vent=!on&&s.e>0.001;
+    return sLine('M15,85 L60,85',on,on?1:0)+sLine('M110,55 L110,15',aOn,on?-1:(vent?1:0))+`<rect x="60" y="55" width="100" height="55" fill="none" stroke="${FG}" stroke-width="1.6"/>`+
+    `<line x1="60" y1="85" x2="92" y2="85" stroke="${on?AIR:FG}" stroke-width="1.6"/>`+seatV(92,85,1)+`<circle cx="${f1(110+s.m*4)}" cy="85" r="7" fill="var(--surface)" stroke="${FG}" stroke-width="1.6"/>`+seatV(128,85,-1)+`<line x1="110" y1="55" x2="110" y2="78" stroke="${FG}" stroke-width="1.4"/><line x1="128" y1="85" x2="160" y2="85" stroke="${vent?AIR:FG}" stroke-width="1.6"/>`+sLine('M160,85 L185,85',vent,vent?1:0)+exh(192,80)+
+    txt(22,76,'P','sv-num')+txt(122,22,'A','sv-num')+txt(182,76,'R','sv-num');},
+  st(s){if(s.p==='on')return '<b>Entra aire per P:</b> la membrana tapa l\'escapament R i l\'aire passa cap a A: el cilindre avança.';
+    return s.e>0.001?'<b>Escapament ràpid:</b> l\'aire del cilindre empeny la membrana, que tapa P, i surt directament per R. El cilindre retrocedeix de pressa.':'<b>En repòs:</b> el cilindre ja s\'ha buidat.';},
+  txt:'<h3>Vàlvula d\'escapament ràpid</h3><p>Està destinada a <b>accelerar la velocitat</b> dels cilindres: assegura l\'escapament directe de l\'aire a l\'atmosfera, sense que hagi de tornar per la conducció i per la vàlvula distribuïdora. Es col·loca a la sortida del cilindre.</p>'};
+
+function truth(rows,cur){return '<p class="panel-t" style="margin-top:10px">Taula de veritat</p><div class="tbl" style="display:inline-block"><table class="truth"><thead><tr><th>X</th><th>Y</th><th>S</th></tr></thead><tbody>'+
+  rows.map(r=>`<tr class="${r[0]===cur[0]&&r[1]===cur[1]?'on':''}"><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join('')+'</tbody></table></div>';}
+CV.or={name:'Selectora (O)',init:{X:false,Y:false,q:-1},
+  ctl:[{t:'tg',k:'X',l:'Senyal X'},{t:'tg',k:'Y',l:'Senyal Y'}],
+  step(s,dt){const t=s.X&&!s.Y?1:(s.Y&&!s.X?-1:s.q>0?1:-1);s.q=approach(s.q,t,6,dt);},
+  cut(s){const S=s.X||s.Y,cx=180+s.q*46;let h=body(40,70,280,130);
+    h+=ch(40,125,72,20,s.X)+ch(110,100,140,70,S)+ch(248,125,72,20,s.Y)+ch(168,70,24,32,S);
+    const src=s.q>0.9?(s.X?1:0):(s.q<-0.9?(s.Y?-1:0):0);
+    if(src>0)h+=fl('M44,135 L180,135 L180,72',1);if(src<0)h+=fl('M316,135 L180,135 L180,72',1);
+    h+=ball(cx,135,26);h+=lab(52,118,'X')+lab(308,118,'Y')+lab(200,64,'S');return h;},
+  sym(s){const S=s.X||s.Y;return sLine('M15,85 L70,85',s.X,s.X?1:0)+sLine('M150,85 L205,85',s.Y,s.Y?-1:0)+sLine('M110,65 L110,20',S,S?-1:0)+`<rect x="70" y="65" width="80" height="40" fill="none" stroke="${FG}" stroke-width="1.6"/>`+
+    `<line x1="70" y1="85" x2="150" y2="85" stroke="${FG}" stroke-width="1.4"/><line x1="110" y1="65" x2="110" y2="85" stroke="${FG}" stroke-width="1.4"/>`+seatV(84,85,1)+seatV(136,85,-1)+`<circle cx="${f1(110+s.q*14)}" cy="85" r="7" fill="var(--surface)" stroke="${FG}" stroke-width="1.6"/>`+
+    txt(22,76,'X','sv-num')+txt(198,76,'Y','sv-num')+txt(122,26,'S','sv-num');},
+  extra(s){return truth([[0,0,0],[1,0,1],[0,1,1],[1,1,1]],[+s.X,+s.Y]);},
+  st(s){if(s.X&&s.Y)return '<b>Les dues entrades:</b> la bola es queda en un costat, però l\'aire arriba a S igualment.';if(s.X||s.Y)return `<b>Només ${s.X?'X':'Y'}:</b> l'aire empeny la bola cap a l'altra entrada, la tapa i surt per S.`;return '<b>Sense senyal:</b> a S no hi ha aire.';},
+  txt:'<h3>Vàlvula selectora de circuit · funció O (OR)</h3><p>Permet obtenir a la sortida <b>S</b> un senyal procedent <b>indistintament</b> de dues entrades diferents. Compleix la funció lògica O de dues entrades. La bola tapa sempre l\'entrada que no té pressió perquè l\'aire no s\'escapi per allà.</p><p class="est">Serveix, per exemple, per governar un cilindre des de dos punts diferents.</p>'};
+
+CV.and={name:'Simultaneïtat (I)',init:{X:false,Y:false,q:1},
+  ctl:[{t:'tg',k:'X',l:'Senyal X'},{t:'tg',k:'Y',l:'Senyal Y'}],
+  step(s,dt){const t=s.X&&!s.Y?1:(s.Y&&!s.X?-1:s.q>0?1:-1);s.q=approach(s.q,t,6,dt);},
+  cut(s){const d=s.q*20,cOn=(s.q>0.9&&s.Y)||(s.q<-0.9&&s.X);let h=body(40,70,280,130);
+    h+=ch(40,125,22,20,s.X)+ch(60,100,70,70,s.X)+ch(128,125,104,20,cOn)+ch(230,100,70,70,s.Y)+ch(298,125,22,20,s.Y)+ch(168,70,24,57,cOn);
+    if(cOn)h+=fl(s.q>0?'M316,135 L180,135 L180,72':'M44,135 L180,135 L180,72',1);
+    h+=`<rect x="${f1(110+d-40)}" y="131" width="${f1(190)}" height="8" fill="var(--steel)"/>`;
+    h+=`<rect x="${f1(100+d)}" y="104" width="10" height="62" rx="2" fill="var(--steel-l)" stroke="var(--steel)" stroke-width="1.5"/><rect x="${f1(250+d)}" y="104" width="10" height="62" rx="2" fill="var(--steel-l)" stroke="var(--steel)" stroke-width="1.5"/>`;
+    h+=lab(52,118,'X')+lab(308,118,'Y')+lab(200,64,'S');return h;},
+  sym(s){const S=s.X&&s.Y;return sLine('M15,85 L70,85',s.X,s.X?1:0)+sLine('M150,85 L205,85',s.Y,s.Y?-1:0)+sLine('M110,65 L110,20',S,S?-1:0)+`<rect x="70" y="65" width="80" height="40" fill="none" stroke="${FG}" stroke-width="1.6"/>`+
+    `<line x1="70" y1="85" x2="150" y2="85" stroke="${FG}" stroke-width="1.4"/><line x1="110" y1="65" x2="110" y2="85" stroke="${FG}" stroke-width="1.4"/><line x1="84" y1="73" x2="84" y2="97" stroke="${FG}" stroke-width="1.6"/><line x1="136" y1="73" x2="136" y2="97" stroke="${FG}" stroke-width="1.6"/>`+
+    txt(22,76,'X','sv-num')+txt(198,76,'Y','sv-num')+txt(122,26,'S','sv-num');},
+  extra(s){return truth([[0,0,0],[1,0,0],[0,1,0],[1,1,1]],[+s.X,+s.Y]);},
+  st(s){if(s.X&&s.Y)return '<b>Les dues entrades:</b> la segona que arriba troba el pas obert i l\'aire surt per S.';if(s.X||s.Y)return `<b>Només ${s.X?'X':'Y'}:</b> la pressió empeny el pistó i tanca el seu propi pas. A S no arriba aire.`;return '<b>Sense senyal:</b> a S no hi ha aire.';},
+  txt:'<h3>Vàlvula de simultaneïtat · funció I (AND)</h3><p>Compleix la funció lògica I. Té dues entrades i una sortida, i només hi ha senyal (pressió d\'aire) a la sortida <b>S</b> si hi ha pressió a <b>les dues entrades</b>.</p><p class="est">S\'utilitza, per exemple, en el comandament simultani de seguretat d\'una premsa: l\'operari ha de tenir les dues mans ocupades.</p>'};
+
+CV.temp={name:'Temporitzador',wide:true,init:{x:false,o:40,pt:0,tm:0,pos:1},
+  ctl:[{t:'tg',k:'x',l:'Senyal x'},{t:'rng',k:'o',l:'Obertura de la reguladora',min:10,max:100,step:1,u:'%'}],
+  step(s,dt){const k=0.08+0.9*s.o/100;if(s.x){s.pt+=(6-s.pt)*(1-Math.exp(-k*dt));s.tm+=dt;}else{s.pt+=(0-s.pt)*(1-Math.exp(-4*dt));s.tm=0;}
+    s.pos=approach(s.pos,s.pt>=3?0:1,6,dt);},
+  cut(s){const k=0.08+0.9*s.o/100,fill=s.pt/6,filling=s.x&&s.pt<5.95,empt=!s.x&&s.pt>0.05;let h='';
+    h+=sLine('M20,100 L80,100',s.x,filling?1:(empt?-1:0))+txt(26,90,'x','sv-num');
+    h+=`<rect x="80" y="70" width="80" height="60" fill="none" stroke="${FG}" stroke-width="1.6"/>`+sLine('M80,100 L95,100 L95,82 L145,82 L145,100 L160,100',s.x||s.pt>0.05,0)+sLine('M95,100 L95,118 L145,118 L145,100',s.x||s.pt>0.05,0)+throttle(120,82,28)+seatV(132,118,-1)+`<circle cx="116" cy="118" r="7" fill="var(--surface)" stroke="${FG}" stroke-width="1.6"/>`;
+    h+=sLine('M160,100 L200,100',s.pt>0.05,filling?1:(empt?-1:0),0);
+    h+=`<rect x="200" y="62" width="130" height="76" rx="34" fill="var(--empty)" stroke="${FG}" stroke-width="1.8"/><clipPath id="tk"><rect x="200" y="62" width="130" height="76" rx="34"/></clipPath><rect x="200" y="${f1(138-76*fill)}" width="130" height="${f1(76*fill)}" fill="var(--air-soft)" clip-path="url(#tk)"/>`+txt(265,52,'Dipòsit · p = '+fmt(+s.pt.toFixed(1))+' bar','sv-num');
+    const S=60,vx=420,vy=70;h+=pilot(`M330,100 L${vx-14},100`,s.pt>0.05,filling?1:0)+txt(372,92,'y','sv-num');
+    const r=valve(VDEF.v32nt,{x:vx,y:vy,S,pos:s.pos,actL:'pilot',actR:'molla',onL:s.pt>=3,portLen:30});h+=r.svg;
+    const xa=r.portX('A');h+=`<circle cx="${f1(xa)}" cy="22" r="12" fill="${r.pp.A?AIR:'var(--empty)'}" stroke="${FG}" stroke-width="1.5"/>`+txt(f1(xa+22),27,'sortida','sv-mut','start');
+    h+=txt(565,200,'t = '+fmt(+s.tm.toFixed(1))+' s','sv-num')+txt(565,220,'retard ≈ '+fmt(+(Math.LN2/k).toFixed(1))+' s','sv-mut');
+    h+=`<line x1="210" y1="${f1(138-76*0.5)}" x2="320" y2="${f1(138-76*0.5)}" stroke="var(--hot)" stroke-dasharray="4 3"/>`+txt(265,152,'canvia a 3 bar','sv-mut');return h;},
+  sym(){return '';},
+  st(s){if(s.x)return s.pt<3?'<b>Senyal x actiu:</b> l\'aire entra al dipòsit a poc a poc a través de la reguladora. Encara no hi ha prou pressió per canviar la vàlvula.':'<b>Temps complert:</b> la pressió del dipòsit pilota la 3/2, que canvia i dona aire a la sortida A.';
+    return s.pt>0.05?'<b>Sense senyal:</b> el dipòsit es buida de pressa per l\'antiretorn i la vàlvula torna a repòs.':'<b>Repòs:</b> sense senyal x, la sortida A no té aire.';},
+  txt:'<h3>Temporitzador</h3><p>Retarda un cert temps un senyal pneumàtic de sortida respecte d\'un senyal d\'entrada. Consta, bàsicament, d\'un <b>petit dipòsit</b> i d\'una <b>vàlvula de regulació de cabal</b> que permet graduar el temps de resposta. Quan la pressió del dipòsit és prou alta, pilota una vàlvula 3/2.</p><p class="est">Com menys obertura té la reguladora, més triga a omplir-se el dipòsit i més llarg és el retard.</p>'};
+
+const CVORD=['anti','antip','cabb','cabu','regp','lim','esc','or','and','temp'];
+$('cv-list').innerHTML=CVORD.map(k=>`<button class="btn" type="button" data-cv="${k}" aria-pressed="${k===cvK}">${CV[k].name}</button>`).join('');
+function cvCtlHtml(v){return v.ctl.map(c=>{
+  if(c.t==='seg')return `<div class="seg" role="group">${c.o.map(o=>`<button type="button" data-ck="${c.k}" data-cv2="${o[0]}" aria-pressed="${String(cvS[c.k])===o[0]}">${o[1]}</button>`).join('')}</div>`;
+  if(c.t==='tg')return `<button class="btn" type="button" data-tg="${c.k}" aria-pressed="${!!cvS[c.k]}">${c.l}</button>`;
+  return `<label class="ctl" style="flex:1 1 320px"><span>${c.l}</span><input type="range" data-rk="${c.k}" min="${c.min}" max="${c.max}" step="${c.step}" value="${cvS[c.k]}"><output id="out-${c.k}">${fmt(cvS[c.k])}${c.u}</output></label>`;}).join('');}
+function cvSet(k){cvK=k;const v=CV[k];cvS=JSON.parse(JSON.stringify(v.init));
+  $('cv-list').querySelectorAll('[data-cv]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.cv===k));
+  $('cv-ctl').innerHTML=cvCtlHtml(v);$('cv-txt').innerHTML=v.txt;
+  $('cv-symbox').hidden=!!v.wide;$('cv-cutbox').classList.toggle('one',!!v.wide);$('cv-cut').setAttribute('viewBox',v.wide?'0 0 640 240':'0 0 360 240');$('cv-cut-t').textContent=v.wide?'Esquema':'Tall simplificat';
+  $('cv-ctl').querySelectorAll('[data-ck]').forEach(b=>b.addEventListener('click',()=>{cvS[b.dataset.ck]=b.dataset.cv2;$('cv-ctl').querySelectorAll(`[data-ck="${b.dataset.ck}"]`).forEach(x=>x.setAttribute('aria-pressed',x===b));}));
+  $('cv-ctl').querySelectorAll('[data-tg]').forEach(b=>b.addEventListener('click',()=>{const kk=b.dataset.tg;cvS[kk]=!cvS[kk];b.setAttribute('aria-pressed',cvS[kk]);}));
+  $('cv-ctl').querySelectorAll('[data-rk]').forEach(r=>r.addEventListener('input',()=>{const kk=r.dataset.rk,c=v.ctl.find(q=>q.k===kk);cvS[kk]=+r.value;$('out-'+kk).textContent=fmt(cvS[kk])+c.u;}));}
+$('cv-list').querySelectorAll('[data-cv]').forEach(b=>b.addEventListener('click',()=>cvSet(b.dataset.cv)));
+cvSet(cvK);
+let lastExtra='';
+function stepCV(dt){const v=CV[cvK];v.step(cvS,dt);$('cv-cut').innerHTML=v.cut(cvS);if(!v.wide)$('cv-sym').innerHTML=v.sym(cvS);
+  const ex=v.extra?v.extra(cvS):'';if(ex!==lastExtra){$('cv-extra').innerHTML=ex;lastExtra=ex;}$('cv-st').innerHTML=v.st(cvS);}
+
+/* ---------- bucle d'animació ---------- */
+let last=performance.now();
+function loop(now){const dt=Math.min(0.05,(now-last)/1000);last=now;T+=dt;
+  if(visible($('cyl-svg')))stepCyl(dt);
+  if(visible($('vx-svg')))stepVX(dt);
+  if(visible($('mono-svg'))){stepMono(dt);stepBi(dt);}
+  if(visible($('ex-svg')))stepEx(dt);
+  if(visible($('cv-cut')))stepCV(dt);
+  requestAnimationFrame(loop);}
+requestAnimationFrame(loop);
+show((location.hash||'').slice(1),false);
+})();
+</script>
+
+<script>
+(function(){
+  var emb=false;try{emb=window.self!==window.top}catch(e){emb=true}
+  if(emb)document.body.classList.add('embed');
+  var d=document,root=d.documentElement;
+  if(d.fullscreenEnabled&&root.requestFullscreen){
+    var b=d.createElement('button');b.type='button';b.className='btn';b.id='fs-btn';b.textContent='⛶ Pantalla completa';
+    b.addEventListener('click',function(){if(d.fullscreenElement){d.exitFullscreen().catch(function(){})}else{root.requestFullscreen().catch(function(){})}});
+    d.addEventListener('fullscreenchange',function(){b.textContent=d.fullscreenElement?'✕ Surt de pantalla completa':'⛶ Pantalla completa'});
+    var seg=d.querySelector('.top .seg');if(seg)seg.parentNode.insertBefore(b,seg);
+  }else if(emb){
+    var a=d.createElement('a');a.className='btn';a.href='https://tecnolyd.github.io/artefactes/pneumatica-components.html';a.target='_blank';a.rel='noopener';a.textContent='⛶ Obre a pantalla completa';
+    var seg2=d.querySelector('.top .seg');if(seg2)seg2.parentNode.insertBefore(a,seg2);
+  }
+  var br=d.querySelector('.brand');if(br){var v=d.createElement('span');v.className='ver';v.textContent='v1';br.appendChild(v);}
+})();
+</script>
+
+</html>
