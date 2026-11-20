@@ -205,7 +205,7 @@ main{max-width:none}
 .field small{color:var(--muted);font-family:var(--f-display)}
 .acts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:12px 0}
 .act{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:8px 10px;text-align:center}
-.act svg{width:100%;max-width:140px;height:auto;display:block;margin:0 auto}
+.act svg{width:100%;max-width:190px;height:auto;display:block;margin:0 auto}
 .act span{font-family:var(--f-display);font-size:1.02rem}
 .actgrp{font-family:var(--f-display);text-transform:uppercase;letter-spacing:.08em;font-size:.85rem;color:var(--muted);margin:14px 0 0}
 .cvlist{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0}
@@ -368,6 +368,11 @@ svg:not(.hlmode) .part-hl{opacity:1}
   <div id="acts"></div>
 
   <h3>Monoestable i biestable</h3>
+  <p>Una vàlvula distribuïdora pot tenir una o dues posicions <b>estables</b>, és a dir, posicions en què es queda sola sense que ningú l'accioni.</p>
+  <div class="cards">
+    <div class="card"><h4>Monoestable</h4><p>Només té <b>una posició estable</b>: la de repòs. L'acciones (polsador, pilotatge…) i canvia; deixes d'accionar-la i la <b>molla</b> la torna a repòs. Exemple: una 3/2 de polsador i molla.</p></div>
+    <div class="card"><h4>Biestable</h4><p>Té <b>dues posicions estables</b>. No porta molla: té un accionament a cada costat. Quan rep un senyal canvia de posició i <b>s'hi queda</b>, encara que el senyal desaparegui, fins que rep el senyal de l'altre costat. Diem que té <b>memòria</b>.</p></div>
+  </div>
   <div class="two">
     <div class="sim">
       <p class="panel-t">Monoestable · polsador i molla</p>
@@ -416,7 +421,7 @@ svg:not(.hlmode) .part-hl{opacity:1}
   <div class="sim">
     <div class="vgrid">
       <div id="cv-cutbox"><h4 id="cv-cut-t">Tall simplificat</h4><svg id="cv-cut" viewBox="0 0 360 240" role="img" aria-label="Tall de la vàlvula"></svg></div>
-      <div id="cv-symbox"><h4>Símbol</h4><svg id="cv-sym" viewBox="0 0 220 150" role="img" aria-label="Símbol de la vàlvula"></svg><div id="cv-extra"></div></div>
+      <div id="cv-symbox"><h4>Símbol</h4><svg id="cv-sym" viewBox="0 0 220 150" role="img" aria-label="Símbol de la vàlvula"></svg><div id="cv-extra"></div><svg id="cv-ext2" viewBox="0 0 230 84" hidden role="img" aria-label="Velocitat d'un cilindre"></svg></div>
     </div>
     <div class="row" id="cv-ctl"></div>
     <p class="status" id="cv-st"></p>
@@ -525,17 +530,17 @@ function pressPorts(def,pos){const a=activeIdx(pos),p={P:true};if(a<0)return p;d
 function conText(def,pos){const a=activeIdx(pos);if(a<0)return '…';const b=def.boxes[a];const L=[];
   b.c.forEach(c=>L.push(c[0]+'→'+c[1]+(c[1]==='R'||c[1]==='S'?' (escapament)':'')));b.t.forEach(t=>L.push(t+' tancada'));return L.join(' · ')||'—';}
 /* accionaments: dibuixats a la vora x (side -1 esquerra, +1 dreta), centrats a y */
-function actSym(type,x,y,side,on){const k=side,c=on?AIR:FG;let s='';const X=d=>f1(x+k*d);
+function actSym(type,x,y,side,on,tail){const k=side,c=on?AIR:FG;let s='';const X=d=>f1(x+k*d);
   switch(type){
     case 'polsador':s=`<line x1="${X(0)}" y1="${y}" x2="${X(14)}" y2="${y}" stroke="${FG}" stroke-width="1.6"/><line x1="${X(14)}" y1="${y-8}" x2="${X(14)}" y2="${y+8}" stroke="${FG}" stroke-width="1.6"/><path d="M${X(14)},${y-8} A8,8 0 0,${k<0?0:1} ${X(14)},${y+8}" fill="${on?'var(--air-soft)':'none'}" stroke="${FG}" stroke-width="1.6"/>`;break;
     case 'manual':s=`<line x1="${X(0)}" y1="${y}" x2="${X(16)}" y2="${y}" stroke="${FG}" stroke-width="1.6"/><line x1="${X(16)}" y1="${y-8}" x2="${X(16)}" y2="${y+8}" stroke="${FG}" stroke-width="1.6"/>`;break;
-    case 'palanca':s=`<line x1="${X(0)}" y1="${y}" x2="${X(10)}" y2="${y}" stroke="${FG}" stroke-width="1.6"/><line x1="${X(10)}" y1="${y-8}" x2="${X(10)}" y2="${y+8}" stroke="${FG}" stroke-width="1.6"/><line x1="${X(10)}" y1="${y}" x2="${X(20)}" y2="${y-14}" stroke="${FG}" stroke-width="1.6"/><circle cx="${X(21)}" cy="${y-16}" r="3" fill="none" stroke="${FG}" stroke-width="1.4"/>`;break;
-    case 'pedal':s=`<line x1="${X(0)}" y1="${y}" x2="${X(10)}" y2="${y}" stroke="${FG}" stroke-width="1.6"/><line x1="${X(10)}" y1="${y-8}" x2="${X(10)}" y2="${y+8}" stroke="${FG}" stroke-width="1.6"/><path d="M${X(10)},${y+6} L${X(20)},${y-10} L${X(26)},${y-10}" fill="none" stroke="${FG}" stroke-width="1.6"/>`;break;
-    case 'palpador':s=`<line x1="${X(0)}" y1="${y}" x2="${X(12)}" y2="${y}" stroke="${FG}" stroke-width="1.6"/><path d="M${X(18)},${y-6} A6,6 0 0,${k<0?1:0} ${X(18)},${y+6}" fill="none" stroke="${FG}" stroke-width="1.6"/><line x1="${X(12)}" y1="${y}" x2="${X(12)}" y2="${y}" />`;break;
+    case 'palanca':s=`<line x1="${X(0)}" y1="${y}" x2="${X(10)}" y2="${y}" stroke="${FG}" stroke-width="1.6"/><line x1="${X(10)}" y1="${y-8}" x2="${X(10)}" y2="${y+8}" stroke="${FG}" stroke-width="1.6"/><line x1="${X(10)}" y1="${y+2}" x2="${X(24)}" y2="${y-16}" stroke="${FG}" stroke-width="1.8"/><circle cx="${X(26)}" cy="${y-19}" r="3.4" fill="var(--surface)" stroke="${FG}" stroke-width="1.5"/>`;break;
+    case 'pedal':s=`<line x1="${X(0)}" y1="${y}" x2="${X(10)}" y2="${y}" stroke="${FG}" stroke-width="1.6"/><line x1="${X(10)}" y1="${y-8}" x2="${X(10)}" y2="${y+8}" stroke="${FG}" stroke-width="1.6"/><path d="M${X(10)},${y+8} L${X(22)},${y-10} L${X(32)},${y-10}" fill="none" stroke="${FG}" stroke-width="1.8" stroke-linejoin="round"/>`;break;
+    case 'palpador':s=`<line x1="${X(0)}" y1="${y}" x2="${X(14)}" y2="${y}" stroke="${FG}" stroke-width="1.6"/><path d="M${X(14)},${y-5} A5,5 0 0,${k<0?0:1} ${X(14)},${y+5}" fill="${on?'var(--air-soft)':'var(--surface)'}" stroke="${FG}" stroke-width="1.6"/><line x1="${X(14)}" y1="${y-5}" x2="${X(14)}" y2="${y+5}" stroke="${FG}" stroke-width="1.6"/>`;break;
     case 'molla':s=`<path d="M${X(0)},${y} `+[0,1,2,3,4,5].map(i=>`L${X(3+i*4)},${y+(i%2?6:-6)}`).join(' ')+` L${X(26)},${y}" fill="none" stroke="${FG}" stroke-width="1.5"/>`;break;
     case 'rodet':s=`<line x1="${X(0)}" y1="${y}" x2="${X(12)}" y2="${y}" stroke="${FG}" stroke-width="1.6"/><circle cx="${X(19)}" cy="${y}" r="7" fill="${on?'var(--air-soft)':'none'}" stroke="${FG}" stroke-width="1.6"/><circle cx="${X(19)}" cy="${y}" r="1.8" fill="${FG}"/>`;break;
-    case 'rodetAb':s=`<line x1="${X(0)}" y1="${y}" x2="${X(10)}" y2="${y}" stroke="${FG}" stroke-width="1.6"/><line x1="${X(10)}" y1="${y}" x2="${X(18)}" y2="${y-10}" stroke="${FG}" stroke-width="1.6"/><circle cx="${X(21)}" cy="${y-14}" r="6" fill="none" stroke="${FG}" stroke-width="1.6"/><circle cx="${X(21)}" cy="${y-14}" r="1.6" fill="${FG}"/>`;break;
-    case 'pilot':{const bx=k<0?x-14:x;s=`<rect x="${bx}" y="${y-7}" width="14" height="14" fill="${on?'var(--air-soft)':'var(--surface)'}" stroke="${FG}" stroke-width="1.5"/><polygon points="${X(10)},${y-4} ${X(10)},${y+4} ${X(4)},${y}" fill="${c}"/>`;break;}
+    case 'rodetAb':s=`<line x1="${X(0)}" y1="${y}" x2="${X(10)}" y2="${y}" stroke="${FG}" stroke-width="1.6"/><line x1="${X(10)}" y1="${y-8}" x2="${X(10)}" y2="${y+8}" stroke="${FG}" stroke-width="1.6"/><line x1="${X(10)}" y1="${y}" x2="${X(18)}" y2="${y-8}" stroke="${FG}" stroke-width="1.6"/><circle cx="${X(18)}" cy="${y-8}" r="1.8" fill="${FG}"/><line x1="${X(18)}" y1="${y-8}" x2="${X(24)}" y2="${y-14}" stroke="${FG}" stroke-width="1.6"/><circle cx="${X(28)}" cy="${y-18}" r="6" fill="var(--surface)" stroke="${FG}" stroke-width="1.6"/><circle cx="${X(28)}" cy="${y-18}" r="1.6" fill="${FG}"/>`;break;
+    case 'pilot':{const bx=k<0?x-14:x;s=`<rect x="${bx}" y="${y-7}" width="14" height="14" fill="${on?'var(--air-soft)':'var(--surface)'}" stroke="${FG}" stroke-width="1.5"/><polygon points="${X(11)},${y-4.5} ${X(11)},${y+4.5} ${X(3)},${y}" fill="none" stroke="${c}" stroke-width="1.5" stroke-linejoin="round"/>`;if(tail)s+=`<line x1="${X(14)}" y1="${y}" x2="${X(34)}" y2="${y}" stroke="${FG}" stroke-width="1.4" stroke-dasharray="4 3"/>`;break;}
     case 'electro':{const bx=k<0?x-14:x;s=`<rect x="${bx}" y="${y-9}" width="14" height="18" fill="none" stroke="${FG}" stroke-width="1.5"/><line x1="${bx}" y1="${y+9}" x2="${bx+14}" y2="${y-9}" stroke="${FG}" stroke-width="1.4"/>`;break;}
     case 'electroPilot':{const bx1=k<0?x-14:x,bx2=k<0?x-30:x+16;s=`<rect x="${bx1}" y="${y-7}" width="14" height="14" fill="none" stroke="${FG}" stroke-width="1.5"/><polygon points="${X(10)},${y-4} ${X(10)},${y+4} ${X(4)},${y}" fill="${FG}"/><rect x="${bx2}" y="${y-9}" width="14" height="18" fill="none" stroke="${FG}" stroke-width="1.5"/><line x1="${bx2}" y1="${y+9}" x2="${bx2+14}" y2="${y-9}" stroke="${FG}" stroke-width="1.4"/>`;break;}
     case 'pressio':s=`<polygon points="${X(4)},${y} ${X(14)},${y-6} ${X(14)},${y+6}" fill="none" stroke="${FG}" stroke-width="1.5"/><line x1="${X(14)}" y1="${y}" x2="${X(30)}" y2="${y}" stroke="${FG}" stroke-width="1.4" stroke-dasharray="4 3"/>`;break;
@@ -685,9 +690,9 @@ function stepVX(dt){const def=VDEF[VX.k],n=def.boxes.length,S=66;let tgt=def.res
 /* ======================= MÒDUL 3 ======================= */
 const ACTS=[['Manuals',[['manual','Control manual general'],['polsador','Polsador'],['palanca','Palanca'],['pedal','Pedal']]],
   ['Mecànics',[['palpador','Palpador mecànic'],['molla','Molla'],['rodet','Rodet'],['rodetAb','Rodet abatible']]],
-  ['Pneumàtics',[['pilot','Pilotatge pneumàtic directe'],['pressio','Comandament per pressió'],['depressio','Comandament per depressió']]],
+  ['Pneumàtics',[['pilot','Pilotatge pneumàtic directe','el que surt als circuits: la línia discontínua porta el senyal'],['pressio','Comandament per pressió'],['depressio','Comandament per depressió']]],
   ['Elèctrics',[['electro','Electroimant'],['electroPilot','Electroimant i vàlvula pilotada']]]];
-$('acts').innerHTML=ACTS.map(g=>`<p class="actgrp">${g[0]}</p><div class="acts">`+g[1].map(a=>`<div class="act"><svg viewBox="0 0 130 56" aria-hidden="true"><path d="M126,8 H70 V48 H126" fill="none" stroke="${FG}" stroke-width="1.8"/>${actSym(a[0],70,28,-1,false)}</svg><span>${a[1]}</span></div>`).join('')+'</div>').join('');
+$('acts').innerHTML=ACTS.map(g=>`<p class="actgrp">${g[0]}</p><div class="acts">`+g[1].map(a=>`<div class="act"><svg viewBox="30 4 100 48" aria-hidden="true"><path d="M126,8 H76 V48 H126" fill="none" stroke="${FG}" stroke-width="1.8"/>${actSym(a[0],76,28,-1,false,true)}</svg><span>${a[1]}</span>${a[2]?'<small style="display:block;color:var(--muted);font-size:.85rem">'+a[2]+'</small>':''}</div>`).join('')+'</div>').join('');
 
 const MONO={p:false,pos:1},BI={s14:false,s12:false,pos:1};
 holdBtn($('mono-b'),v=>MONO.p=v);holdBtn($('bi-14'),v=>BI.s14=v);holdBtn($('bi-12'),v=>BI.s12=v);
@@ -716,7 +721,7 @@ function stepEx(dt){EX.pos=approach(EX.pos,EX.p?0:1,6,dt);const def=VDEF.v32nt,S
   const r=valve(def,{x:80,y:210,S,pos:EX.pos,actL:'polsador',actR:'molla',onL:EX.p,portLen:16,num:EX.nom==='num'});
   const xa=r.portX('A');let s=c.svg+r.svg;
   s+=pipe(`M${f1(xa)},${210-16} L${f1(xa)},150 L${f1(c.portPost)},150 L${f1(c.portPost)},${96}`,!!r0.A,mv>0?1:(mv<0?-1:0),3);
-  s+=txt(400,190,EX.ext>0.5?'Avanç':'Retrocés','sv-t').replace('sv-t"','sv-t" style="font-size:22px"');
+  const lblE=mv>0?'Avança':(mv<0?'Retrocedeix':(EX.ext>0.99?'Tija fora':'Tija a dins'));s+=txt(400,190,lblE,'sv-t').replace('sv-t"','sv-t" style="font-size:22px"');
   $('ex-svg').innerHTML=s;
   const L=EX.nom==='num'?['1','2','3']:['P','A','R'];
   $('ex-t').innerHTML=EX.p?`<b>Polsador premut:</b> l'aire passa de ${L[0]} a ${L[1]}, entra a la cambra posterior i la tija avança.`:
@@ -791,109 +796,144 @@ CV.antip={name:'Antiretorn pilotada',init:{dir:'RL',x:false,b:0,pp:0},
   txt:'<h3>Vàlvula antiretorn pilotada</h3><p>En condicions normals només deixa passar l\'aire en un sentit. Però mitjançant l\'acció d\'un <b>pilotatge extern</b> (X) pot permetre el pas en sentit invers: el senyal X empeny un petit pistó que obre la vàlvula.</p><p class="est">Prova-ho en ordre: 1) «Aire per 2» → barrat. 2) «Activa el pilotatge X» → passa.</p>'};
 
 /* ---------- reguladores de cabal ---------- */
-CV.cabb={name:'Reguladora de cabal bidireccional',init:{dir:'LR',o:50},
+// cilindre petit que avança a una velocitat proporcional al cabal (es reinicia en arribar al final)
+function miniStep(s,q,dt){s.cy=(s.cy||0)+q/100*0.55*dt;if(s.cy>1.15)s.cy=0;}
+function miniCyl(s,q){const c=cylinder({x:8,y:22,L:100,H:30,type:'DE',ext:Math.min(1,s.cy||0),post:q>0,ant:false});
+  return c.svg+txt(8,14,'Un cilindre connectat a la vàlvula:','sv-mut','start')+txt(8,76,'Velocitat de la tija: '+(q===0?'aturada':(q>=90?'ràpida':(q>=40?'mitjana':'lenta'))),'sv-fg','start');}
+CV.cabb={name:'Reguladora de cabal bidireccional',init:{dir:'LR',o:50,cy:0},
   ctl:[{t:'seg',k:'dir',o:[['0','Sense aire'],['LR','Aire per 1'],['RL','Aire per 2']]},{t:'rng',k:'o',l:'Obertura de l\'agulla',min:0,max:100,step:1,u:'%'}],
-  step(){},
-  cut(s){const lr=s.dir==='LR',rl=s.dir==='RL',op=s.o>0,tipY=150-28*s.o/100;let h=body(20,70,320,120);
+  q(s){return s.dir==='0'?0:s.o;},
+  step(s,dt){miniStep(s,this.q(s),dt);},
+  cut(s){const lr=s.dir==='LR',rl=s.dir==='RL',op=s.o>0,tipY=136-14*s.o/100;let h=body(20,70,320,120);
     h+=ch(20,122,160,28,lr||(rl&&op))+ch(180,122,160,28,rl||(lr&&op));
-    h+=fl('M24,136 L180,136 L336,136',op?(lr?1:(rl?-1:0)):0,0.2+s.o/100);
+    h+=`<path d="M156,150 L166,136 L194,136 L204,150 Z" fill="var(--body)" stroke="var(--body-d)" stroke-width="1.5"/>`+txt(180,166,'seient','sv-mut');
+    h+=fl('M24,136 L180,131 L336,136',op?(lr?1:(rl?-1:0)):0,0.15+1.1*s.o/100);
     h+=`<rect x="160" y="30" width="40" height="18" rx="3" fill="var(--steel-l)" stroke="var(--steel)"/><rect x="174" y="48" width="12" height="${f1(tipY-16-48)}" fill="var(--steel-l)" stroke="var(--steel)"/><polygon points="172,${f1(tipY-16)} 188,${f1(tipY-16)} 180,${f1(tipY)}" fill="var(--steel)"/>`+txt(232,44,'agulla','sv-mut');
+    if(op)h+=`<line x1="214" y1="${f1(tipY)}" x2="214" y2="136" stroke="var(--hot)" stroke-width="1.4"/>`+txt(222,f1((tipY+136)/2+4),'pas','sv-mut','start');
     h+=lab(34,116,'1')+lab(326,116,'2');
     h+=s.dir==='0'?badge(180,218,'neu','Sense aire'):(op?badge(180,218,'ok','✓ Passa un '+s.o+' % del cabal'):badge(180,218,'bad','✕ Agulla tancada'));return h;},
   sym(s){const lr=s.dir==='LR',rl=s.dir==='RL',op=s.o>0,d=op?(lr?1:(rl?-1:0)):0;
     return sLine('M15,75 L70,75',lr||(rl&&op),d)+sLine('M150,75 L205,75',rl||(lr&&op),d)+`<rect x="70" y="45" width="80" height="60" fill="none" stroke="${FG}" stroke-width="1.6"/>`+throttle(110,75,40)+txt(22,66,'1','sv-num')+txt(198,66,'2','sv-num');},
-  extra(s){const q=s.dir==='0'?0:s.o;return `<p class="panel-t" style="margin-top:10px">Cabal que passa</p><div class="meter"><div style="width:${q}%"></div></div>`;},
-  st(s){if(s.dir==='0')return '<b>Sense aire.</b>';if(s.o===0)return '<b>Obertura 0 %:</b> l\'agulla tanca del tot el pas.';return '<b>Cabal regulat:</b> l\'agulla estreny el pas igual en tots dos sentits. Com més obertura, més cabal i més velocitat de l\'actuador.';},
-  txt:'<h3>Vàlvula reguladora de cabal bidireccional</h3><p>Les reguladores de cabal varien la <b>velocitat</b> dels actuadors perquè regulen el cabal d\'aire. Les <b>bidireccionals</b> regulen el pas de l\'aire en tots dos sentits.</p>'};
+  ext2(s){return miniCyl(s,this.q(s));},
+  st(s){if(s.dir==='0')return '<b>Sense aire.</b>';if(s.o===0)return '<b>Agulla tancada:</b> no queda cap pas i el cilindre no es mou.';return `<b>Cabal regulat:</b> l'agulla deixa un pas ${s.o<35?'estret':(s.o<70?'mitjà':'ample')} entre la punta i el seient. Passa poc aire per segon si el pas és estret, i el cilindre va ${s.o<35?'lent':(s.o<70?'a mitja velocitat':'ràpid')}. Regula igual en tots dos sentits.`;},
+  txt:'<h3>Vàlvula reguladora de cabal bidireccional</h3><p>Les reguladores de cabal varien la <b>velocitat</b> dels actuadors perquè regulen el cabal d\'aire (la quantitat d\'aire que passa per segon). Les <b>bidireccionals</b> regulen el pas de l\'aire en tots dos sentits.</p><p class="est">La pressió no és el que canvia: el que canvia és quant aire passa cada segon, i per tant la velocitat del cilindre.</p>'};
 
-CV.cabu={name:'Reguladora de cabal unidireccional',init:{dir:'LR',o:35,b:0},
+CV.cabu={name:'Reguladora de cabal unidireccional',init:{dir:'LR',o:35,b:0,cy:0},
   ctl:[{t:'seg',k:'dir',o:[['0','Sense aire'],['LR','Aire per 1'],['RL','Aire per 2']]},{t:'rng',k:'o',l:'Obertura de l\'agulla',min:0,max:100,step:1,u:'%'}],
-  step(s,dt){s.b=approach(s.b,s.dir==='LR'?1:0,1.4,dt);},
-  cut(s){const lr=s.dir==='LR',rl=s.dir==='RL',op=s.o>0,on=lr||(rl&&op),onR=s.dir!=='0',bx=170+s.b*30,tipY=80-20*s.o/100;let h=body(20,30,320,170);
-    h+=ch(20,90,90,60,on)+ch(250,90,90,60,onR);
-    h+=ch(95,60,20,32,on)+ch(95,60,90,20,on)+ch(180,60,90,20,onR)+ch(245,60,20,32,onR);
-    h+=ch(95,148,20,24,on)+ch(95,160,65,20,on)+ch(158,160,107,20,onR||lr)+ch(245,148,20,24,onR);
-    h+=`<rect x="165" y="10" width="30" height="14" rx="3" fill="var(--steel-l)" stroke="var(--steel)"/><rect x="175" y="24" width="10" height="${f1(tipY-12-24)}" fill="var(--steel-l)" stroke="var(--steel)"/><polygon points="174,${f1(tipY-12)} 186,${f1(tipY-12)} 180,${f1(tipY)}" fill="var(--steel)"/>`;
-    h+=spring(bx+14,240,170,24,5,'var(--steel)')+ball(bx,170,14);
-    const d=lr?1:(rl?-1:0);h+=fl('M24,120 L105,120 L105,70 L255,70 L255,120 L336,120',op?d:0,0.2+s.o/100*(lr?0.35:1));if(lr&&s.b>0.6)h+=fl('M105,120 L105,170 L255,170 L255,120',1,1);
-    if(rl)h+=cross(156,170);
-    h+=lab(34,84,'1')+lab(326,84,'2')+txt(250,196,'antiretorn','sv-mut')+txt(232,52,'agulla','sv-mut');
+  q(s){return s.dir==='0'?0:(s.dir==='LR'?100:s.o);},
+  step(s,dt){s.b=approach(s.b,s.dir==='LR'?1:0,1.4,dt);miniStep(s,this.q(s),dt);},
+  cut(s){const lr=s.dir==='LR',rl=s.dir==='RL',op=s.o>0,on=lr||(rl&&op),onR=s.dir!=='0',bx=164+s.b*30,tipY=70-10*s.o/100;let h=body(20,30,320,170);
+    h+=ch(20,90,92,60,on)+ch(248,90,92,60,onR);
+    h+=ch(95,58,20,34,on)+ch(95,58,85,22,on)+ch(180,58,85,22,onR)+ch(245,58,20,34,onR);
+    h+=`<path d="M162,80 L170,70 L190,70 L198,80 Z" fill="var(--body)" stroke="var(--body-d)" stroke-width="1.5"/>`;
+    h+=ch(95,148,20,24,on)+ch(95,160,57,20,on)+ch(156,160,109,20,onR)+ch(245,148,20,24,onR);
+    h+=`<path d="M144,160 L156,160 L156,166 L144,166 Z M144,174 L156,174 L156,180 L144,180 Z" fill="var(--body)" stroke="var(--body-d)" stroke-width="1.5"/>`;
+    h+=`<rect x="165" y="8" width="30" height="14" rx="3" fill="var(--steel-l)" stroke="var(--steel)"/><rect x="175" y="22" width="10" height="${f1(tipY-12-22)}" fill="var(--steel-l)" stroke="var(--steel)"/><polygon points="174,${f1(tipY-12)} 186,${f1(tipY-12)} 180,${f1(tipY)}" fill="var(--steel)"/>`;
+    h+=spring(bx+10,240,170,18,5,'var(--steel)')+ball(bx,170,10);
+    const d=lr?1:(rl?-1:0);h+=fl('M24,120 L105,120 L105,66 L255,66 L255,120 L336,120',op?d:0,0.15+s.o/100*(lr?0.3:1.1));if(lr&&s.b>0.6)h+=fl('M105,120 L105,170 L255,170 L255,120',1,1.3);
+    if(rl)h+=cross(152,170);
+    h+=lab(34,84,'1')+lab(326,84,'2')+txt(152,196,'orifici + bola (antiretorn)','sv-mut')+txt(222,50,'agulla','sv-mut','start');
     h+=lr?badge(180,222,'ok','✓ Passa lliure (100 %)'):rl?(op?badge(180,222,'neu','Regulat: passa un '+s.o+' %'):badge(180,222,'bad','✕ No passa')):badge(180,222,'neu','Sense aire');return h;},
   sym(s){const lr=s.dir==='LR',rl=s.dir==='RL',op=s.o>0,on1=lr||(rl&&op),on2=s.dir!=='0',d=lr?1:(rl&&op?-1:0);
     return sLine('M15,75 L55,75',on1,d)+sLine('M165,75 L205,75',on2,d)+sLine('M55,75 L55,45 L165,45 L165,75',lr||(rl&&op),0)+sLine('M55,75 L55,105 L165,105 L165,75',lr||on2,0)+
     throttle(110,45,34)+seatV(98,105,1)+`<circle cx="114" cy="105" r="8" fill="var(--surface)" stroke="${FG}" stroke-width="1.6"/>`+`<rect x="40" y="25" width="140" height="100" fill="none" stroke="${FG}" stroke-width="1" stroke-dasharray="4 3"/>`+txt(22,66,'1','sv-num')+txt(198,66,'2','sv-num');},
-  extra(s){const q=s.dir==='0'?0:(s.dir==='LR'?100:s.o);return `<p class="panel-t" style="margin-top:10px">Cabal que passa</p><div class="meter"><div style="width:${q}%"></div></div>`;},
-  st(s){return s.dir==='LR'?'<b>De 1 cap a 2:</b> l\'aire obre l\'antiretorn i circula lliurement, sense que l\'agulla el freni.':
-    s.dir==='RL'?(s.o>0?'<b>De 2 cap a 1:</b> l\'antiretorn queda tancat i tot l\'aire ha de passar per l\'agulla: el cabal queda regulat.':'<b>De 2 cap a 1 amb l\'agulla tancada:</b> l\'aire no pot passar.'):'<b>Sense aire.</b>';},
-  txt:'<h3>Vàlvula reguladora de cabal unidireccional</h3><p>Permet la <b>circulació lliure</b> de l\'aire en un sentit i, en el contrari, hi intercala una <b>estrangulació</b> que es pot regular a voluntat i que fixa el cabal. Porta incorporada una vàlvula antiretorn.</p>'};
+  ext2(s){return miniCyl(s,this.q(s));},
+  st(s){return s.dir==='LR'?'<b>De 1 cap a 2:</b> l\'aire empeny la bola, destapa l\'orifici i passa per baix, lliurement. L\'agulla no el frena: el cilindre va ràpid.':
+    s.dir==='RL'?(s.o>0?'<b>De 2 cap a 1:</b> l\'aire i la molla premen la bola contra l\'orifici i el tapen. Tot l\'aire ha de passar per dalt, per l\'agulla: el cabal queda regulat i el cilindre va més lent.':'<b>De 2 cap a 1 amb l\'agulla tancada:</b> l\'orifici està tapat per la bola i l\'agulla també: no passa aire.'):'<b>Sense aire.</b>';},
+  txt:'<h3>Vàlvula reguladora de cabal unidireccional</h3><p>Permet la <b>circulació lliure</b> de l\'aire en un sentit i, en el contrari, hi intercala una <b>estrangulació</b> que es pot regular a voluntat i que fixa el cabal. Porta incorporada una vàlvula antiretorn: per això té dos camins, un amb l\'agulla i un altre amb la bola.</p>'};
 
-/* ---------- reguladora de pressió ---------- */
-CV.regp={name:'Reguladora de pressió',vb:'0 0 360 250',init:{p1:6,pr:4,sp:0},
+/* ---------- reguladora de pressió (model vertical: molla obre, p2 tanca) ---------- */
+CV.regp={name:'Reguladora de pressió',vb:'0 0 360 270',init:{p1:6,pr:4,g:1},
   ctl:[{t:'rng',k:'p1',l:'Pressió d\'entrada p1',min:2,max:10,step:0.5,u:' bar'},{t:'rng',k:'pr',l:'Pressió regulada (pom)',min:1,max:8,step:0.5,u:' bar'}],
-  step(s,dt){s.sp=approach(s.sp,s.p1>s.pr?0.72:0,1.2,dt);},
-  cut(s){const p2=Math.min(s.p1,s.pr),xl=178-s.sp*28,rs=xl-50,px=52+s.pr*4;let h=body(20,40,280,175);
-    h+=chp(70,110,xl-70,40,s.p1)+chp(110,150,24,65,s.p1);
-    h+=chp(xl+40,110,280-xl-40,40,p2)+chp(150,40,22,70,p2)+chp(172,56,108,16,p2)+chp(262,56,18,54,p2);
-    h+=fl('M122,213 L122,130 L161,130 L161,42',1,s.sp>0.3?0.35:1);
-    h+=`<rect x="${f1(xl)}" y="112" width="40" height="36" rx="3" fill="var(--steel-l)" stroke="var(--steel)" stroke-width="1.5"/><rect x="${f1(rs)}" y="126" width="50" height="8" fill="var(--steel)"/>`;
-    h+=spring(px,rs,130,30,7,'var(--steel)')+`<rect x="${f1(px-4)}" y="114" width="5" height="32" fill="var(--steel)"/><rect x="4" y="118" width="16" height="24" rx="3" fill="var(--steel-l)" stroke="var(--steel)"/><rect x="20" y="126" width="${f1(px-24)}" height="8" fill="var(--steel)"/>`;
-    h+=force(px+8,100,px+40,100,SPR,'molla',px+24,94);
-    if(s.p1>s.pr||s.sp>0.05)h+=force(xl+84,130,xl+44,130,AIR,'p2',xl+66,124);
-    h+=txt(122,232,'p1 = '+fmt(s.p1)+' bar','sv-num')+txt(161,32,'p2 = '+fmt(p2)+' bar','sv-num')+txt(12,166,'pom','sv-mut','start');
-    h+=gauge(330,70,20,p2,10,'p2')+gauge(330,180,20,s.p1,10,'p1');
+  step(s,dt){s.g=approach(s.g,s.p1>s.pr?0.22:1,1.1,dt);},
+  cut(s){const p2=Math.min(s.p1,s.pr),plY=30+s.pr*5,pyT=100+14*s.g,pop=182+14*s.g;let h=body(50,20,240,230);
+    h+=ch(112,28,116,pyT-28,false);
+    h+=chp(112,pyT+12,116,170-pyT-12,p2)+chp(228,140,62,20,p2)+chp(158,170,24,12,p2);
+    h+=chp(112,182,116,48,s.p1)+chp(50,195,62,20,s.p1);
+    h+=`<path d="M112,170 L158,170 L158,182 M182,182 L182,170 L228,170" fill="none" stroke="var(--body-d)" stroke-width="1.5"/>`;
+    h+=fl(`M52,205 L170,205 L170,${f1(pop-2)} L170,150 L288,150`,1,0.2+0.9*s.g);
+    h+=`<rect x="150" y="4" width="40" height="12" rx="3" fill="var(--steel-l)" stroke="var(--steel)"/><rect x="164" y="16" width="12" height="${f1(plY-16)}" fill="var(--steel-l)" stroke="var(--steel)"/><rect x="132" y="${f1(plY)}" width="76" height="5" fill="var(--steel)"/>`;
+    h+=vspring(170,plY+5,pyT,54,7);
+    h+=`<rect x="112" y="${f1(pyT)}" width="116" height="12" rx="2" fill="var(--piston)" stroke="var(--body-d)" stroke-width="1.4"/><rect x="166" y="${f1(pyT+12)}" width="8" height="${f1(pop-pyT-12)}" fill="var(--steel)"/><polygon points="152,${f1(pop)} 188,${f1(pop)} 180,${f1(pop+12)} 160,${f1(pop+12)}" fill="var(--steel-l)" stroke="var(--steel)" stroke-width="1.4"/>`;
+    h+=force(124,pyT-30,124,pyT-4,SPR,'molla: obre',90,pyT-34);
+    h+=force(132,pyT+46,132,pyT+16,AIR,'p2: tanca',134,pyT+62);
+    h+=txt(102,pyT+10,'pistó','sv-mut','end')+txt(196,226,'obturador','sv-mut','start')+txt(204,10,'pom','sv-mut','start');
+    h+=txt(81,190,'p1','sv-fg')+txt(270,134,'p2','sv-fg');
+    h+=gauge(326,70,20,p2,10,'p2 = '+fmt(p2))+gauge(326,200,20,s.p1,10,'p1 = '+fmt(s.p1));
     return h;},
   sym(s){return sLine('M85,140 L85,100',true,1)+sLine('M85,50 L85,10',true,1)+`<rect x="60" y="50" width="50" height="50" fill="none" stroke="${FG}" stroke-width="1.6"/>`+arrow(85,96,85,54,FG,1.6,8)+adjSpring(110,75)+pilot('M85,30 L45,30 L45,75 L60,75',true,0)+txt(97,146,'p1','sv-num')+txt(97,16,'p2','sv-num');},
-  st(s){const p2=Math.min(s.p1,s.pr);return s.p1>s.pr?`<b>p1 = ${fmt(s.p1)} bar és més gran que ${fmt(s.pr)} bar:</b> la pressió de sortida empeny la corredora contra la molla, la corredora tapa part del forat i a la sortida només hi arriben <b>${fmt(p2)} bar</b>.`:`<b>p1 = ${fmt(s.p1)} bar no arriba a ${fmt(s.pr)} bar:</b> la molla manté la corredora enrere, el forat queda obert i p2 = p1.`;},
-  txt:'<h3>Vàlvula reguladora de pressió</h3><p>Redueix la pressió d\'entrada fins a un valor <b>inferior regulable</b> de sortida. Són vàlvules de dues vies <b>normalment obertes</b> gràcies a la força de la molla, que redueixen la pressió quan el valor de la sortida supera el de regulació, tot barrant el pas amb un pistó o una corredora.</p><p class="est">Gira el pom (lliscador «pressió regulada»): com més comprimida és la molla, més pressió deixa passar.</p>'};
+  st(s){const p2=Math.min(s.p1,s.pr);return s.p1>s.pr?`<b>Hi ha dues forces sobre el pistó:</b> la molla empeny cap avall (obre) i p2 empeny cap amunt (tanca). Quan p2 arriba a ${fmt(s.pr)} bar, les forces s'equilibren: l'obturador gairebé tanca i a la sortida hi ha <b>${fmt(p2)} bar</b>, encara que a l'entrada n'hi hagi ${fmt(s.p1)}.`:`<b>p1 = ${fmt(s.p1)} bar no arriba al valor regulat (${fmt(s.pr)} bar):</b> p2 no pot vèncer la molla, l'obturador queda del tot obert i p2 = p1.`;},
+  txt:'<h3>Vàlvula reguladora de pressió</h3><p>Redueix la pressió d\'entrada fins a un valor <b>inferior regulable</b> de sortida. És <b>normalment oberta</b> gràcies a la força de la molla, i redueix el pas quan la pressió de sortida supera el valor de regulació.</p><p class="est">Pensa-ho com una balança: a dalt, la <b>molla</b> (que fixes amb el pom); a baix, la <b>pressió de sortida p2</b>. Si p2 és petita, guanya la molla i la vàlvula obre; quan p2 arriba al valor fixat, guanya p2 i la vàlvula tanca. Així p2 es manté constant. El dibuix és un model simplificat; al símbol, la línia discontínua és aquesta p2 que torna a empènyer.</p>'};
 
-/* ---------- limitadora de pressió ---------- */
-CV.lim={name:'Limitadora de pressió',vb:'0 0 360 260',init:{on:false,p:0,tr:6,lift:0},
-  ctl:[{t:'tg',k:'on',l:'Engega el compressor'},{t:'act',k:'buida',l:'Buida la instal·lació'},{t:'rng',k:'tr',l:'Pressió de tarat (pom)',min:2,max:9,step:0.5,u:' bar'}],
-  act:{buida(s){s.p=0;}},
-  step(s,dt){if(s.on)s.p=Math.min(s.p+1.1*dt,s.tr);if(s.p>s.tr)s.p=s.tr;s.lift=approach(s.lift,(s.on&&s.p>=s.tr-0.001)?1:0,2,dt);},
-  cut(s){const op=s.lift>0.4,dy=150-s.lift*16,py=82+s.tr*2;let h=body(90,40,180,160);
-    h+=chp(168,158,24,42,s.p)+chp(130,88,100,72,op?s.p:0)+chp(228,132,42,22,op?s.p*0.5:0);
-    h+=sLine('M46,226 L180,226 L180,200',s.p>0,s.on&&!op?1:0)+`<circle cx="34" cy="226" r="12" fill="var(--surface)" stroke="${FG}" stroke-width="1.6"/><polygon points="28,232 40,226 28,220" fill="none" stroke="${FG}" stroke-width="1.4"/>`+txt(34,252,'compressor','sv-mut');
-    h+=fl('M180,198 L180,143 L268,143',op?1:0,1);
-    h+=`<rect x="140" y="${f1(dy)}" width="80" height="10" rx="2" fill="var(--steel-l)" stroke="var(--steel)" stroke-width="1.5"/>`+vspring(180,py+6,dy,40,7);
-    h+=`<rect x="140" y="${f1(py)}" width="80" height="6" fill="var(--steel)"/><rect x="174" y="14" width="12" height="${f1(py-14)}" fill="var(--steel-l)" stroke="var(--steel)"/><rect x="160" y="8" width="40" height="12" rx="3" fill="var(--steel-l)" stroke="var(--steel)"/>`+txt(206,18,'pom','sv-mut','start');
-    h+=force(146,py+14,146,py+40,SPR,'molla',118,py+30);
-    if(s.p>0.3)h+=force(214,196,214,dy+16,AIR,'aire',240,184);
-    if(op&&!reduce){const ph=(T*1.4)%1;h+=arrow(276,143,312,143,AIR,2.4,9)+`<circle cx="${f1(318+ph*24)}" cy="${f1(140-ph*10)}" r="${f1(3+ph*6)}" fill="none" stroke="${AIR}" opacity="${f1(1-ph)}"/>`+txt(300,170,'a l\'atmosfera','sv-mut');}
-    h+=lab(202,214,'P')+lab(254,126,'A')+gauge(318,72,26,s.p,10,fmt(+s.p.toFixed(1))+' bar');
-    h+=op?badge(262,238,'neu','Oberta: allibera aire'):badge(262,238,'ok','Tancada');return h;},
+/* ---------- limitadora de pressió dins d'una instal·lació ---------- */
+CV.lim={name:'Limitadora de pressió',vb:'0 0 360 300',init:{on:false,p:0,tr:6,lift:0,e:0},
+  ctl:[{t:'tg',k:'on',l:'Engega el compressor'},{t:'act',k:'buida',l:'Torna a començar'},{t:'rng',k:'tr',l:'Pressió de tarat (pom)',min:3,max:9,step:0.5,u:' bar'}],
+  act:{buida(s){s.p=0;s.e=0;s.on=false;const b=document.querySelector('[data-tg="on"]');if(b)b.setAttribute('aria-pressed','false');}},
+  step(s,dt){if(s.on){if(s.e<1){s.e=Math.min(1,s.e+0.3*dt);s.p=approach(s.p,2,2,dt);}else s.p=Math.min(s.tr,s.p+1.2*dt);}
+    if(s.p>s.tr)s.p=s.tr;s.lift=approach(s.lift,(s.on&&s.e>=1&&s.p>=s.tr-0.001)?1:0,2,dt);},
+  cut(s){const op=s.lift>0.4,dy=112-s.lift*12,py=46+s.tr*1.6,mv=s.on&&s.e<1;let h=body(120,24,120,126);
+    h+=chp(168,120,24,30,s.p)+chp(140,66,80,54,op?s.p:0)+chp(220,98,20,14,op?s.p*.5:0);
+    h+=fl('M180,148 L180,106 L238,106',op?1:0,1);
+    h+=`<rect x="146" y="${f1(dy)}" width="68" height="8" rx="2" fill="var(--steel-l)" stroke="var(--steel)" stroke-width="1.4"/>`+vspring(180,py+5,dy,34,6);
+    h+=`<rect x="146" y="${f1(py)}" width="68" height="5" fill="var(--steel)"/><rect x="175" y="8" width="10" height="${f1(py-8)}" fill="var(--steel-l)" stroke="var(--steel)"/><rect x="164" y="2" width="32" height="10" rx="3" fill="var(--steel-l)" stroke="var(--steel)"/>`;
+    h+=force(150,py+10,150,py+34,SPR,'',0,0)+(s.p>0.3?force(208,146,208,dy+12,AIR,'',0,0):'');
+    if(op&&!reduce){const ph=(T*1.4)%1;h+=arrow(244,106,272,106,AIR,2.4,9)+`<circle cx="${f1(278+ph*20)}" cy="${f1(103-ph*8)}" r="${f1(3+ph*5)}" fill="none" stroke="${AIR}" opacity="${f1(1-ph)}"/>`+txt(282,92,'a l\'atmosfera','sv-mut');}
+    h+=txt(110,40,'limitadora','sv-mut','end')+lab(198,166,'P');
+    // instal·lació: compressor → línia principal → cilindre que treballa
+    h+=`<circle cx="26" cy="190" r="12" fill="var(--surface)" stroke="${FG}" stroke-width="1.6"/><polygon points="20,196 32,190 20,184" fill="none" stroke="${FG}" stroke-width="1.4"/>`+txt(4,216,'compressor','sv-mut','start');
+    h+=pipe('M38,190 L300,190',s.p>0,s.on&&(mv||op)?1:0,3)+pipe('M180,190 L180,150',s.p>0,op?1:0,3);
+    const c=cylinder({x:60,y:236,L:120,H:34,type:'SE',ext:s.e,post:s.p>0,ant:false});h+=c.svg+pipe(`M${f1(c.portPost)},190 L${f1(c.portPost)},236`,s.p>0,mv?1:0,3);
+    h+=`<circle cx="${f1(c.portPost)}" cy="190" r="3.5" fill="${s.p>0?AIR:MUT}"/><circle cx="180" cy="190" r="3.5" fill="${s.p>0?AIR:MUT}"/>`+txt(120,292,'cilindre que treballa','sv-mut');
+    h+=gauge(318,46,22,s.p,10,'')+txt(290,50,fmt(+s.p.toFixed(1))+' bar','sv-num','end')+pipe('M318,68 L318,190 L300,190',s.p>0,0,2);
+    h+=op?badge(66,110,'neu','Oberta'):badge(66,110,'ok','Tancada');return h;},
   sym(s){const op=s.lift>0.4;return sLine('M100,145 L100,105',s.p>0,op?1:0)+sLine('M100,45 L100,22',op,op?1:0)+exh(100,13)+`<rect x="70" y="45" width="60" height="60" fill="none" stroke="${FG}" stroke-width="1.6"/>`+
     arrow(112,100,112,50,op?AIR:FG,1.6,8)+adjSpring(130,75)+pilot('M100,125 L55,125 L55,75 L70,75',s.p>0,0)+txt(112,150,'P','sv-num');},
-  st(s){if(s.lift>0.4)return `<b>Ha arribat al tarat (${fmt(s.tr)} bar):</b> la força de l'aire sobre el disc supera la de la molla, el disc s'aixeca i l'aire surt a l'atmosfera. Per molt que el compressor continuï, la pressió no passa de ${fmt(s.tr)} bar.`;
-    if(s.on)return `<b>El compressor omple la instal·lació:</b> la pressió puja (${fmt(+s.p.toFixed(1))} bar), però encara no supera la força de la molla.`;
-    return s.p>0?'<b>Compressor aturat:</b> la pressió es manté i la vàlvula està tancada.':'<b>Instal·lació buida.</b> Engega el compressor.';},
-  txt:'<h3>Vàlvula limitadora de pressió</h3><p>També s\'anomena <b>vàlvula de seguretat</b>. Impedeix superar la pressió màxima permesa pel sistema: si la pressió puja per sobre del valor prefixat, la vàlvula obre cap a l\'atmosfera l\'orifici de sortida i deixa escapar aire fins que es restableix el valor nominal.</p><p class="est">El pom comprimeix la molla: com més comprimida, més alta és la pressió de tarat.</p>'};
+  st(s){if(s.lift>0.4)return `<b>Ha arribat al tarat (${fmt(s.tr)} bar):</b> el cilindre ja no consumeix aire i el compressor continua empenyent. La força de l'aire sobre el disc supera la de la molla, el disc s'aixeca i l'aire sobrant surt a l'atmosfera. Així la pressió no passa de ${fmt(s.tr)} bar i la instal·lació no es fa malbé.`;
+    if(s.on&&s.e<1)return '<b>L\'aire treballa:</b> va pel conducte principal fins al cilindre i el fa avançar. La pressió és baixa i la limitadora ni s\'immuta: està tancada i no hi passa aire.';
+    if(s.on)return `<b>El cilindre ha arribat al final:</b> l'aire ja no té on anar i la pressió puja (${fmt(+s.p.toFixed(1))} bar). La limitadora encara està tancada.`;
+    return s.p>0?'<b>Compressor aturat:</b> la pressió es manté.':'<b>Instal·lació buida.</b> Engega el compressor.';},
+  txt:'<h3>Vàlvula limitadora de pressió</h3><p>També s\'anomena <b>vàlvula de seguretat</b>. Va connectada en derivació a la instal·lació. Mentre la pressió és normal, està tancada i l\'aire va a treballar als actuadors. Si la pressió s\'eleva per sobre del valor prefixat, la vàlvula obre cap a l\'atmosfera l\'orifici de sortida i deixa escapar aire fins que es restableix el valor nominal.</p><p class="est">El pom comprimeix la molla: com més comprimida, més alta és la pressió de tarat.</p>'};
 
-/* ---------- escapament ràpid (Fig. 3.44) ---------- */
-CV.esc={name:'Escapament ràpid',vb:'0 0 360 260',init:{p:'off',m:-1,e:0},
-  ctl:[{t:'seg',k:'p',o:[['on','Entra aire per P'],['off','Talla l\'aire de P']]}],
-  step(s,dt){if(s.p==='on'){s.m=approach(s.m,1,3,dt);if(s.m>0.9)s.e=approach(s.e,1,0.45,dt);}else if(s.e>0.001){s.m=approach(s.m,-1,3,dt);if(s.m<-0.9)s.e=approach(s.e,0,0.9,dt);}},
-  cut(s){const on=s.p==='on',aOn=on||s.e>0.001,vent=!on&&s.e>0.001&&s.m<-0.9,fill=on&&s.m>0.9&&s.e<1,xm=120+s.m*40;
+/* ---------- escapament ràpid (Fig. 3.44 i 3.64) dins del circuit, amb i sense ---------- */
+function escSym(m,on,aOn,vent){
+  return sLine('M15,85 L60,85',on,on?1:0)+sLine('M110,62 L110,18',aOn,on?1:(vent?-1:0))+`<rect x="60" y="62" width="100" height="46" fill="none" stroke="${FG}" stroke-width="1.6"/>`+
+    `<line x1="60" y1="85" x2="146" y2="85" stroke="${FG}" stroke-width="1.4"/><path d="M80,78 L70,85 L80,92" fill="none" stroke="${FG}" stroke-width="1.6"/><circle cx="110" cy="85" r="2.8" fill="${FG}"/><line x1="110" y1="62" x2="110" y2="85" stroke="${FG}" stroke-width="1.4"/>`+
+    `<circle cx="${f1(126+m*3)}" cy="85" r="6" fill="var(--surface)" stroke="${FG}" stroke-width="1.6"/><polygon points="140,79 152,85 140,91" fill="none" stroke="${FG}" stroke-width="1.6"/>`+
+    `<path d="M110,48 L178,48 L178,74" fill="none" stroke="${FG}" stroke-width="1.2" stroke-dasharray="4 3"/>`+sLine('M160,85 L188,85',vent,vent?1:0)+txt(22,76,'P','sv-num')+txt(122,24,'A','sv-num')+txt(196,104,'R','sv-num');}
+CV.esc={name:'Escapament ràpid',wide:true,vb:'0 0 640 320',init:{pb:false,mode:'amb',m:-1,e:0,vp:1,tR:null,tA:null,tS:null},
+  ctl:[{t:'tg',k:'pb',l:'Polsador premut (avança)'},{t:'seg',k:'mode',o:[['amb','Amb escapament ràpid'],['sense','Sense escapament ràpid']]}],
+  step(s,dt){s.vp=approach(s.vp,s.pb?0:1,6,dt);const vA=s.vp<0.05,amb=s.mode==='amb';
+    if(vA){s.tR=null;if(amb){s.m=approach(s.m,1,3,dt);if(s.m>0.9)s.e=approach(s.e,1,0.4,dt);}else s.e=approach(s.e,1,0.4,dt);}
+    else if(s.e>0.001){if(s.tR==null)s.tR=0;s.tR+=dt;if(amb){s.m=approach(s.m,-1,3,dt);if(s.m<-0.9)s.e=approach(s.e,0,1.3,dt);}else s.e=approach(s.e,0,0.38,dt);
+      if(s.e<=0.001){if(amb)s.tA=s.tR;else s.tS=s.tR;s.tR=null;}}},
+  cut(s){const amb=s.mode==='amb',vA=s.vp<0.05,emptying=!vA&&s.e>0.001,aOn=vA||s.e>0.001,fill=vA&&s.e<1&&(!amb||s.m>0.9),ventQ=amb&&emptying&&s.m<-0.9,ventL=!amb&&emptying,xm=120+s.m*40;
     const c=cylinder({x:100,y:14,L:110,H:40,type:'SE',ext:s.e,post:aOn,ant:false});const xp=c.portPost;let h=c.svg;
-    h+=`<polygon points="20,130 60,130 90,108 150,108 180,130 340,130 340,232 20,232" class="bk"/>`;
-    h+=ch(20,170,52,22,on)+`<polygon points="72,150 92,124 148,124 168,150 168,212 148,226 92,226 72,212" fill="${aOn?'var(--air-soft)':'var(--empty)'}"/>`+ch(168,170,172,22,vent)+ch(xp-12,100,24,26,aOn);
-    h+=pipe(`M${f1(xp)},100 L${f1(xp)},54`,aOn,fill?1:(vent?-1:0),3);
-    h+=fl(`M24,181 L${f1(xp-4)},181 L${f1(xp)},104`,fill?1:0)+fl(`M${f1(xp)},104 L${f1(xp+4)},181 L336,181`,vent?1:0,1.5);
-    h+=`<path d="M${f1(xm)},138 Q${f1(xm+s.m*18)},181 ${f1(xm)},224" fill="none" stroke="${FG}" stroke-width="5" stroke-linecap="round"/>`;
-    if(fill)h+=force(28,206,62,206,AIR,'aire de P',46,222);
-    if(vent){h+=force(xp+26,150,xp-6,160,AIR,'aire d\'A',xp+34,146);if(!reduce)h+=arrow(342,181,356,181,MUT,2.4,9);}
-    if(on&&s.m>0.9)h+=cross(170,181);if(vent)h+=cross(70,181);
-    h+=lab(32,160,'P')+lab(xp+18,96,'A')+lab(326,160,'R')+txt(xm+(s.m>0?-38:38),246,'membrana','sv-mut');
-    const b=on?(s.e<1?badge(280,80,'ok','P → A: omple'):badge(280,80,'neu','Cilindre ple')):(vent?badge(280,80,'bad','A → R directe'):badge(280,80,'neu','Repòs'));return h+b;},
-  sym(s){const on=s.p==='on',aOn=on||s.e>0.001,vent=!on&&s.e>0.001;
-    return sLine('M15,85 L60,85',on,on?1:0)+sLine('M110,62 L110,18',aOn,on?-1:(vent?1:0))+`<rect x="60" y="62" width="100" height="46" fill="none" stroke="${FG}" stroke-width="1.6"/>`+
-      `<line x1="60" y1="85" x2="146" y2="85" stroke="${FG}" stroke-width="1.4"/>`+`<path d="M80,78 L70,85 L80,92" fill="none" stroke="${FG}" stroke-width="1.6"/>`+`<circle cx="110" cy="85" r="2.8" fill="${FG}"/><line x1="110" y1="62" x2="110" y2="85" stroke="${FG}" stroke-width="1.4"/>`+
-      `<circle cx="${f1(126+s.m*3)}" cy="85" r="6" fill="var(--surface)" stroke="${FG}" stroke-width="1.6"/><polygon points="140,79 152,85 140,91" fill="none" stroke="${FG}" stroke-width="1.6"/>`+
-      `<path d="M110,48 L178,48 L178,74" fill="none" stroke="${FG}" stroke-width="1.2" stroke-dasharray="4 3"/>`+sLine('M160,85 L188,85',vent,vent?1:0)+
-      txt(22,76,'P','sv-num')+txt(122,24,'A','sv-num')+txt(196,104,'R','sv-num');},
-  st(s){if(s.p==='on')return s.m<0.9?'<b>Entra aire per P:</b> l\'aire empeny la membrana cap a la dreta…':'<b>P → A:</b> la membrana tapa l\'escapament R i l\'aire passa cap a A: el cilindre s\'omple i avança.';
-    return s.e>0.001?'<b>Escapament ràpid:</b> en tallar P, l\'aire del cilindre (A) empeny la membrana cap a l\'esquerra; tapa P i obre R. L\'aire surt directament a l\'atmosfera, sense tornar per la vàlvula distribuïdora.':'<b>Repòs:</b> el cilindre ja és buit.';},
-  txt:'<h3>Vàlvula d\'escapament ràpid</h3><p>Està destinada a <b>accelerar la velocitat</b> dels cilindres: assegura l\'escapament directe de l\'aire a l\'atmosfera, sense retencions. Es col·loca a la sortida del cilindre (Fig. 3.64), perquè l\'aire no hagi de recórrer tota la conducció de retorn ni travessar el distribuïdor.</p>'};
+    const lineOn=vA||ventL;
+    // vàlvula 3/2 de polsador i conducció llarga fins a la vàlvula d'escapament ràpid
+    const r=valve(VDEF.v32nt,{x:470,y:50,S:50,pos:s.vp,actL:'polsador',actR:'molla',onL:s.pb,portLen:16});h+=r.svg+txt(520,146,'distribuïdor 3/2','sv-mut');
+    const route='M535,34 L535,20 L400,20 L400,310 L8,310 L8,181 L20,181';
+    h+=pipe(route,lineOn,fill?1:(ventL?-1:0),3)+txt(200,302,'conducció (llarga) entre el distribuïdor i el cilindre','sv-mut');
+    if(ventL&&!reduce)h+=arrow(r.portX('R')+14,118,r.portX('R')+34,130,MUT,2.4,9);
+    if(amb){
+      h+=`<polygon points="20,130 60,130 90,108 150,108 180,130 340,130 340,232 20,232" class="bk"/>`;
+      h+=ch(20,170,52,22,vA||(s.m<0.9&&aOn&&vA))+`<polygon points="72,150 92,124 148,124 168,150 168,212 148,226 92,226 72,212" fill="${aOn?'var(--air-soft)':'var(--empty)'}"/>`+ch(168,170,172,22,ventQ)+ch(xp-12,100,24,26,aOn);
+      h+=fl(`M24,181 L${f1(xp-4)},181 L${f1(xp)},104`,fill?1:0)+fl(`M${f1(xp)},104 L${f1(xp+4)},181 L336,181`,ventQ?1:0,1.5);
+      h+=`<path d="M${f1(xm)},138 Q${f1(xm+s.m*18)},181 ${f1(xm)},224" fill="none" stroke="${FG}" stroke-width="5" stroke-linecap="round"/>`;
+      if(vA&&s.m>0.9)h+=cross(170,181);if(ventQ){h+=cross(70,181)+force(xp+26,150,xp-6,160,AIR,'aire d\'A',xp+36,146);if(!reduce)h+=arrow(342,181,370,181,MUT,2.4,9);}
+      h+=lab(32,160,'P')+lab(xp+18,96,'A')+lab(326,160,'R')+txt(220,252,'vàlvula d\'escapament ràpid','sv-mut');
+    }else{h+=`<rect x="20" y="130" width="320" height="102" rx="6" fill="none" stroke="${MUT}" stroke-dasharray="5 5"/>`+txt(180,252,'(sense vàlvula d\'escapament ràpid)','sv-mut');}
+    h+=pipe(amb?`M${f1(xp)},100 L${f1(xp)},54`:`M20,181 L${f1(xp)},181 L${f1(xp)},54`,aOn,fill?(amb?1:1):((ventQ||ventL)?-1:0),3);
+    h+=txt(520,212,'Símbol','sv-mut')+`<g transform="translate(434,206) scale(.85)">`+escSym(s.m,vA&&amb,aOn&&amb,ventQ)+`</g>`;
+    const tf=t=>t==null?'—':fmt(+t.toFixed(1))+' s';
+    h+=txt(440,120,'','sv-num');
+    h+=`<text x="520" y="172" text-anchor="middle" class="sv-fg" style="font-size:14px">Temps de retrocés</text>`+txt(520,192,'amb: '+tf(s.tA)+'  ·  sense: '+tf(s.tS),'sv-num');
+    const b=vA?(s.e<1?badge(270,80,'ok','Omple: avança'):badge(270,80,'neu','Tija fora')):(emptying?(amb?badge(270,80,'bad','A → R directe'):badge(270,80,'bad','Torna per la conducció')):badge(270,80,'neu','Repòs'));return h+b;},
+  sym(){return '';},
+  st(s){const amb=s.mode==='amb',vA=s.vp<0.05;
+    if(vA)return amb?'<b>Avanç:</b> l\'aire ve del distribuïdor per la conducció, entra per P, empeny la membrana (que tapa R) i passa cap a A: el cilindre avança.':'<b>Avanç:</b> l\'aire ve del distribuïdor per la conducció i entra al cilindre.';
+    if(s.e>0.001)return amb?'<b>Retrocés ràpid:</b> en deixar anar el polsador, la conducció es buida i P queda sense pressió. L\'aire del cilindre empeny la membrana cap a l\'esquerra, tapa P i surt <b>directament per R</b>, al costat mateix del cilindre.':'<b>Retrocés lent:</b> l\'aire del cilindre ha de fer tot el camí de tornada per la conducció i sortir per l\'escapament del distribuïdor. Triga més.';
+    return '<b>Repòs.</b> Prem el polsador i després deixa\'l anar. Prova-ho amb i sense escapament ràpid i compara els temps de retrocés.';},
+  txt:'<h3>Vàlvula d\'escapament ràpid</h3><p>Està destinada a <b>accelerar la velocitat</b> dels cilindres. A vegades l\'avanç o el retrocés és lent perquè l\'aire, abans de ser evacuat a l\'exterior, ha de recórrer la conducció de retorn i travessar les vies d\'escapament del distribuïdor. Si es col·loca una vàlvula d\'escapament ràpid <b>a la sortida del cilindre</b> (Fig. 3.64), l\'aire surt directament a l\'atmosfera.</p>'};
 
 /* ---------- selectora (O) i simultaneïtat (I) amb els dos polsadors ---------- */
 function truth(rows,cur){return '<p class="panel-t" style="margin-top:10px">Taula de veritat</p><div class="tbl" style="display:inline-block"><table class="truth"><thead><tr><th>X</th><th>Y</th><th>S</th></tr></thead><tbody>'+
@@ -919,7 +959,7 @@ CV.or={name:'Selectora (O)',vb:'0 0 360 312',init:{X:false,Y:false,px:6,py:6,q:-
     if(s.Y&&!s.X&&s.q<-0.9){h+=force(cx+66,130,cx+28,118,AIR,'',0,0)+cross(88,104);}
     h+=lab(42,88,'X')+lab(318,88,'Y')+lab(204,40,'S')+txt(250,40,S?'S: '+fmt(pS)+' bar':'S: sense aire','sv-num','start');
     h+=inputValves(s);h+=S?badge(180,170,'ok','✓ S té aire'):badge(180,170,'neu','S sense aire');return h;},
-  sym(s){const S=s.X||s.Y;return sLine('M15,85 L70,85',s.X,s.X?1:0)+sLine('M150,85 L205,85',s.Y,s.Y?-1:0)+sLine('M110,65 L110,20',S,S?-1:0)+`<rect x="70" y="65" width="80" height="40" fill="none" stroke="${FG}" stroke-width="1.6"/>`+
+  sym(s){const S=s.X||s.Y;return sLine('M15,85 L70,85',s.X,s.X?1:0)+sLine('M150,85 L205,85',s.Y,s.Y?-1:0)+sLine('M110,65 L110,20',S,S?1:0)+`<rect x="70" y="65" width="80" height="40" fill="none" stroke="${FG}" stroke-width="1.6"/>`+
     `<line x1="70" y1="85" x2="150" y2="85" stroke="${FG}" stroke-width="1.4"/><line x1="110" y1="65" x2="110" y2="85" stroke="${FG}" stroke-width="1.4"/>`+seatV(84,85,1)+seatV(136,85,-1)+`<circle cx="${f1(110+s.q*14)}" cy="85" r="7" fill="var(--surface)" stroke="${FG}" stroke-width="1.6"/>`+
     txt(22,76,'X','sv-num')+txt(198,76,'Y','sv-num')+txt(122,26,'S','sv-num');},
   extra(s){return truth([[0,0,0],[1,0,1],[0,1,1],[1,1,1]],[+s.X,+s.Y]);},
@@ -942,7 +982,7 @@ CV.and={name:'Simultaneïtat (I)',vb:'0 0 360 312',init:{X:false,Y:false,px:6,py
     if(sR&&s.X)h+=cross(131,104);if(sL&&s.Y)h+=cross(229,104);
     h+=lab(42,88,'X')+lab(318,88,'Y')+lab(204,40,'S')+txt(250,40,cOn?'S: '+fmt(pS)+' bar':'S: sense aire','sv-num','start');
     h+=inputValves(s);h+=cOn?badge(180,170,'ok','✓ S té aire'):badge(180,170,(s.X||s.Y)?'bad':'neu',(s.X||s.Y)?'✕ Falta l\'altre senyal':'S sense aire');return h;},
-  sym(s){const S=s.X&&s.Y;return sLine('M15,85 L70,85',s.X,s.X?1:0)+sLine('M150,85 L205,85',s.Y,s.Y?-1:0)+sLine('M110,65 L110,20',S,S?-1:0)+`<rect x="70" y="65" width="80" height="40" fill="none" stroke="${FG}" stroke-width="1.6"/>`+
+  sym(s){const S=s.X&&s.Y;return sLine('M15,85 L70,85',s.X,s.X?1:0)+sLine('M150,85 L205,85',s.Y,s.Y?-1:0)+sLine('M110,65 L110,20',S,S?1:0)+`<rect x="70" y="65" width="80" height="40" fill="none" stroke="${FG}" stroke-width="1.6"/>`+
     `<line x1="70" y1="85" x2="150" y2="85" stroke="${FG}" stroke-width="1.4"/><line x1="110" y1="65" x2="110" y2="85" stroke="${FG}" stroke-width="1.4"/><line x1="84" y1="73" x2="84" y2="97" stroke="${FG}" stroke-width="1.6"/><line x1="136" y1="73" x2="136" y2="97" stroke="${FG}" stroke-width="1.6"/>`+
     txt(22,76,'X','sv-num')+txt(198,76,'Y','sv-num')+txt(122,26,'S','sv-num');},
   extra(s){return truth([[0,0,0],[1,0,0],[0,1,0],[1,1,1]],[+s.X,+s.Y]);},
@@ -1001,7 +1041,8 @@ $('cv-list').querySelectorAll('[data-cv]').forEach(b=>b.addEventListener('click'
 cvSet(cvK);
 let lastExtra='';
 function stepCV(dt){const v=CV[cvK];v.step(cvS,dt);$('cv-cut').innerHTML=v.cut(cvS);if(!v.wide)$('cv-sym').innerHTML=v.sym(cvS);
-  const ex=v.extra?v.extra(cvS):'';if(ex!==lastExtra){$('cv-extra').innerHTML=ex;lastExtra=ex;}$('cv-st').innerHTML=v.st(cvS);}
+  const ex=v.extra?v.extra(cvS):'';if(ex!==lastExtra){$('cv-extra').innerHTML=ex;lastExtra=ex;}$('cv-st').innerHTML=v.st(cvS);
+  const e2=$('cv-ext2');if(v.ext2&&!v.wide){e2.removeAttribute('hidden');e2.innerHTML=v.ext2(cvS);}else e2.setAttribute('hidden','');}
 
 /* ---------- bucle d'animació ---------- */
 let last=performance.now();
@@ -1031,7 +1072,7 @@ show((location.hash||'').slice(1),false);
     var a=d.createElement('a');a.className='btn';a.href='https://tecnolyd.github.io/artefactes/pneumatica-components.html';a.target='_blank';a.rel='noopener';a.textContent='⛶ Obre a pantalla completa';
     var seg2=d.querySelector('.top .seg');if(seg2)seg2.parentNode.insertBefore(a,seg2);
   }
-  var br=d.querySelector('.brand');if(br){var v=d.createElement('span');v.className='ver';v.textContent='v2';br.appendChild(v);}
+  var br=d.querySelector('.brand');if(br){var v=d.createElement('span');v.className='ver';v.textContent='v3';br.appendChild(v);}
 })();
 </script>
 
