@@ -1,0 +1,681 @@
+<!doctype html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>[hidden]{display:none!important}body{margin:0}</style>
+<title>Circuits amb dos cilindres</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+<style>
+/* Layout: quadern d'enginyeria — barra lateral de mòduls + pàgina central; calent (Th) i fred (Tc) codificats en color a tot arreu */
+:root{
+  --bg:#f3f5f8; --surface:#ffffff; --fg:#18202b; --muted:#566273; --line:#d6dce4;
+  --accent:#23395d; --accent-soft:#e3e9f3;
+  --hot:#bf4329; --hot-soft:#f8e2db; --cold:#2a66a8; --cold-soft:#dde9f6;
+  --work:#a46f12; --work-soft:#f6ead0; --ok:#2c7a4b; --ok-soft:#dcefe3; --bad:#b0291c; --bad-soft:#f8dedb;
+  --f-display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --f-body:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#11151b; --surface:#191f27; --fg:#e5e9ef; --muted:#9aa5b4; --line:#2b3440;
+  --accent:#a9c1e6; --accent-soft:#1f2b3d;
+  --hot:#f08a6f; --hot-soft:#3b211b; --cold:#72a9e8; --cold-soft:#18283b;
+  --work:#e3b450; --work-soft:#382c13; --ok:#6cc690; --ok-soft:#17301f; --bad:#f08478; --bad-soft:#3a1c19;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#11151b; --surface:#191f27; --fg:#e5e9ef; --muted:#9aa5b4; --line:#2b3440;
+  --accent:#a9c1e6; --accent-soft:#1f2b3d;
+  --hot:#f08a6f; --hot-soft:#3b211b; --cold:#72a9e8; --cold-soft:#18283b;
+  --work:#e3b450; --work-soft:#382c13; --ok:#6cc690; --ok-soft:#17301f; --bad:#f08478; --bad-soft:#3a1c19;
+  color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:17px;line-height:1.6}
+body.classe{font-size:20px}
+body.classe .est{display:none!important}
+h1,h2,h3,.ui{font-family:var(--f-display)}
+h2{font-size:2.2em;line-height:1.05;margin:.1em 0 .35em;font-weight:700;text-wrap:balance;letter-spacing:.005em}
+h3{font-size:1.35em;margin:1.6em 0 .4em;font-weight:600;text-wrap:balance}
+p{margin:.6em 0}
+.mono,.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line);padding:10px 16px;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.brand{font-family:var(--f-display);font-weight:700;font-size:1.3rem;letter-spacing:.02em}
+.brand span{color:var(--hot)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.seg button{font-family:var(--f-display);font-size:1rem;font-weight:600;border:0;background:transparent;color:var(--muted);padding:6px 16px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--surface)}
+.shell{display:grid;grid-template-columns:230px minmax(0,1fr);gap:28px;max-width:1240px;margin:0 auto;padding-inline:16px;padding-block:24px 48px}
+.side{position:sticky;top:76px;align-self:start;display:flex;flex-direction:column;gap:2px}
+.side button{display:flex;gap:10px;align-items:baseline;text-align:left;font-family:var(--f-display);font-size:1.08rem;font-weight:500;color:var(--muted);background:none;border:0;border-radius:8px;padding:8px 10px;cursor:pointer}
+.side button b{font-family:var(--f-mono);font-size:.8rem;font-weight:500;color:var(--muted);min-width:1.4em}
+.side button:hover{background:var(--accent-soft);color:var(--fg)}
+.side button[aria-current="true"]{background:var(--accent-soft);color:var(--fg);font-weight:700}
+.side button[aria-current="true"] b{color:var(--hot)}
+main{min-width:0;max-width:900px}
+body.classe main{max-width:1180px}
+.eyebrow{font-family:var(--f-display);text-transform:uppercase;letter-spacing:.12em;font-size:.85rem;color:var(--hot);font-weight:600;margin:0}
+.lead{font-size:1.12em;color:var(--fg);max-width:65ch}
+.est p,.est li{max-width:68ch}
+.fig{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;margin:18px 0}
+.fig svg{display:block;width:100%;height:auto}
+.svgwrap{overflow-x:auto}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.controls{display:grid;gap:10px;margin-top:12px}
+.ctl{display:grid;grid-template-columns:minmax(120px,190px) minmax(0,1fr) 92px;gap:10px;align-items:center;font-family:var(--f-display);font-size:1.05rem}
+.ctl output{font-family:var(--f-mono);font-size:.95rem;text-align:right}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:14px}
+.stat{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--bg)}
+.stat .k{font-family:var(--f-display);font-size:.95rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.stat .v{font-family:var(--f-mono);font-size:1.35em;font-variant-numeric:tabular-nums}
+.stat.hot .v{color:var(--hot)} .stat.cold .v{color:var(--cold)} .stat.work .v{color:var(--work)}
+.pill{display:inline-block;font-family:var(--f-display);font-weight:600;font-size:.95rem;border-radius:999px;padding:3px 12px}
+.pill.ok{background:var(--ok-soft);color:var(--ok)} .pill.bad{background:var(--bad-soft);color:var(--bad)} .pill.info{background:var(--accent-soft);color:var(--accent)}
+.msg{margin-top:10px;min-height:1.6em}
+.key{border:1px solid var(--line);background:var(--accent-soft);border-radius:12px;padding:14px 18px;margin:24px 0;font-style:italic;font-size:1.06em}
+.key::before{content:"Frase resum";display:block;font-style:normal;font-family:var(--f-display);text-transform:uppercase;letter-spacing:.1em;font-size:.8rem;color:var(--accent);font-weight:700;margin-bottom:4px}
+.note{border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin:16px 0;background:var(--surface)}
+.note strong{font-family:var(--f-display);font-size:1.08em}
+.tbl{overflow-x:auto;margin:14px 0;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:.93em}
+th,td{padding:8px 12px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{font-family:var(--f-display);font-size:1.02em;font-weight:600;background:var(--bg)}
+tr:last-child td{border-bottom:0}
+td.h{color:var(--hot);font-weight:600} td.c{color:var(--cold);font-weight:600}
+.eq{font-family:var(--f-mono);font-size:1.05em;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 14px;display:inline-block;margin:6px 0}
+.btn{font-family:var(--f-display);font-weight:600;font-size:1.02rem;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:8px;padding:7px 14px;cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--surface);border-color:var(--accent)}
+.btn[aria-pressed="true"]{background:var(--accent-soft);border-color:var(--accent)}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.pager{display:flex;justify-content:space-between;gap:12px;margin-top:40px;padding-top:16px;border-top:1px solid var(--line);flex-wrap:wrap}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:12px 0}
+.card{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--surface)}
+.card h4{font-family:var(--f-display);font-size:1.15em;margin:0 0 4px}
+.tag{font-family:var(--f-display);font-weight:600;font-size:.9rem}
+.tag.ok{color:var(--ok)} .tag.bad{color:var(--bad)}
+.stepper{display:flex;flex-wrap:wrap;gap:6px}
+.stagecard{margin-top:14px}
+.stagecard dl{display:grid;grid-template-columns:minmax(110px,170px) minmax(0,1fr);gap:6px 14px;margin:8px 0}
+.stagecard dt{font-family:var(--f-display);font-weight:600;color:var(--muted)}
+.stagecard dd{margin:0}
+.bar{display:flex;height:44px;border-radius:8px;overflow:hidden;border:1px solid var(--line);margin-top:10px}
+.bar div{display:flex;align-items:center;justify-content:center;font-family:var(--f-mono);font-size:.85rem;white-space:nowrap;overflow:hidden;transition:flex-basis .25s}
+.seg-w{background:var(--work-soft);color:var(--work)} .seg-p{background:var(--bad-soft);color:var(--bad)} .seg-c{background:var(--cold-soft);color:var(--cold)}
+.legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:8px;font-family:var(--f-display);font-size:1rem}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.gauge{position:relative;height:28px;border-radius:999px;background:var(--bg);border:1px solid var(--line);margin:22px 0 30px}
+.gauge .fill{position:absolute;inset:0 auto 0 0;border-radius:999px;background:var(--work-soft);border-right:3px solid var(--work)}
+.gauge .mark{position:absolute;top:-8px;bottom:-8px;width:3px;background:var(--hot)}
+.gauge .mlabel{position:absolute;top:32px;transform:translateX(-50%);font-family:var(--f-display);font-size:.9rem;color:var(--hot);white-space:nowrap}
+.field{display:grid;gap:4px;font-family:var(--f-display);font-size:1rem}
+.field input{font-family:var(--f-mono);font-size:1rem;padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);width:100%}
+.err{color:var(--bad);font-size:13px;min-height:1.2em;font-family:var(--f-display)}
+.quiz{display:grid;gap:14px}
+.q{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:var(--surface)}
+.q h4{font-family:var(--f-display);font-size:1.2em;margin:0 0 8px;font-weight:600}
+.q label{display:flex;gap:10px;align-items:flex-start;padding:6px 8px;border-radius:8px;cursor:pointer}
+.q label:hover{background:var(--bg)}
+.q label.right{background:var(--ok-soft)} .q label.wrong{background:var(--bad-soft)}
+.q .fb{margin-top:8px}
+.reveal{margin-top:8px}
+/* svg */
+.sv-t{fill:var(--fg);font-family:var(--f-display);font-size:16px;font-weight:600}
+.sv-s{fill:var(--muted);font-family:var(--f-display);font-size:14px}
+.sv-m{fill:var(--fg);font-family:var(--f-mono);font-size:13px}
+.sv-hot{fill:var(--hot-soft);stroke:var(--hot);stroke-width:1.2}
+.sv-cold{fill:var(--cold-soft);stroke:var(--cold);stroke-width:1.2}
+.sv-neu{fill:var(--bg);stroke:var(--muted);stroke-width:1.2}
+.sv-pipe{fill:none;stroke:var(--muted);stroke-width:2}
+.sv-front{fill:none;stroke:var(--muted);stroke-width:1;stroke-dasharray:6 5}
+.fl-hot{fill:var(--hot)} .fl-cold{fill:var(--cold)} .fl-work{fill:var(--work)} .fl-neu{fill:var(--muted)}
+.tx-hot{fill:var(--hot)} .tx-cold{fill:var(--cold)} .tx-work{fill:var(--work)}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+@media (max-width:820px){
+  .shell{grid-template-columns:minmax(0,1fr);gap:12px;padding-block:12px 40px}
+  .side{position:static;flex-direction:row;overflow-x:auto;gap:4px;padding-bottom:6px}
+  .side button{white-space:nowrap}
+  .ctl{grid-template-columns:minmax(0,1fr) 84px}
+  .ctl input{grid-column:1 / -1;grid-row:2}
+  h2{font-size:1.9em}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+.soon{display:flex;gap:10px;align-items:baseline;font-family:var(--f-display);font-size:1.08rem;color:var(--muted);opacity:.6;padding:8px 10px}
+.soon b{font-family:var(--f-mono);font-size:.8rem;min-width:1.4em}
+.soon i{font-style:normal;font-size:.8rem;text-transform:uppercase;letter-spacing:.08em;margin-left:auto}
+a.btn{text-decoration:none;display:inline-block}
+.info4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:16px 0}
+.i4{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:12px;text-align:center}
+.i4 h4{font-family:var(--f-display);font-size:1.3em;margin:0}
+.i4n{font-family:var(--f-display);font-weight:700;font-size:2.2em;line-height:1}
+.i4 svg{width:100%;max-width:150px;height:auto;margin:6px auto;display:block}
+.i4v{font-family:var(--f-display);font-weight:700;font-size:1.2em;margin:4px 0}
+.i4s{font-size:.9em;color:var(--muted);margin:0}
+@media (max-width:820px){.info4{grid-template-columns:repeat(2,minmax(0,1fr))}.soon{white-space:nowrap}}
+
+@media (max-width:1040px){.shell{grid-template-columns:minmax(0,1fr);gap:12px}.side{position:static;flex-direction:row;overflow-x:auto;gap:4px;padding-bottom:6px}.side button,.soon{white-space:nowrap}main{max-width:none}}
+body.embed{font-size:16px}
+body.embed.classe{font-size:19px}
+body.embed .top{padding:6px 12px}
+body.embed .shell{max-width:none;padding-block:12px 32px}
+body.embed main,body.embed.classe main{max-width:none}
+body.embed h2{font-size:1.9em}
+body.embed .lead,body.embed .est p,body.embed .est li{max-width:none}
+:fullscreen body,body:fullscreen{overflow:auto}
+body.embed .shell{grid-template-columns:minmax(0,1fr);gap:12px}body.embed .side{position:static;flex-direction:row;overflow-x:auto;gap:4px;padding-bottom:6px}body.embed .side button,body.embed .soon{white-space:nowrap}
+.ver{font-family:var(--f-mono);font-size:.75rem;color:var(--muted);margin-left:8px}
+.chip{display:inline-block;padding:3px 10px;border-radius:999px;font-family:var(--f-display);font-weight:600;font-size:.95rem;border:1px solid var(--line);color:var(--muted)}.chip.on{background:var(--ok-soft);color:var(--ok);border-color:transparent}
+/* menú de mòduls sempre a dalt; versió ben visible */
+.shell{grid-template-columns:minmax(0,1fr);gap:12px;max-width:1180px}
+.side{position:static;flex-direction:row;overflow-x:auto;gap:4px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+.side button{white-space:nowrap}
+main{max-width:none}
+@media (min-width:821px){.side{flex-wrap:wrap;overflow:visible}}
+.ver{font-family:var(--f-mono);font-size:.8rem;color:var(--accent);background:var(--accent-soft);border-radius:999px;padding:2px 9px;margin-left:10px;vertical-align:3px}
+/* ---- específic: components pneumàtics ----
+   Colors com al llibre: aire a pressió = blau (--air), conductes sense pressió = gris,
+   cos de les vàlvules = beix (--body), èmbol = beix fosc (--piston), peces mòbils = acer */
+:root{--air:#2f95d6;--air-soft:#cfe8f8;--empty:#eef1f5;--body:#f6dcb8;--body-d:#c49a68;--piston:#efc493;--steel:#6f7a88;--steel-l:#c3cad3}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--air:#5fb6ee;--air-soft:#173246;--empty:#202833;--body:#3f3326;--body-d:#8b7152;--piston:#a9845a;--steel:#9aa5b4;--steel-l:#5b6673}}
+:root[data-theme="dark"]{--air:#5fb6ee;--air-soft:#173246;--empty:#202833;--body:#3f3326;--body-d:#8b7152;--piston:#a9845a;--steel:#9aa5b4;--steel-l:#5b6673}
+.c-air{color:var(--air)}
+.legend i.lg-air,.lg-air{display:inline-block;width:26px;height:0;border-top:4px solid var(--air);vertical-align:4px;margin-right:6px}
+.legend i.lg-off,.lg-off{display:inline-block;width:26px;height:0;border-top:3px solid var(--muted);vertical-align:4px;margin-right:6px}
+.legend i.lg-pil,.lg-pil{display:inline-block;width:26px;height:0;border-top:3px dashed var(--air);vertical-align:4px;margin-right:6px}
+.legend span{display:inline-flex;align-items:center;color:var(--muted)}
+.sim{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;margin:16px 0}
+.sim svg{display:block;width:100%;height:auto;touch-action:none}
+.sim .row{margin-top:10px}
+.status{margin-top:10px;font-size:1.02em;min-height:3.2em}
+.status b{font-family:var(--f-display);font-size:1.08em}
+.hold{touch-action:none;user-select:none;-webkit-user-select:none}
+.hold[aria-pressed="true"]{background:var(--air-soft);border-color:var(--air);color:var(--fg)}
+.vpick{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.vpick .btn{font-family:var(--f-mono);font-weight:500}
+.vinfo{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:12px}
+.steps{margin:10px 0 0;padding-left:1.4em;font-family:var(--f-mono);font-size:.98em}
+.steps li{margin:.45em 0}
+.steps .lbl{font-family:var(--f-display);font-size:1.02em;color:var(--muted);display:block}
+.steps .res{color:var(--accent);font-weight:500}
+.calc{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:18px;align-items:start}
+.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.field small{color:var(--muted);font-family:var(--f-display)}
+.acts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:12px 0}
+.act{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:8px 10px;text-align:center}
+.act svg{width:100%;max-width:190px;height:auto;display:block;margin:0 auto}
+.act span{font-family:var(--f-display);font-size:1.02rem}
+.actgrp{font-family:var(--f-display);text-transform:uppercase;letter-spacing:.08em;font-size:.85rem;color:var(--muted);margin:14px 0 0}
+.cvlist{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0}
+.vgrid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:14px;align-items:start}
+.vgrid h4,.panel-t{font-family:var(--f-display);font-size:.9rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:0 0 4px;font-weight:600}
+.vgrid .one{grid-column:1 / -1}
+.cvtxt h3{margin-top:.6em}
+.truth{width:auto;min-width:220px}
+.truth td,.truth th{text-align:center;font-family:var(--f-mono)}
+.truth tr.on td{background:var(--air-soft);font-weight:600}
+.meter{height:14px;border-radius:999px;background:var(--bg);border:1px solid var(--line);overflow:hidden;margin-top:4px}
+.meter div{height:100%;background:var(--air);transition:width .2s}
+.bk{fill:var(--body);stroke:var(--body-d);stroke-width:1.5}
+.sv-fg{fill:var(--fg);font-family:var(--f-display);font-size:15px;font-weight:600}
+.sv-num{fill:var(--fg);font-family:var(--f-mono);font-size:13px}
+.sv-mut{fill:var(--muted);font-family:var(--f-display);font-size:13px}
+.part-hl{opacity:.25;transition:opacity .2s}
+.hlmode .part-hl.on{opacity:1}
+svg:not(.hlmode) .part-hl{opacity:1}
+.partlbl{display:none}
+.hlmode .partlbl.on{display:inline}
+@media (max-width:760px){.vgrid,.calc{grid-template-columns:minmax(0,1fr)}.fields{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+.sim>svg,.sim .two svg{max-width:720px;margin-inline:auto}
+#parts-svg,#cyl-svg{max-width:780px}
+#mono-svg,#bi-svg{max-width:420px}
+.vinfo .v{font-size:1.05em}
+.plan-grid{display:grid;grid-template-columns:minmax(0,1fr) 200px;gap:16px;align-items:start}
+.seqt td,.seqt th{text-align:center;font-family:var(--f-mono);font-size:1.05em;padding:6px 10px}
+.seqt tr.on td{background:var(--hot-soft);color:var(--hot);font-weight:700}
+.sim .btn:disabled{opacity:.4;cursor:not-allowed}
+@media (max-width:760px){.plan-grid{grid-template-columns:minmax(0,1fr)}}
+</style>
+<header class="top">
+  <div class="brand">Circuits amb <span>dos cilindres</span></div>
+  <div class="row">
+    <div class="seg" role="group" aria-label="Mode de visualització">
+      <button id="mode-estudi" type="button" aria-pressed="true">Mode estudi</button>
+      <button id="mode-classe" type="button" aria-pressed="false">Mode classe</button>
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+<nav class="side" aria-label="Mòduls">
+  <button type="button" data-go="seq"><b>1</b>Seqüències</button>
+  <button type="button" data-go="ex3"><b>2</b>Estampació</button>
+  <button type="button" data-go="ex4"><b>3</b>Transport de peces</button>
+  <button type="button" data-go="ex5"><b>4</b>Unitat de mecanització</button>
+</nav>
+
+<main>
+<section class="mod" data-key="seq">
+  <p class="eyebrow">Mòdul 1 · Com es llegeix</p>
+  <h2>Seqüències de dos cilindres</h2>
+  <p class="lead">Quan una màquina té dos cilindres, cal dir <b>en quin ordre</b> es mouen. Això és la <b>seqüència de treball</b>.</p>
+  <div class="cards">
+    <div class="card"><h4>Notació</h4><p>Cada cilindre té una lletra (A = 1.0, B = 2.0). <b>A+</b> vol dir que la tija d'A avança; <b>A−</b>, que retrocedeix. «A+, B+, A−, B−» és una seqüència de quatre etapes.</p></div>
+    <div class="card"><h4>Quadre de seqüència</h4><p>És una taula amb una fila per etapa i una columna per cilindre: hi marquem + o − quan aquell cilindre es mou. Si dos moviments són a la mateixa fila, passen alhora: «(A− B−)».</p></div>
+    <div class="card"><h4>Finals de cursa</h4><p>Microvàlvules accionades per rodet que la tija trepitja en arribar al final. Detecten que un moviment ha acabat i donen el senyal per començar el següent.</p></div>
+  </div>
+  <h3>Com fer servir els simuladors</h3>
+  <ul>
+    <li><b>A dalt</b> hi ha el plànol de situació (la màquina); <b>a sota</b>, l'esquema pneumàtic del llibre amb la seva numeració; <b>al costat</b>, el quadre de seqüència amb l'etapa actual destacada.</li>
+    <li>Els cicles són <b>semiautomàtics</b>: prem el polsador 1.2 per iniciar-ne un.</li>
+    <li>En mode <b>Pas a pas</b>, el circuit s'atura en acabar cada moviment: pots veure quin final de cursa s'ha trepitjat i quin senyal ha arribat abans de prémer «Pas següent».</li>
+    <li>Els finals de cursa trepitjats es marquen en <span style="color:var(--hot);font-weight:600">vermell</span>.</li>
+  </ul>
+  <div class="legend"><span><i class="lg-air"></i>aire a pressió</span><span><i class="lg-pil"></i>senyal</span><span><i class="lg-off"></i>sense pressió</span></div>
+  <div class="pager"><span></span><button class="btn primary" type="button" data-go="ex3">Següent: Estampació →</button></div>
+</section>
+
+<section class="mod" data-key="ex3" hidden>
+  <p class="eyebrow">Mòdul 2 · Exemple 3 · A+, B+, (A− B−)</p>
+  <h2>Mecanisme d'estampació</h2>
+  <p class="lead">En prémer el polsador, el cilindre A posiciona la peça contra la paret i el cilindre B hi estampa la data de caducitat. Després tornen tots dos alhora.</p>
+  <div class="simwrap" id="w3"></div>
+  <div class="cards">
+    <div class="card"><h4>Com funciona</h4><p>1.2 pilota 1.1 i A avança lentament. En arribar a la paret, la tija trepitja 2.2, que pilota 2.1: B baixa i estampa. Abaix, B trepitja 2.3, que actua sobre els pilotatges drets de 1.1 i 2.1: tornen tots dos.</p></div>
+    <div class="card"><h4>Detalls</h4><p>Són cilindres de simple efecte: tornen per la molla. Els reguladors 1.02 i 2.02, a l'entrada dels cilindres, donen un avanç lent i un retrocés ràpid.</p></div>
+  </div>
+  <div class="pager"><button class="btn" type="button" data-go="seq">← Seqüències</button><button class="btn primary" type="button" data-go="ex4">Següent: Transport de peces →</button></div>
+</section>
+
+<section class="mod" data-key="ex4" hidden>
+  <p class="eyebrow">Mòdul 3 · Exemple 4 · A+, B+, A−, B−</p>
+  <h2>Sistema de transport de peces</h2>
+  <p class="lead">El cilindre A puja la peça del nivell inferior al superior, i el cilindre B l'empeny horitzontalment fins al seu lloc.</p>
+  <div class="simwrap" id="w4"></div>
+  <div class="cards">
+    <div class="card"><h4>Com funciona</h4><p>1.2 i 1.4 (B a dins) en sèrie pilotes 1.1: A puja. A dalt, A trepitja 2.2: B avança. Al final, B trepitja 1.3: A baixa. Abaix, A trepitja 2.3: B torna.</p></div>
+    <div class="card"><h4>Per què 1.4</h4><p>1.4 està en sèrie amb el polsador: el cicle només pot començar si B és a dins. Així no s'engega amb la màquina a mig camí.</p></div>
+  </div>
+  <div class="pager"><button class="btn" type="button" data-go="ex3">← Estampació</button><button class="btn primary" type="button" data-go="ex5">Següent: Unitat de mecanització →</button></div>
+</section>
+
+<section class="mod" data-key="ex5" hidden>
+  <p class="eyebrow">Mòdul 4 · Exemple 5 · A+, B+, B−, A−</p>
+  <h2>Unitat de mecanització</h2>
+  <p class="lead">El cilindre A empeny la peça fins a la paret; el cilindre B fa baixar el trepant i la perfora; B torna a pujar i, finalment, A retrocedeix.</p>
+  <div class="simwrap" id="w5"></div>
+  <div class="note"><strong>Per què hi ha la vàlvula 0.3?</strong> En aquesta seqüència, quan B ha de pujar (B−), la tija d'A encara trepitja 2.2, que continua enviant el senyal de baixar (B+). Al distribuïdor 2.1 hi arribarien dos senyals contraris alhora i no canviaria: la màquina es bloquejaria. La vàlvula de memòria <b>0.3</b> ho evita: reparteix l'aire en dos grups (línies I i II) i deixa sense aire els finals de cursa que no toquen.</div>
+  <div class="cards">
+    <div class="card"><h4>Grup I: A+, B+</h4><p>Amb la línia I amb aire, 1.1 fa avançar A; quan A trepitja 2.2 (alimentat per la línia I), B baixa. Abaix, B trepitja 2.3, que canvia 0.3 al grup II.</p></div>
+    <div class="card"><h4>Grup II: B−, A−</h4><p>La línia II pilota 2.1 i B puja. A dalt, B trepitja 1.3 (alimentat per la línia II), que fa retrocedir A. Amb A a dins (1.4), un nou toc a 1.2 torna 0.3 al grup I.</p></div>
+  </div>
+  <div class="pager"><button class="btn" type="button" data-go="ex4">← Transport de peces</button><span></span></div>
+</section>
+</main>
+</div>
+
+<script>
+(function(){
+"use strict";
+const $=id=>document.getElementById(id);
+const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+const visible=el=>el&&el.offsetParent!==null;
+const AIR='var(--air)',MUT='var(--muted)',FG='var(--fg)';
+let T=0; // temps global (s) per animar el flux
+const f1=v=>(+v).toFixed(1);
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const approach=(v,t,rate,dt)=>{const d=t-v,s=rate*dt;return Math.abs(d)<=s?t:v+Math.sign(d)*s;};
+
+/* ---------- navegació i mode ---------- */
+const mods=[...document.querySelectorAll('.mod')],keys=mods.map(m=>m.dataset.key);
+function show(key,scroll){if(!keys.includes(key))key=keys[0];mods.forEach(m=>m.hidden=m.dataset.key!==key);
+  document.querySelectorAll('.side button').forEach(b=>b.setAttribute('aria-current',b.dataset.go===key?'true':'false'));
+  try{history.replaceState(null,'','#'+key)}catch(e){}
+  if(scroll)window.scrollTo({top:0,behavior:reduce?'auto':'smooth'});}
+document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>show(b.dataset.go,true)));
+function setMode(m){document.body.classList.toggle('classe',m==='classe');$('mode-classe').setAttribute('aria-pressed',m==='classe');$('mode-estudi').setAttribute('aria-pressed',m!=='classe');store.set('pn-mode',m);}
+$('mode-classe').addEventListener('click',()=>setMode('classe'));$('mode-estudi').addEventListener('click',()=>setMode('estudi'));
+setMode(store.get('pn-mode')==='classe'?'classe':'estudi');
+
+/* botó que s'ha de mantenir premut (ratolí, dit o teclat) */
+function holdBtn(btn,on){let st=false;const set=v=>{if(v===st)return;st=v;btn.setAttribute('aria-pressed',v);on(v);};
+  btn.addEventListener('pointerdown',e=>{e.preventDefault();try{btn.setPointerCapture(e.pointerId)}catch(_){}set(true);});
+  ['pointerup','pointercancel','lostpointercapture'].forEach(ev=>btn.addEventListener(ev,()=>set(false)));
+  btn.addEventListener('keydown',e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();set(true);}});
+  btn.addEventListener('keyup',e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();set(false);}});
+  btn.addEventListener('blur',()=>set(false));
+  return set;}
+function segGroup(sel,attr,cb){const bs=[...document.querySelectorAll(sel)];bs.forEach(b=>b.addEventListener('click',()=>{bs.forEach(x=>x.setAttribute('aria-pressed',x===b));cb(b.dataset[attr]);}));}
+
+/* ---------- primitives SVG ---------- */
+// conducte: línia base (blava si té pressió) + punts que es mouen si hi circula aire (dir = 1 en el sentit del traç, -1 al revés)
+function pipe(d,on,dir,w,speed){w=w||3;speed=speed==null?1:speed;
+  let s=`<path d="${d}" fill="none" stroke="${on?AIR:MUT}" stroke-width="${on?w+0.6:w*0.8}" stroke-linejoin="round" stroke-linecap="round"/>`;
+  if(on&&dir&&!reduce&&speed>0){const off=((-dir*T*30*speed)%14).toFixed(1);s+=`<path d="${d}" fill="none" stroke="var(--surface)" stroke-width="${(w*0.5).toFixed(1)}" stroke-dasharray="3 11" stroke-dashoffset="${off}" stroke-linecap="round" opacity=".9"/>`;}
+  return s;}
+function pilot(d,on,dir){let s=`<path d="${d}" fill="none" stroke="${on?AIR:MUT}" stroke-width="${on?2.4:1.6}" stroke-dasharray="6 4"/>`;
+  if(on&&dir&&!reduce){const off=((-dir*T*30)%10).toFixed(1);s+=`<path d="${d}" fill="none" stroke="var(--surface)" stroke-width="1.2" stroke-dasharray="2 8" stroke-dashoffset="${off}"/>`;}return s;}
+function head(x1,y1,x2,y2,col,sz){sz=sz||8;const dx=x2-x1,dy=y2-y1,L=Math.hypot(dx,dy)||1,ux=dx/L,uy=dy/L,nx=-uy,ny=ux;
+  const bx=x2-ux*sz,by=y2-uy*sz;return `<polygon points="${f1(x2)},${f1(y2)} ${f1(bx+nx*sz*.45)},${f1(by+ny*sz*.45)} ${f1(bx-nx*sz*.45)},${f1(by-ny*sz*.45)}" fill="${col}"/>`;}
+function arrow(x1,y1,x2,y2,col,w,sz){return `<line x1="${f1(x1)}" y1="${f1(y1)}" x2="${f1(x2-(x2-x1)*0.06)}" y2="${f1(y2-(y2-y1)*0.06)}" stroke="${col}" stroke-width="${w||2}"/>`+head(x1,y1,x2,y2,col,sz);}
+function spring(x1,x2,yc,h,n,col){let p=`M${f1(x1)},${f1(yc)}`;const step=(x2-x1)/n;for(let i=0;i<n;i++){p+=` L${f1(x1+step*(i+.25))},${f1(yc-h/2)} L${f1(x1+step*(i+.75))},${f1(yc+h/2)}`;}p+=` L${f1(x2)},${f1(yc)}`;
+  return `<path d="${p}" fill="none" stroke="${col||FG}" stroke-width="1.6" stroke-linejoin="round"/>`;}
+function vspring(xc,y1,y2,w,n,col){let p=`M${f1(xc)},${f1(y1)}`;const step=(y2-y1)/n;for(let i=0;i<n;i++){p+=` L${f1(xc-w/2)},${f1(y1+step*(i+.25))} L${f1(xc+w/2)},${f1(y1+step*(i+.75))}`;}p+=` L${f1(xc)},${f1(y2)}`;
+  return `<path d="${p}" fill="none" stroke="${col||'var(--steel)'}" stroke-width="2" stroke-linejoin="round"/>`;}
+const src=(x,y)=>`<circle cx="${x}" cy="${y}" r="7" fill="var(--surface)" stroke="${FG}" stroke-width="1.6"/><circle cx="${x}" cy="${y}" r="2.4" fill="${FG}"/>`;
+const exh=(x,y)=>`<polygon points="${x-7},${y} ${x+7},${y} ${x},${y+9}" fill="none" stroke="${FG}" stroke-width="1.5"/>`;
+const txt=(x,y,s,cls,anchor)=>`<text x="${x}" y="${y}" class="${cls||'sv-s'}" text-anchor="${anchor||'middle'}">${s}</text>`;
+function gauge(cx,cy,r,val,max,label){const a0=Math.PI*0.75,a1=Math.PI*2.25,a=a0+(a1-a0)*clamp(val/max,0,1);
+  const px=(ang,rr)=>[cx+Math.cos(ang)*rr,cy+Math.sin(ang)*rr];let ticks='';
+  for(let i=0;i<=max;i+=max>6?2:1){const ang=a0+(a1-a0)*i/max,[x1,y1]=px(ang,r-2),[x2,y2]=px(ang,r-7);ticks+=`<line x1="${f1(x1)}" y1="${f1(y1)}" x2="${f1(x2)}" y2="${f1(y2)}" stroke="${MUT}" stroke-width="1.2"/>`;}
+  const [nx,ny]=px(a,r-9);
+  return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="var(--surface)" stroke="${FG}" stroke-width="1.6"/>${ticks}<line x1="${cx}" y1="${cy}" x2="${f1(nx)}" y2="${f1(ny)}" stroke="var(--hot)" stroke-width="2.4" stroke-linecap="round"/><circle cx="${cx}" cy="${cy}" r="2.6" fill="${FG}"/>`+
+    txt(cx,cy+r+15,label,'sv-num');}
+
+/* ---------- cilindre (estil del llibre: èmbol beix, cambres blaves amb pressió) ---------- */
+// o:{x,y,L,H,type:'SE'|'DE',ext 0..1,post,ant (pressió),fPost,fAnt (+1 entra, -1 surt, 0),ports:true}
+function cylinder(o){const {x,y,L,H}=o,cap=8,pw=14,ext=clamp(o.ext,0,1);
+  const px=x+cap+ext*(L-2*cap-pw),rodH=Math.max(8,H*.22),rodLen=L-2*cap-pw+40;
+  let s='';
+  s+=`<rect x="${x+cap}" y="${y+2}" width="${f1(px-x-cap)}" height="${H-4}" fill="${o.post?'var(--air-soft)':'var(--empty)'}"/>`;
+  s+=`<rect x="${f1(px+pw)}" y="${y+2}" width="${f1(x+L-cap-px-pw)}" height="${H-4}" fill="${o.ant?'var(--air-soft)':'var(--empty)'}"/>`;
+  if(o.type==='SE'){const n=Math.max(4,Math.round(5+ext*-1));s+=spring(px+pw+2,x+L-cap-2,y+H/2,H-10,6,'var(--steel)');}
+  s+=`<rect x="${f1(px+pw)}" y="${f1(y+H/2-rodH/2)}" width="${f1(rodLen)}" height="${f1(rodH)}" fill="var(--steel-l)" stroke="var(--steel)" stroke-width="1.2"/>`;
+  s+=`<rect x="${f1(px)}" y="${y+2}" width="${pw}" height="${H-4}" fill="var(--piston)" stroke="var(--body-d)" stroke-width="1.2"/>`;
+  s+=`<rect x="${x}" y="${y}" width="${L}" height="${H}" fill="none" stroke="${FG}" stroke-width="2.2"/>`;
+  s+=`<rect x="${x}" y="${y}" width="${cap}" height="${H}" fill="var(--steel-l)" stroke="${FG}" stroke-width="1.5"/><rect x="${x+L-cap}" y="${y}" width="${cap}" height="${H}" fill="var(--steel-l)" stroke="${FG}" stroke-width="1.5"/>`;
+  s+=`<rect x="${f1(px+pw)}" y="${f1(y+H/2-rodH/2)}" width="${f1(Math.max(0,x+L-px-pw))}" height="${f1(rodH)}" fill="var(--steel-l)" stroke="none"/>`;
+  s+=`<line x1="${f1(px+pw)}" y1="${f1(y+H/2-rodH/2)}" x2="${f1(px+pw+rodLen)}" y2="${f1(y+H/2-rodH/2)}" stroke="var(--steel)" stroke-width="1.2"/><line x1="${f1(px+pw)}" y1="${f1(y+H/2+rodH/2)}" x2="${f1(px+pw+rodLen)}" y2="${f1(y+H/2+rodH/2)}" stroke="var(--steel)" stroke-width="1.2"/><line x1="${f1(px+pw+rodLen)}" y1="${f1(y+H/2-rodH/2)}" x2="${f1(px+pw+rodLen)}" y2="${f1(y+H/2+rodH/2)}" stroke="var(--steel)" stroke-width="1.2"/>`;
+  if(o.type==='SE'){s+=`<line x1="${x+L-cap-16}" y1="${y-1}" x2="${x+L-cap-16}" y2="${y+3}" stroke="var(--surface)" stroke-width="5"/>`;}
+  return {svg:s,px,pw,rodEnd:px+pw+rodLen,portPost:x+cap+12,portAnt:x+L-cap-12};}
+// connexió d'una cambra amb fletxetes d'entrada/sortida
+function portFlow(xp,y1,y2,on,f){let s=pipe(`M${xp},${y2} L${xp},${y1}`,on,f>0?1:(f<0?-1:0),3);
+  if(f>0&&!reduce)s+=arrow(xp+14,y2-4,xp+14,y1+6,AIR,2,7);
+  if(f<0&&!reduce)s+=arrow(xp+14,y1+6,xp+14,y2-4,MUT,2,7);return s;}
+
+/* ---------- motor de símbols de vàlvules distribuïdores ---------- */
+const VDEF={
+  v22no:{name:'2/2 NO',full:'Distribuïdor 2/2 normalment obert',ports:{A:['t',.5],P:['b',.5]},boxes:[{c:[],t:['A','P']},{c:[['P','A']],t:[]}],rest:1},
+  v22nt:{name:'2/2 NT',full:'Distribuïdor 2/2 normalment tancat',ports:{A:['t',.5],P:['b',.5]},boxes:[{c:[['P','A']],t:[]},{c:[],t:['A','P']}],rest:1},
+  v32no:{name:'3/2 NO',full:'Distribuïdor 3/2 normalment obert',ports:{A:['t',.3],P:['b',.3],R:['b',.72]},boxes:[{c:[['A','R']],t:['P']},{c:[['P','A']],t:['R']}],rest:1},
+  v32nt:{name:'3/2 NT',full:'Distribuïdor 3/2 normalment tancat',ports:{A:['t',.3],P:['b',.3],R:['b',.72]},boxes:[{c:[['P','A']],t:['R']},{c:[['A','R']],t:['P']}],rest:1},
+  v42:{name:'4/2',full:'Distribuïdor 4/2',ports:{A:['t',.28],B:['t',.72],P:['b',.28],R:['b',.72]},boxes:[{c:[['P','B'],['A','R']],t:[]},{c:[['P','A'],['B','R']],t:[]}],rest:1},
+  v52:{name:'5/2',full:'Distribuïdor 5/2',ports:{A:['t',.3],B:['t',.7],R:['b',.14],P:['b',.5],S:['b',.86]},boxes:[{c:[['P','B'],['A','R']],t:['S']},{c:[['P','A'],['B','S']],t:['R']}],rest:1},
+  v53:{name:'5/3',full:'Distribuïdor 5/3 de centre tancat',ports:{A:['t',.3],B:['t',.7],R:['b',.14],P:['b',.5],S:['b',.86]},boxes:[{c:[['P','B'],['A','R']],t:['S']},{c:[],t:['A','B','R','P','S']},{c:[['P','A'],['B','S']],t:['R']}],rest:1}
+};
+const NUM={P:'1',A:'2',B:'4',R:'3',S:'5'};
+function activeIdx(pos){const r=Math.round(pos);return Math.abs(pos-r)<0.04?r:-1;}
+function pressPorts(def,pos,pin){if(pin===false)return {};const a=activeIdx(pos),p={P:true};if(a<0)return p;def.boxes[a].c.forEach(c=>{if(c[0]==='P')p[c[1]]=true;});return p;}
+function conText(def,pos){const a=activeIdx(pos);if(a<0)return '…';const b=def.boxes[a];const L=[];
+  b.c.forEach(c=>L.push(c[0]+'→'+c[1]+(c[1]==='R'||c[1]==='S'?' (escapament)':'')));b.t.forEach(t=>L.push(t+' tancada'));return L.join(' · ')||'—';}
+/* accionaments: dibuixats a la vora x (side -1 esquerra, +1 dreta), centrats a y */
+function actSym(type,x,y,side,on,tail){const k=side,c=on?AIR:FG;let s='';const X=d=>f1(x+k*d);
+  const rod=n=>`<line x1="${X(0)}" y1="${y-2.8}" x2="${X(n)}" y2="${y-2.8}" stroke="${FG}" stroke-width="1.4"/><line x1="${X(0)}" y1="${y+2.8}" x2="${X(n)}" y2="${y+2.8}" stroke="${FG}" stroke-width="1.4"/>`;
+  switch(type){
+    case 'polsador':s=rod(10)+`<path d="M${X(10)},${y-7} A7,7 0 0,${k<0?0:1} ${X(10)},${y+7} Z" fill="${on?'var(--air-soft)':'var(--surface)'}" stroke="${FG}" stroke-width="1.6"/>`;break;
+    case 'manual':s=rod(12)+`<line x1="${X(12)}" y1="${y-8}" x2="${X(12)}" y2="${y+8}" stroke="${FG}" stroke-width="1.6"/>`;break;
+    case 'palanca':s=rod(14)+`<line x1="${X(19)}" y1="${y+12}" x2="${X(9.5)}" y2="${y-11}" stroke="${FG}" stroke-width="1.7"/><circle cx="${X(8)}" cy="${y-15}" r="4" fill="var(--surface)" stroke="${FG}" stroke-width="1.5"/>`;break;
+    case 'pedal':s=rod(14)+`<path d="M${X(19)},${y+12} L${X(9)},${y-12} L${X(18)},${y-15}" fill="none" stroke="${FG}" stroke-width="1.7" stroke-linejoin="round"/>`;break;
+    case 'palpador':s=`<path d="M${X(0)},${y-3.5} L${X(16)},${y-3.5} A3.5,3.5 0 0,${k<0?0:1} ${X(16)},${y+3.5} L${X(0)},${y+3.5}" fill="${on?'var(--air-soft)':'var(--surface)'}" stroke="${FG}" stroke-width="1.5"/>`;break;
+    case 'molla':s=`<path d="M${X(0)},${y} `+[0,1,2,3,4,5].map(i=>`L${X(3+i*4)},${y+(i%2?6:-6)}`).join(' ')+` L${X(26)},${y}" fill="none" stroke="${FG}" stroke-width="1.5"/>`;break;
+    case 'rodet':s=rod(10)+`<circle cx="${X(17)}" cy="${y}" r="7" fill="${on?'var(--air-soft)':'var(--surface)'}" stroke="${FG}" stroke-width="1.6"/><circle cx="${X(17)}" cy="${y}" r="2.6" fill="none" stroke="${FG}" stroke-width="1.4"/>`;break;
+    case 'rodetAb':{const px=x+k*12,py=y,rx=x+k*26,ry=y+11,dx=rx-px,dy=ry-py,Lr=Math.hypot(dx,dy),nx=-dy/Lr*3,ny=dx/Lr*3;s=rod(9)+`<line x1="${f1(px+nx)}" y1="${f1(py+ny)}" x2="${f1(rx+nx)}" y2="${f1(ry+ny)}" stroke="${FG}" stroke-width="1.4"/><line x1="${f1(px-nx)}" y1="${f1(py-ny)}" x2="${f1(rx-nx)}" y2="${f1(ry-ny)}" stroke="${FG}" stroke-width="1.4"/><circle cx="${f1(px)}" cy="${py}" r="3.4" fill="var(--surface)" stroke="${FG}" stroke-width="1.4"/><circle cx="${f1(rx)}" cy="${ry}" r="6" fill="var(--surface)" stroke="${FG}" stroke-width="1.5"/><circle cx="${f1(rx)}" cy="${ry}" r="2.4" fill="none" stroke="${FG}" stroke-width="1.3"/>`;break;}
+    case 'pilot':{const bx=k<0?x-18:x;s=`<rect x="${bx}" y="${y-6}" width="18" height="12" fill="${on?'var(--air-soft)':'var(--surface)'}" stroke="${FG}" stroke-width="1.5"/><path d="M${X(18)},${y-6} L${X(11)},${y} L${X(18)},${y+6}" fill="none" stroke="${c}" stroke-width="1.5" stroke-linejoin="round"/>`;if(tail)s+=`<line x1="${X(18)}" y1="${y}" x2="${X(36)}" y2="${y}" stroke="${FG}" stroke-width="1.4" stroke-dasharray="4 3"/>`;break;}
+    case 'electro':{const bx=k<0?x-14:x;s=`<rect x="${bx}" y="${y-9}" width="14" height="18" fill="none" stroke="${FG}" stroke-width="1.5"/><line x1="${bx}" y1="${y+9}" x2="${bx+14}" y2="${y-9}" stroke="${FG}" stroke-width="1.4"/>`;break;}
+    case 'electroPilot':{const bx1=k<0?x-14:x,bx2=k<0?x-30:x+16;s=`<rect x="${bx1}" y="${y-7}" width="14" height="14" fill="none" stroke="${FG}" stroke-width="1.5"/><polygon points="${X(10)},${y-4} ${X(10)},${y+4} ${X(4)},${y}" fill="${FG}"/><rect x="${bx2}" y="${y-9}" width="14" height="18" fill="none" stroke="${FG}" stroke-width="1.5"/><line x1="${bx2}" y1="${y+9}" x2="${bx2+14}" y2="${y-9}" stroke="${FG}" stroke-width="1.4"/>`;break;}
+    case 'pressio':s=`<polygon points="${X(4)},${y} ${X(14)},${y-6} ${X(14)},${y+6}" fill="none" stroke="${FG}" stroke-width="1.5"/><line x1="${X(14)}" y1="${y}" x2="${X(30)}" y2="${y}" stroke="${FG}" stroke-width="1.4" stroke-dasharray="4 3"/>`;break;
+    case 'depressio':s=`<polygon points="${X(14)},${y} ${X(4)},${y-6} ${X(4)},${y+6}" fill="none" stroke="${FG}" stroke-width="1.5"/><line x1="${X(14)}" y1="${y}" x2="${X(30)}" y2="${y}" stroke="${FG}" stroke-width="1.4" stroke-dasharray="4 3"/>`;break;
+  }return s;}
+// o:{x,y,S,pos,actL,actR (tipus o array),onL,onR,num (números en lloc de lletres),hl:'vies'|'pos',portLen,labels,exhaust}
+function valve(def,o){const S=o.S||56,n=def.boxes.length,pos=o.pos,a=activeIdx(pos),dx=(def.rest-pos)*S,pl=o.portLen==null?24:o.portLen;
+  const pin=o.pIn!==false,pp=pressPorts(def,pos,pin);let s=`<g transform="translate(${f1(dx)},0)">`;
+  def.boxes.forEach((b,i)=>{const bx=o.x+i*S,by=o.y,act=i===a;
+    s+=`<rect x="${bx}" y="${by}" width="${S}" height="${S}" fill="${act?'var(--surface)':'var(--surface)'}" stroke="${FG}" stroke-width="1.8"/>`;
+    const P=k=>{const q=def.ports[k];return [bx+q[1]*S,q[0]==='t'?by+5:by+S-5];};
+    b.t.forEach(k=>{const q=def.ports[k],xx=bx+q[1]*S;if(q[0]==='t')s+=`<line x1="${f1(xx)}" y1="${by}" x2="${f1(xx)}" y2="${by+11}" stroke="${FG}" stroke-width="1.6"/><line x1="${f1(xx-6)}" y1="${by+11}" x2="${f1(xx+6)}" y2="${by+11}" stroke="${FG}" stroke-width="1.6"/>`;
+      else s+=`<line x1="${f1(xx)}" y1="${by+S}" x2="${f1(xx)}" y2="${by+S-11}" stroke="${FG}" stroke-width="1.6"/><line x1="${f1(xx-6)}" y1="${by+S-11}" x2="${f1(xx+6)}" y2="${by+S-11}" stroke="${FG}" stroke-width="1.6"/>`;});
+    b.c.forEach(c=>{const [x1,y1]=P(c[0]),[x2,y2]=P(c[1]);const live=act&&c[0]==='P'&&pin;const col=live?AIR:FG;
+      if(live)s+=pipe(`M${f1(x1)},${f1(y1)} L${f1(x2-(x2-x1)*.08)},${f1(y2-(y2-y1)*.08)}`,true,1,2.2);else s+=`<line x1="${f1(x1)}" y1="${f1(y1)}" x2="${f1(x2-(x2-x1)*.08)}" y2="${f1(y2-(y2-y1)*.08)}" stroke="${col}" stroke-width="1.7"/>`;
+      s+=head(x1,y1,x2,y2,col,8);});
+    if(o.hl==='pos')s+=`<circle cx="${bx+S/2}" cy="${by-16}" r="11" fill="var(--hot)"/>`+txt(bx+S/2,by-11.5,String(i+1),'sv-fg').replace('sv-fg"','sv-fg" style="fill:#fff;font-size:14px"');
+  });
+  const ym=o.y+S/2,L=[].concat(o.actL||[]),R=[].concat(o.actR||[]);let xl=o.x,xr=o.x+n*S;
+  L.forEach((t,i)=>{s+=actSym(t,xl,ym,-1,o.onL&&i===L.length-1);xl-=(t==='molla'?26:(t==='electroPilot'?30:18));});
+  R.forEach((t,i)=>{s+=actSym(t,xr,ym,1,o.onR&&i===R.length-1);xr+=(t==='molla'?26:(t==='electroPilot'?30:18));});
+  s+='</g>';
+  // conductes exteriors (fixos, a la casella de repòs)
+  ['P','A','B','R','S'].filter(k=>def.ports[k]).forEach((k,i)=>{const q=def.ports[k],xx=o.x+def.rest*S+q[1]*S,on=!!pp[k];
+    const lbl=o.num?NUM[k]:k;
+    if(q[0]==='t'){s+=pipe(`M${f1(xx)},${o.y} L${f1(xx)},${o.y-pl}`,on,0,2.4);if(o.labels!==false)s+=txt(f1(xx+10),o.y-6,lbl,'sv-num','start');}
+    else{s+=pipe(`M${f1(xx)},${o.y+S} L${f1(xx)},${o.y+S+pl}`,on,0,2.4);
+      if(k==='P'&&o.src!==false)s+=src(xx,o.y+S+pl+7);else if(k!=='P')s+=exh(xx,o.y+S+pl);
+      if(o.labels!==false)s+=txt(f1(xx+(k==='P'?11:8)),o.y+S+16,lbl,'sv-num','start');}
+    if(o.hl==='vies'){const yy=q[0]==='t'?o.y-pl-14:o.y+S+pl+(k==='P'?26:22);s+=`<circle cx="${f1(xx)}" cy="${yy}" r="10" fill="var(--hot)"/><text x="${f1(xx)}" y="${yy+4.5}" text-anchor="middle" class="sv-fg" style="fill:#fff;font-size:13px">${i+1}</text>`;}
+  });
+  return {svg:s,pp,a,portX:k=>o.x+def.rest*S+def.ports[k][1]*S,top:o.y-pl,bot:o.y+S+pl,mid:o.y+S/2,attL:o.x+dx-18,attR:o.x+dx+n*S+18};}
+
+/* ---------- utilitats de circuit ---------- */
+const SUP={'-':'⁻','0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹'};
+function trimz(s){return s.indexOf('.')>=0?s.replace(/0+$/,'').replace(/\.$/,''):s;}
+function fmt(v){if(!isFinite(v))return '—';if(v===0)return '0';const a=Math.abs(v),dec=a>=100?0:a>=10?1:a>=1?1:2;return (v<0?'−':'')+trimz(a.toFixed(dec)).replace('.',',');}
+VDEF.v32ntR={name:'3/2 NT',ports:{A:['t',.3],P:['b',.3],R:['b',.72]},boxes:[{c:[['A','R']],t:['P']},{c:[['P','A']],t:['R']}],rest:0};
+// cilindre amb la tija cap a l'esquerra (com als esquemes del llibre)
+function cylL(o){const c=cylinder(o),m=2*o.x+o.L;return {svg:`<g transform="translate(${m},0) scale(-1,1)">${c.svg}</g>`,post:m-c.portPost,ant:m-c.portAnt,bot:o.y+o.H};}
+function rodEndAt(o,e){const cap=8,pw=14,st=o.L-2*cap-pw;return 2*o.x+o.L-(o.x+cap+e*st+pw+st+40);}
+function cylMove(ext,post,ant,type,dt,v,vr){vr=vr||v;if(type==='SE')return approach(ext,post?1:0,post?v:vr,dt);if(post&&!ant)return approach(ext,1,v,dt);if(ant&&!post)return approach(ext,0,vr,dt);return ext;}
+// aire d'escapament que circula (línia grisa amb punts que es mouen)
+function exFlow(d,dir,speed){let s=`<path d="${d}" fill="none" stroke="${MUT}" stroke-width="2.6" stroke-linejoin="round"/>`;
+  if(dir&&!reduce){const off=((-dir*T*30*(speed||1))%14).toFixed(1);s+=`<path d="${d}" fill="none" stroke="${FG}" stroke-width="1.6" stroke-dasharray="2 12" stroke-dashoffset="${off}" stroke-linecap="round"/>`;}return s;}
+const lbl=(x,y,t,anchor)=>`<text x="${f1(x)}" y="${f1(y)}" class="sv-num" text-anchor="${anchor||'start'}" style="font-weight:500">${t}</text>`;
+function endMark(x,y,label,on){const c=on?'var(--hot)':FG;return `<line x1="${f1(x)}" y1="${y}" x2="${f1(x)}" y2="${y+16}" stroke="${c}" stroke-width="${on?2.4:1.6}"/>`+txt(f1(x),y-4,label,'sv-num').replace('class="sv-num"',`class="sv-num" style="fill:${c};font-weight:${on?700:500}"`);}
+const biTarget=(pos,L,R)=>L&&!R?0:(R&&!L?1:(pos>0.5?1:0));
+const badgeC=(x,y,kind,t)=>{const w=t.length*7.2+24,c=kind==='ok'?['var(--ok-soft)','var(--ok)']:kind==='bad'?['var(--bad-soft)','var(--bad)']:['var(--accent-soft)','var(--accent)'];
+  return `<rect x="${f1(x-w/2)}" y="${y-13}" width="${f1(w)}" height="25" rx="12.5" fill="${c[0]}" stroke="${c[1]}" stroke-width="1.3"/><text x="${x}" y="${y+5}" text-anchor="middle" class="sv-fg" style="fill:${c[1]};font-size:14px">${t}</text>`;};
+// regulador de cabal unidireccional vertical; freeUp: deixa passar lliure cap amunt (cap al cilindre)
+function regSym(cx,cy,freeUp,use,inflow,spd){const t=cy-30,b=cy+30,xl=cx-14,xr=cx+14;let s=`<rect x="${cx-26}" y="${t-6}" width="52" height="72" fill="var(--surface)" stroke="${FG}" stroke-width="1" stroke-dasharray="4 3"/>`;
+  const br=(xx,on,dir)=>{const d=`M${cx},${t} L${xx},${t} L${xx},${b} L${cx},${b}`;return on?(inflow?pipe(d,true,dir,2.4,spd):exFlow(d,dir,spd)):`<path d="${d}" fill="none" stroke="${FG}" stroke-width="1.4"/>`;};
+  const dir=inflow?(freeUp?-1:-1):1;// recorregut del traç: de dalt a baix; l'aire que entra al cilindre puja
+  s+=br(xl,use==='thr',inflow?-1:1)+br(xr,use==='chk',inflow?-1:1);
+  s+=`<path d="M${xl-8},${cy-10} Q${xl},${cy} ${xl-8},${cy+10}" fill="none" stroke="${FG}" stroke-width="1.5"/><path d="M${xl+8},${cy-10} Q${xl},${cy} ${xl+8},${cy+10}" fill="none" stroke="${FG}" stroke-width="1.5"/>`+arrow(xl-11,cy+12,xl+11,cy-12,FG,1.3,6);
+  const vy=freeUp?cy+8:cy-8,k=freeUp?-1:1;s+=`<path d="M${xr-8},${vy+k*10} L${xr},${vy} L${xr+8},${vy+k*10}" fill="none" stroke="${FG}" stroke-width="1.5"/><circle cx="${xr}" cy="${vy+k*14}" r="5.5" fill="var(--surface)" stroke="${FG}" stroke-width="1.5"/>`;
+  return s;}
+function andSym(cx,cy,X,Y,S){return sLineC(`M${cx-22},${cy} L${cx-40},${cy}`,X)+sLineC(`M${cx+22},${cy} L${cx+40},${cy}`,Y)+`<rect x="${cx-22}" y="${cy-12}" width="44" height="24" fill="var(--surface)" stroke="${FG}" stroke-width="1.5"/><line x1="${cx-22}" y1="${cy}" x2="${cx+22}" y2="${cy}" stroke="${FG}" stroke-width="1.2"/><line x1="${cx}" y1="${cy-12}" x2="${cx}" y2="${cy}" stroke="${FG}" stroke-width="1.2"/><line x1="${cx-14}" y1="${cy-7}" x2="${cx-14}" y2="${cy+7}" stroke="${FG}" stroke-width="1.5"/><line x1="${cx+14}" y1="${cy-7}" x2="${cx+14}" y2="${cy+7}" stroke="${FG}" stroke-width="1.5"/>`;}
+const sLineC=(d,on)=>pilot(d,on,on?1:0);
+
+
+function biMove(s,k,L,R,dt){const t='t_'+k;if(s[t]===undefined)s[t]=s[k]>0.5?1:0;if(L&&!R)s[t]=0;else if(R&&!L)s[t]=1;s[k]=approach(s[k],s[t],6,dt);}
+
+/* ======================= controlador comú ======================= */
+function seqTable(rows,cur){return '<p class="panel-t">Quadre de seqüència</p><div class="tbl"><table class="seqt"><thead><tr><th>Etapa</th><th>A</th><th>B</th></tr></thead><tbody>'+
+  rows.map((r,i)=>`<tr class="${cur===i+1?'on':''}"><td>${i+1}</td><td>${r[0]}</td><td>${r[1]}</td></tr>`).join('')+'</tbody></table></div>';}
+function makeEx(key,def){const w=$('w'+key.slice(2));
+  w.innerHTML=`<div class="sim"><div class="plan-grid"><div><p class="panel-t">Plànol de situació</p><svg id="${key}-plan" viewBox="${def.planVB}" role="img" aria-label="Plànol de situació"></svg></div><div id="${key}-seq"></div></div>
+  <p class="panel-t" style="margin-top:12px">Esquema pneumàtic</p><svg id="${key}-sch" viewBox="${def.schVB}" role="img" aria-label="Esquema pneumàtic"></svg>
+  <div class="row"><button class="btn hold" type="button" id="${key}-p" aria-pressed="false">Prem 1.2 (inici)</button>
+  <div class="seg" role="group" aria-label="Mode"><button type="button" data-${key}m="cont" aria-pressed="true">Continu</button><button type="button" data-${key}m="pas" aria-pressed="false">Pas a pas</button></div>
+  <button class="btn primary" type="button" id="${key}-n" disabled>Pas següent ▶</button><button class="btn" type="button" id="${key}-r">Reinicia</button></div>
+  <p class="status" id="${key}-st"></p></div>`;
+  const st=Object.assign({p:false,mode:'cont',paused:false,mov:false,stage:0,lastSeq:''},def.init());
+  holdBtn($(key+'-p'),v=>{st.p=v;if(v)st.paused=false;});
+  segGroup(`[data-${key}m]`,key+'m',v=>{st.mode=v;st.paused=false;});
+  $(key+'-n').addEventListener('click',()=>{st.paused=false;});
+  $(key+'-r').addEventListener('click',()=>{for(const k in st)if(k.startsWith('t_'))delete st[k];Object.assign(st,def.init(),{paused:false,mov:false,stage:0});});
+  return {st,def,key};}
+function stepEx(E,dt){const s=E.st,allow=!(s.mode==='pas'&&s.paused);
+  const r=E.def.frame(s,dt,allow);
+  if(s.mov&&!r.moving&&s.mode==='pas'&&!r.idle)s.paused=true;s.mov=r.moving;
+  if(r.stage)s.stage=r.stage;else if(r.idle)s.stage=0;
+  $(E.key+'-plan').innerHTML=r.plan;$(E.key+'-sch').innerHTML=r.sch;
+  const sq=seqTable(E.def.rows,s.stage);if(sq!==s.lastSeq){$(E.key+'-seq').innerHTML=sq;s.lastSeq=sq;}
+  const nb=$(E.key+'-n');nb.disabled=!(s.mode==='pas'&&s.paused);
+  let txt=r.status;if(s.mode==='cont'&&!r.moving&&!r.idle&&s.lastSt)txt=s.lastSt;else s.lastSt=r.status;
+  const h=(s.mode==='pas'&&s.paused?'<span class="pill info">Aturat</span> ':'')+txt;const el=$(E.key+'-st');if(el.innerHTML!==h)el.innerHTML=h;}
+// cilindre del plànol de situació (horitzontal o vertical)
+function planCylH(x,y,L,H,ext,stroke,dir){// dir 1: la tija surt cap a la dreta; -1: cap a l'esquerra
+  const rodL=20+ext*stroke,rx=dir>0?x+L:x-rodL;let s=`<rect x="${dir>0?x+L:x-rodL}" y="${y+H/2-4}" width="${f1(rodL)}" height="8" fill="var(--steel-l)" stroke="var(--steel)"/>`;
+  s+=`<rect x="${x}" y="${y}" width="${L}" height="${H}" rx="4" fill="var(--steel-l)" stroke="${FG}" stroke-width="1.6"/><rect x="${x-4}" y="${y-3}" width="8" height="${H+6}" fill="var(--steel)"/><rect x="${x+L-4}" y="${y-3}" width="8" height="${H+6}" fill="var(--steel)"/>`;
+  return {svg:s,tip:dir>0?x+L+rodL:x-rodL};}
+function planCylV(x,y,W,H,ext,stroke,dir){// dir 1: la tija surt cap avall; -1: cap amunt
+  const rodL=16+ext*stroke;let s=`<rect x="${x+W/2-4}" y="${f1(dir>0?y+H:y-rodL)}" width="8" height="${f1(rodL)}" fill="var(--steel-l)" stroke="var(--steel)"/>`;
+  s+=`<rect x="${x}" y="${y}" width="${W}" height="${H}" rx="4" fill="var(--steel-l)" stroke="${FG}" stroke-width="1.6"/><rect x="${x-3}" y="${y-4}" width="${W+6}" height="8" fill="var(--steel)"/><rect x="${x-3}" y="${y+H-4}" width="${W+6}" height="8" fill="var(--steel)"/>`;
+  return {svg:s,tip:dir>0?y+H+rodL:y-rodL};}
+function fcPlan(x,y,lbl,on,rot,below){return `<g transform="translate(${f1(x)},${f1(y)}) rotate(${rot||0})"><rect x="-10" y="-22" width="20" height="16" fill="${on?'var(--hot-soft)':'var(--body)'}" stroke="${on?'var(--hot)':'var(--body-d)'}" stroke-width="1.4"/><line x1="0" y1="-6" x2="0" y2="-2" stroke="${FG}" stroke-width="1.4"/><circle cx="0" cy="2" r="4" fill="var(--surface)" stroke="${on?'var(--hot)':FG}" stroke-width="1.6"/></g>`+txt(f1(x+(rot===90?27:(rot===-90?-27:0))),f1(y+(rot?4:(below?22:-26))),lbl,'sv-num',rot===90?'start':(rot===-90?'end':undefined)).replace('class="sv-num"',`class="sv-num" style="fill:${on?'var(--hot)':FG};font-weight:600"`);}
+const piece=(x,y,w,h,extra)=>`<rect x="${f1(x)}" y="${f1(y)}" width="${w}" height="${h}" fill="var(--cold-soft)" stroke="var(--cold)" stroke-width="1.5"/>`+(extra||'');
+const VS=34;// mida de les microvàlvules
+
+/* ======================= EXEMPLE 3 · ESTAMPACIÓ ======================= */
+const EX3={planVB:'0 0 640 230',schVB:'0 -14 640 394',rows:[['+',''],['','+'],['−','−']],
+  init:()=>({eA:0,eB:0,v12:1,v11:1,v21:1,v22:1,v23:1,stamped:false}),
+  frame(s,dt,allow){const S=40;let h='';
+    s.v12=approach(s.v12,s.p?0:1,6,dt);const r12=valve(VDEF.v32nt,{x:40,y:300,S,pos:s.v12,actL:'polsador',actR:'molla',onL:s.p,portLen:14,labels:false});
+    const s22=s.eA>0.97,s23=s.eB>0.97;
+    s.v22=approach(s.v22,s22?0:1,6,dt);const r22=valve(VDEF.v32nt,{x:236,y:96,S:VS,pos:s.v22,actL:'rodet',actR:'molla',onL:s22,portLen:12,labels:false});
+    s.v23=approach(s.v23,s23?0:1,6,dt);const r23=valve(VDEF.v32nt,{x:470,y:96,S:VS,pos:s.v23,actL:'rodet',actR:'molla',onL:s23,portLen:12,labels:false});
+    const L11=!!r12.pp.A,R=!!r23.pp.A,L21=!!r22.pp.A;
+    biMove(s,'v11',L11,R,dt);biMove(s,'v21',L21,R,dt);
+    const r11=valve(VDEF.v32nt,{x:28,y:190,S,pos:s.v11,actL:'pilot',actR:'pilot',onL:L11,onR:R,portLen:14,labels:false}),r21=valve(VDEF.v32nt,{x:348,y:190,S,pos:s.v21,actL:'pilot',actR:'pilot',onL:L21,onR:R,portLen:14,labels:false});
+    const pA=!!r11.pp.A,pB=!!r21.pp.B||!!r21.pp.A;const oA=s.eA,oB=s.eB;
+    if(allow){s.eA=cylMove(s.eA,pA,false,'SE',dt,0.28,0.7);s.eB=cylMove(s.eB,pB,false,'SE',dt,0.32,0.7);}
+    const mA=Math.sign(s.eA-oA),mB=Math.sign(s.eB-oB);
+    if(s.p&&s.eA<0.02&&s.eB<0.02){s.stamped=false;s.px=220;}if(s.eB>0.95)s.stamped=true;
+    const cA=cylinder({x:60,y:30,L:120,H:34,type:'SE',ext:s.eA,post:pA}),cB=cylinder({x:380,y:30,L:120,H:34,type:'SE',ext:s.eB,post:pB});
+    h+=cA.svg+cB.svg;
+    const line=(c,r,pp,m)=>pipe(`M${f1(c.portPost)},${r.top} L${f1(c.portPost)},145`,pp,pp&&m>0?1:0,3)+(m<0?exFlow(`M${f1(c.portPost)},85 L${f1(c.portPost)},64`,-1):pipe(`M${f1(c.portPost)},85 L${f1(c.portPost)},64`,pp,pp&&m>0?1:0,3))+regSym(c.portPost,115,false,m>0?'thr':(m<0?'chk':null),m>0,m>0?0.5:1.4);
+    h+=line(cA,r11,pA,mA)+line(cB,r21,pB,mB)+r11.svg+r21.svg+r12.svg+r22.svg+r23.svg;
+    h+=pilot(`M${f1(r12.portX('A'))},${r12.top} L${f1(r12.portX('A'))},270 L6,270 L6,${r11.mid} L${f1(r11.attL)},${r11.mid}`,L11,L11?1:0);
+    h+=pilot(`M${f1(r22.portX('A'))},${r22.top} L${f1(r22.portX('A'))},74 L316,74 L316,${r21.mid} L${f1(r21.attL)},${r21.mid}`,L21,L21?1:0);
+    h+=pilot(`M${f1(r23.portX('A'))},${r23.top} L${f1(r23.portX('A'))},74 L520,74 L520,250 L196,250 L196,${r11.mid} L${f1(r11.attR)},${r11.mid}`,R,R?1:0)+pilot(`M520,${r21.mid} L${f1(r21.attR)},${r21.mid}`,R,R?-1:0)+`<circle cx="520" cy="${r21.mid}" r="3" fill="${R?AIR:MUT}"/>`;
+    h+=endMark(60+8+90+14+130,8,'2.2',s22)+endMark(380+8+90+14+130,8,'2.3',s23)+lbl(60,24,'A · 1.0')+lbl(380,24,'B · 2.0')+lbl(50,118,'1.02','end')+lbl(370,118,'2.02','end')+lbl(28,185,'1.1')+lbl(348,185,'2.1')+lbl(40,295,'1.2')+lbl(236,91,'2.2')+lbl(470,91,'2.3');
+    // plànol
+    let p=`<line x1="20" y1="190" x2="440" y2="190" stroke="${FG}" stroke-width="2"/><rect x="440" y="100" width="14" height="90" fill="url(#hatch3)" stroke="${FG}"/>`;
+    p+=`<defs><pattern id="hatch3" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="var(--muted)" stroke-width="2"/></pattern></defs>`;
+    const pa=planCylH(30,150,110,32,s.eA,190,1);p+=pa.svg+`<rect x="${f1(pa.tip)}" y="146" width="8" height="40" fill="var(--steel)"/>`;
+    s.px=Math.max(s.px||220,pa.tip+8);const px=s.px;p+=piece(px,150,70,40,s.stamped?txt(f1(px+35),174,'12/27','sv-fg').replace('class="sv-fg"','class="sv-fg" style="fill:var(--hot)"'):'');
+    const pb=planCylV(386,8,36,52,s.eB,62,1);p+=pb.svg+`<rect x="384" y="${f1(pb.tip)}" width="40" height="10" fill="var(--steel)"/>`;
+    p+=fcPlan(430,205,'2.2',s22)+fcPlan(470,138,'2.3',s23,90)+txt(85,214,'A','sv-fg')+txt(470,40,'B','sv-fg');
+    const stage=mA>0?1:(mB>0?2:((mA<0||mB<0)?3:0));
+    const status=mA>0?'<b>Etapa 1 · A+:</b> 1.2 ha pilotat 1.1 i A empeny la peça cap a la paret (lentament, per 1.02).':mB>0?'<b>Etapa 2 · B+:</b> A ha trepitjat 2.2, que pilota 2.1: B baixa a estampar.':(mA<0||mB<0)?'<b>Etapa 3 · (A− B−):</b> B ha trepitjat 2.3, que actua sobre els pilotatges drets de 1.1 i 2.1: tornen tots dos alhora (ràpid).':
+      (s22&&s.eB<0.02?'<b>Senyal:</b> 2.2 ja ha pilotat 2.1. Prem «Pas següent».':(s23?'<b>Senyal:</b> 2.3 ja ha pilotat 1.1 i 2.1. Prem «Pas següent».':'<b>Repòs.</b> Prem 1.2 per iniciar un cicle.'));
+    return {plan:p,sch:h,moving:mA!==0||mB!==0,stage,idle:s.eA<0.02&&s.eB<0.02&&!s.p,status};}};
+
+/* ======================= EXEMPLE 4 · TRANSPORT ======================= */
+const EX4={planVB:'0 0 640 250',schVB:'0 -14 640 444',rows:[['+',''],['','+'],['−',''],['','−']],
+  init:()=>({eA:0,eB:0,v12:1,v14:1,v13:1,v22:1,v23:1,v11:1,v21:1,pc:'lift',spawn:1}),
+  frame(s,dt,allow){const S=40;let h='';const cA0={x:150,y:30,L:120,H:34,type:'DE'},cB0={x:470,y:30,L:120,H:34,type:'DE'};
+    const a0=s.eA<0.03,a1=s.eA>0.97,b0=s.eB<0.03,b1=s.eB>0.97;
+    s.v12=approach(s.v12,s.p?0:1,6,dt);const r12=valve(VDEF.v32nt,{x:30,y:350,S:VS,pos:s.v12,actL:'polsador',actR:'molla',onL:s.p,portLen:12,labels:false});
+    s.v14=approach(s.v14,b0?0:1,6,dt);const r14=valve(VDEF.v32nt,{x:30,y:270,S:VS,pos:s.v14,actL:'rodet',actR:'molla',onL:b0,portLen:12,labels:false,pIn:!!r12.pp.A,src:false});
+    s.v13=approach(s.v13,b1?0:1,6,dt);const r13=valve(VDEF.v32nt,{x:296,y:270,S:VS,pos:s.v13,actL:'rodet',actR:'molla',onL:b1,portLen:12,labels:false});
+    s.v22=approach(s.v22,a1?0:1,6,dt);const r22=valve(VDEF.v32nt,{x:414,y:270,S:VS,pos:s.v22,actL:'rodet',actR:'molla',onL:a1,portLen:12,labels:false});
+    s.v23=approach(s.v23,a0?0:1,6,dt);const r23=valve(VDEF.v32nt,{x:530,y:270,S:VS,pos:s.v23,actL:'rodet',actR:'molla',onL:a0,portLen:12,labels:false});
+    const L11=!!r14.pp.A,R11=!!r13.pp.A,L21=!!r22.pp.A,R21=!!r23.pp.A;
+    biMove(s,'v11',L11,R11,dt);biMove(s,'v21',L21,R21,dt);
+    const r11=valve(VDEF.v52,{x:150,y:180,S,pos:s.v11,actL:'pilot',actR:'pilot',onL:L11,onR:R11,portLen:14,labels:false}),r21=valve(VDEF.v52,{x:470,y:180,S,pos:s.v21,actL:'pilot',actR:'pilot',onL:L21,onR:R21,portLen:14,labels:false});
+    const pA=!!r11.pp.A,pB=!!r11.pp.B,qA=!!r21.pp.A,qB=!!r21.pp.B,oA=s.eA,oB=s.eB;
+    if(allow){s.eA=cylMove(s.eA,pB,pA,'DE',dt,0.3,0.4);s.eB=cylMove(s.eB,qB,qA,'DE',dt,0.3,0.4);}
+    const mA=Math.sign(s.eA-oA),mB=Math.sign(s.eB-oB);
+    const cA=cylL(Object.assign({ext:s.eA,post:pB,ant:pA},cA0)),cB=cylL(Object.assign({ext:s.eB,post:qB,ant:qA},cB0));
+    h+=cA.svg+cB.svg+pipesDE(r11,cA,pA,pB,mA,124,134)+pipesDE(r21,cB,qA,qB,mB,124,134)+r11.svg+r21.svg+r12.svg+r13.svg+r14.svg+r22.svg+r23.svg;
+    h+=pipe(`M${f1(r12.portX('A'))},${r12.top} L${f1(r14.portX('P'))},${r14.bot}`,!!r12.pp.A,0,2.2);
+    h+=pilot(`M${f1(r14.portX('A'))},${r14.top} L${f1(r14.portX('A'))},${r11.mid} L${f1(r11.attL)},${r11.mid}`,L11,L11?1:0)+pilot(`M${f1(r13.portX('A'))},${r13.top} L${f1(r13.portX('A'))},${r11.mid} L${f1(r11.attR)},${r11.mid}`,R11,R11?-1:0);
+    h+=pilot(`M${f1(r22.portX('A'))},${r22.top} L${f1(r22.portX('A'))},${r21.mid} L${f1(r21.attL)},${r21.mid}`,L21,L21?1:0)+pilot(`M${f1(r23.portX('A'))},${r23.top} L${f1(r23.portX('A'))},244 L630,244 L630,${r21.mid} L${f1(r21.attR)},${r21.mid}`,R21,R21?1:0);
+    h+=endMark(rodEndAt(cA0,1),8,'2.2',a1)+endMark(rodEndAt(cA0,0),8,'2.3',a0)+endMark(rodEndAt(cB0,1),8,'1.3',b1)+endMark(rodEndAt(cB0,0),8,'1.4',b0);
+    h+=lbl(236,26,'A · 1.0')+lbl(560,26,'B · 2.0')+lbl(150,175,'1.1')+lbl(470,175,'2.1')+lbl(30,345,'1.2')+lbl(30,265,'1.4')+lbl(296,265,'1.3')+lbl(414,265,'2.2')+lbl(530,265,'2.3');
+    // plànol: A puja (vertical), B empeny (horitzontal)
+    const lowY=200,upY=96,platY=lowY-(lowY-upY)*s.eA;
+    if(s.pc==='lift'&&s.eB>0.05&&a1)s.pc='push';if(s.pc==='push'&&b1)s.pc='done';if(s.pc==='done'&&a0&&b0&&!s.p){s.pc='new';s.spawn=0;}
+    if(s.pc==='new'){s.spawn=Math.min(1,s.spawn+dt*0.8);if(s.spawn>=1)s.pc='lift';}
+    let p=`<line x1="300" y1="${lowY}" x2="620" y2="${lowY}" stroke="${FG}" stroke-width="2"/><line x1="40" y1="${upY}" x2="240" y2="${upY}" stroke="${FG}" stroke-width="2"/><line x1="300" y1="${upY}" x2="620" y2="${upY}" stroke="${FG}" stroke-width="2"/>`;
+    p+=`<rect x="242" y="${f1(platY)}" width="56" height="8" fill="var(--steel)"/>`;const ca=planCylV(256,214,28,30,s.eA,98,-1);p+=ca.svg;
+    const tipB=310-s.eB*170;const cb=planCylH(430,upY-36,120,26,s.eB,170,-1);p+=cb.svg+`<rect x="${f1(cb.tip-8)}" y="${upY-40}" width="8" height="34" fill="var(--steel)"/>`;
+    let pcx=246,pcy=platY-36;if(s.pc==='push'){pcx=Math.min(246,cb.tip-8-48);pcy=upY-36;}if(s.pc==='done'){pcx=Math.min(246,92);pcy=upY-36;}
+    if(s.pc==='new'){p+=piece(246+(1-s.spawn)*300,lowY-36,48,36);p+=piece(92,upY-36,48,36).replace('var(--cold-soft)','var(--ok-soft)');}
+    else p+=piece(pcx,pcy,48,36);
+    p+=fcPlan(232,lowY-6,'2.3',a0,-90)+fcPlan(232,upY+18,'2.2',a1,-90)+fcPlan(560,upY+18,'1.4',b0,0,1)+fcPlan(400,upY+18,'1.3',b1,0,1)+txt(296,238,'A','sv-fg')+txt(560,52,'B','sv-fg');
+    const stage=mA>0?1:(mB>0?2:(mA<0?3:(mB<0?4:0)));
+    const status=mA>0?'<b>Etapa 1 · A+:</b> 1.2 i 1.4 (B a dins) en sèrie han pilotat 1.1: A puja la peça.':mB>0?'<b>Etapa 2 · B+:</b> A a dalt trepitja 2.2, que pilota 2.1: B empeny la peça.':mA<0?'<b>Etapa 3 · A−:</b> B al final trepitja 1.3, que pilota l\'altre costat de 1.1: A baixa.':mB<0?'<b>Etapa 4 · B−:</b> A abaix trepitja 2.3, que pilota 2.1: B torna.':
+      '<b>'+(a0&&b0?'Repòs.':'Aturat entre etapes.')+'</b> '+(a0&&b0?'1.4 està trepitjat (B a dins): prem 1.2 per iniciar un cicle.':'Prem «Pas següent».');
+    return {plan:p,sch:h,moving:mA!==0||mB!==0,stage,idle:a0&&b0&&!s.p,status};}};
+
+/* ======================= EXEMPLE 5 · MECANITZACIÓ (amb 0.3) ======================= */
+const EX5={planVB:'0 0 640 240',schVB:'0 -14 640 424',rows:[['+',''],['','+'],['','−'],['−','']],
+  init:()=>({eA:0,eB:0,v12:1,v14:1,v13:1,v22:1,v23:1,v11:1,v21:1,v03:1,hole:false}),
+  frame(s,dt,allow){const S=40;let h='';const cA0={x:150,y:24,L:120,H:34,type:'DE'},cB0={x:470,y:24,L:120,H:34,type:'DE'};
+    const a0=s.eA<0.03,a1=s.eA>0.97,b0=s.eB<0.03,b1=s.eB>0.97;
+    const g1=s.v03<0.05,g2=s.v03>0.95;// línia I (B de 0.3) i línia II (A de 0.3)
+    s.v13=approach(s.v13,b0?0:1,6,dt);const r13=valve(VDEF.v32nt,{x:300,y:190,S:VS,pos:s.v13,actL:'rodet',actR:'molla',onL:b0,portLen:12,labels:false,pIn:g2,src:false});
+    s.v22=approach(s.v22,a1?0:1,6,dt);const r22=valve(VDEF.v32nt,{x:420,y:190,S:VS,pos:s.v22,actL:'rodet',actR:'molla',onL:a1,portLen:12,labels:false,pIn:g1,src:false});
+    s.v23=approach(s.v23,b1?0:1,6,dt);const r23=valve(VDEF.v32nt,{x:530,y:190,S:VS,pos:s.v23,actL:'rodet',actR:'molla',onL:b1,portLen:12,labels:false,pIn:g1,src:false});
+    s.v12=approach(s.v12,s.p?0:1,6,dt);const r12=valve(VDEF.v32nt,{x:30,y:190,S:VS,pos:s.v12,actL:'polsador',actR:'molla',onL:s.p,portLen:12,labels:false,pIn:g2,src:false});
+    s.v14=approach(s.v14,a0?0:1,6,dt);const r14=valve(VDEF.v32nt,{x:140,y:190,S:VS,pos:s.v14,actL:'rodet',actR:'molla',onL:a0,portLen:12,labels:false,pIn:!!r12.pp.A,src:false});
+    const toI=!!r14.pp.A,toII=!!r23.pp.A;biMove(s,'v03',toI,toII,dt);
+    const r03=valve(VDEF.v52,{x:280,y:320,S,pos:s.v03,actL:'pilot',actR:'pilot',onL:toI,onR:toII,portLen:14,labels:false});
+    const L11=g1,R11=!!r13.pp.A,L21=!!r22.pp.A,R21=g2;
+    biMove(s,'v11',L11,R11,dt);biMove(s,'v21',L21,R21,dt);
+    const r11=valve(VDEF.v52,{x:150,y:100,S,pos:s.v11,actL:'pilot',actR:'pilot',onL:L11,onR:R11,portLen:12,labels:false}),r21=valve(VDEF.v52,{x:470,y:100,S,pos:s.v21,actL:'pilot',actR:'pilot',onL:L21,onR:R21,portLen:12,labels:false});
+    const pA=!!r11.pp.A,pB=!!r11.pp.B,qA=!!r21.pp.A,qB=!!r21.pp.B,oA=s.eA,oB=s.eB;
+    if(allow){s.eA=cylMove(s.eA,pB,pA,'DE',dt,0.3,0.4);s.eB=cylMove(s.eB,qB,qA,'DE',dt,0.3,0.4);}
+    const mA=Math.sign(s.eA-oA),mB=Math.sign(s.eB-oB);if(s.p&&a0&&b0){s.hole=false;s.px=240;}if(s.eB>0.95)s.hole=true;
+    const cA=cylL(Object.assign({ext:s.eA,post:pB,ant:pA},cA0)),cB=cylL(Object.assign({ext:s.eB,post:qB,ant:qA},cB0));
+    h+=cA.svg+cB.svg+pipesDE(r11,cA,pA,pB,mA,72,80)+pipesDE(r21,cB,qA,qB,mB,72,80)+r11.svg+r21.svg+r03.svg+r12.svg+r13.svg+r14.svg+r22.svg+r23.svg;
+    // línies de grup I i II
+    h+=pilot('M14,250 L620,250',g1,0)+pilot('M30,262 L616,262',g2,0)+lbl(4,246,'I')+lbl(20,276,'II');
+    h+=pilot(`M${f1(r03.portX('B'))},${r03.top} L${f1(r03.portX('B'))},250`,g1,g1?-1:0)+pilot(`M${f1(r03.portX('A'))},${r03.top} L${f1(r03.portX('A'))},262`,g2,g2?-1:0);
+    const dot=(x,y,on)=>`<circle cx="${f1(x)}" cy="${y}" r="3" fill="${on?AIR:MUT}"/>`;
+    h+=dot(r03.portX('B'),250,g1)+dot(r03.portX('A'),262,g2);
+    // alimentacions des de les línies
+    h+=pilot(`M${f1(r22.portX('P'))},${r22.bot} L${f1(r22.portX('P'))},250`,g1,0)+dot(r22.portX('P'),250,g1)+pilot(`M${f1(r23.portX('P'))},${r23.bot} L${f1(r23.portX('P'))},250`,g1,0)+dot(r23.portX('P'),250,g1);
+    h+=pilot(`M${f1(r13.portX('P'))},${r13.bot} L${f1(r13.portX('P'))},262`,g2,0)+dot(r13.portX('P'),262,g2)+pilot(`M${f1(r12.portX('P'))},${r12.bot} L${f1(r12.portX('P'))},262`,g2,0)+dot(r12.portX('P'),262,g2);
+    h+=pipe(`M${f1(r12.portX('A'))},${r12.top} L${f1(r12.portX('A'))},170 L100,170 L100,242 L${f1(r14.portX('P'))},242 L${f1(r14.portX('P'))},${r14.bot}`,!!r12.pp.A,0,2.2);
+    // senyals
+    h+=pilot(`M14,250 L14,${r11.mid} L${f1(r11.attL)},${r11.mid}`,L11,L11?-1:0)+dot(14,250,g1)+pilot(`M616,262 L616,${r21.mid} L${f1(r21.attR)},${r21.mid}`,R21,R21?-1:0)+dot(616,262,g2);
+    h+=pilot(`M${f1(r13.portX('A'))},${r13.top} L${f1(r13.portX('A'))},${r11.mid} L${f1(r11.attR)},${r11.mid}`,R11,R11?-1:0)+pilot(`M${f1(r22.portX('A'))},${r22.top} L${f1(r22.portX('A'))},${r21.mid} L${f1(r21.attL)},${r21.mid}`,L21,L21?1:0);
+    h+=pilot(`M${f1(r23.portX('A'))},${r23.top} L${f1(r23.portX('A'))},170 L634,170 L634,${r03.mid} L${f1(r03.attR)},${r03.mid}`,toII,toII?1:0)+pilot(`M${f1(r14.portX('A'))},${r14.top} L${f1(r14.portX('A'))},170 L210,170 L210,${r03.mid} L${f1(r03.attL)},${r03.mid}`,toI,toI?1:0);
+    h+=endMark(rodEndAt(cA0,1),4,'2.2',a1)+endMark(rodEndAt(cA0,0),4,'1.4',a0)+endMark(rodEndAt(cB0,1),4,'2.3',b1)+endMark(rodEndAt(cB0,0),4,'1.3',b0);
+    h+=lbl(236,20,'A · 1.0')+lbl(560,20,'B · 2.0')+lbl(150,95,'1.1')+lbl(470,95,'2.1')+lbl(30,185,'1.2')+lbl(140,185,'1.4')+lbl(300,185,'1.3')+lbl(420,185,'2.2')+lbl(530,185,'2.3')+lbl(198,345,'0.3','end')+lbl(198,358,'(memòria)','end');
+    h+=txt(470,330,g1?'Grup I actiu':(g2?'Grup II actiu':'…'),'sv-fg','start');
+    // plànol: A empeny la peça, B baixa el trepant
+    let p=`<line x1="20" y1="200" x2="470" y2="200" stroke="${FG}" stroke-width="2"/><rect x="470" y="70" width="14" height="130" fill="url(#hatch5)" stroke="${FG}"/><defs><pattern id="hatch5" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="var(--muted)" stroke-width="2"/></pattern></defs>`;
+    const pa=planCylH(30,160,110,32,s.eA,200,1);p+=pa.svg+`<rect x="${f1(pa.tip)}" y="156" width="8" height="40" fill="var(--steel)"/>`;
+    s.px=Math.max(s.px||240,pa.tip+8);const px=s.px;p+=piece(px,150,80,50,s.hole?`<rect x="${f1(px+34)}" y="150" width="12" height="22" fill="${FG}" opacity=".75"/>`:'');
+    const pb=planCylV(392,4,44,40,s.eB,58,1);p+=pb.svg+`<rect x="380" y="${f1(pb.tip)}" width="68" height="22" rx="3" fill="var(--steel-l)" stroke="${FG}"/>`;
+    const dy=pb.tip+22,turn=(mB!==0||b1)&&!reduce?((T*40)%8):0;p+=`<rect x="410" y="${f1(dy)}" width="8" height="30" fill="var(--steel)"/>`;for(let i=0;i<4;i++)p+=`<line x1="410" y1="${f1(dy+4+i*7+turn*0.8)}" x2="418" y2="${f1(dy+1+i*7+turn*0.8)}" stroke="var(--surface)" stroke-width="1.4"/>`;
+    p+=fcPlan(460,214,'2.2',a1)+fcPlan(498,64,'1.3',b0,90)+fcPlan(498,112,'2.3',b1,90)+fcPlan(150,140,'1.4',a0)+txt(85,224,'A','sv-fg')+txt(370,30,'B','sv-fg','end');
+    const stage=mA>0?1:(mB>0?2:(mB<0?3:(mA<0?4:0)));
+    const status=mA>0?'<b>Etapa 1 · A+:</b> el grup I té aire i pilota 1.1: A empeny la peça.':mB>0?'<b>Etapa 2 · B+:</b> A trepitja 2.2 (alimentat pel grup I), que pilota 2.1: el trepant baixa.':mB<0?'<b>Etapa 3 · B−:</b> B ha trepitjat 2.3 i 0.3 ha passat al grup II. 2.2 continua trepitjat, però ja no té aire: per això 2.1 pot canviar i el trepant puja.':mA<0?'<b>Etapa 4 · A−:</b> B a dalt trepitja 1.3 (alimentat pel grup II), que fa retrocedir A.':
+      '<b>'+(a0&&b0?'Repòs.':'Aturat entre etapes.')+'</b> '+(a0&&b0?(g2?'Grup II actiu i 1.4 trepitjat (A a dins): prem 1.2 per passar al grup I i començar.':'Prem 1.2.'):'Prem «Pas següent».');
+    return {plan:p,sch:h,moving:mA!==0||mB!==0,stage,idle:a0&&b0&&!s.p,status};}};
+function pipesDE(r,c,pA,pB,mv,yA,yB){const xA=r.portX('A'),xB=r.portX('B');return pipe(`M${f1(xA)},${r.top} L${f1(xA)},${yA} L${f1(c.ant)},${yA} L${f1(c.ant)},${c.bot}`,pA,pA&&mv<0?1:0,3)+pipe(`M${f1(xB)},${r.top} L${f1(xB)},${yB} L${f1(c.post)},${yB} L${f1(c.post)},${c.bot}`,pB,pB&&mv>0?1:0,3);}
+
+const E3=makeEx('ex3',EX3),E4=makeEx('ex4',EX4),E5=makeEx('ex5',EX5);
+let last=performance.now();
+function loop(now){const dt=Math.min(0.05,(now-last)/1000);last=now;T+=dt;
+  if(visible($('ex3-sch')))stepEx(E3,dt);if(visible($('ex4-sch')))stepEx(E4,dt);if(visible($('ex5-sch')))stepEx(E5,dt);
+  requestAnimationFrame(loop);}
+requestAnimationFrame(loop);
+show((location.hash||'').slice(1),false);
+})();
+</script>
+
+<script>
+(function(){
+  var emb=false;try{emb=window.self!==window.top}catch(e){emb=true}
+  if(emb)document.body.classList.add('embed');
+  var d=document,root=d.documentElement;
+  if(d.fullscreenEnabled&&root.requestFullscreen){
+    var b=d.createElement('button');b.type='button';b.className='btn';b.id='fs-btn';b.textContent='⛶ Pantalla completa';
+    b.addEventListener('click',function(){if(d.fullscreenElement){d.exitFullscreen().catch(function(){})}else{root.requestFullscreen().catch(function(){})}});
+    d.addEventListener('fullscreenchange',function(){b.textContent=d.fullscreenElement?'✕ Surt de pantalla completa':'⛶ Pantalla completa'});
+    var seg=d.querySelector('.top .seg');if(seg)seg.parentNode.insertBefore(b,seg);
+  }else if(emb){
+    var a=d.createElement('a');a.className='btn';a.href='https://tecnolyd.github.io/artefactes/pneumatica-dos-cilindres.html';a.target='_blank';a.rel='noopener';a.textContent='⛶ Obre a pantalla completa';
+    var seg2=d.querySelector('.top .seg');if(seg2)seg2.parentNode.insertBefore(a,seg2);
+  }
+  var br=d.querySelector('.brand');if(br){var v=d.createElement('span');v.className='ver';v.textContent='v1';br.appendChild(v);}
+})();
+</script>
+
+</html>
