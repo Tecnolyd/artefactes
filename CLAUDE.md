@@ -25,7 +25,7 @@ Guia per continuar fent artefactes en una conversa nova. Llegeix-la sencera aban
 | circumferencia-unitat.html | Raons trigonomètriques | Eines matemàtiques |
 | generador-dinamo.html | Generadors i dinamo (v7, autoavaluació a Google Forms: autoavaluacio-generador-dinamo.gs) | 1r BAT → Màquines elèctriques |
 | regles-ma.html | Regles de la mà esquerra i dreta (v4, pendent foto de la mà) | 1r BAT → Màquines elèctriques |
-| pneumatica-components.html | Components pneumàtics (v1): cilindres, distribuïdores, comandaments i vàlvules de control | 2n BAT → Pneumàtica |
+| pneumatica-components.html | Components pneumàtics (v2): cilindres, distribuïdores, comandaments i vàlvules de control | 2n BAT → Pneumàtica |
 
 Pendent: **Lleis de Kirchhoff** (1r BAT → Electricitat) i **Circuits pneumàtics** (`pneumatica-circuits.html`, 2n BAT: directe/indirecte, velocitat, simultani i O, control de posició, temporitzat i oscil·lador).
 
