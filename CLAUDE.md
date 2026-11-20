@@ -26,8 +26,9 @@ Guia per continuar fent artefactes en una conversa nova. Llegeix-la sencera aban
 | generador-dinamo.html | Generadors i dinamo (v7, autoavaluació a Google Forms: autoavaluacio-generador-dinamo.gs) | 1r BAT → Màquines elèctriques |
 | regles-ma.html | Regles de la mà esquerra i dreta (v4, pendent foto de la mà) | 1r BAT → Màquines elèctriques |
 | pneumatica-components.html | Components pneumàtics (v4): cilindres, distribuïdores, comandaments i vàlvules de control | 2n BAT → Pneumàtica |
+| pneumatica-circuits.html | Circuits pneumàtics (v1): indirecte, velocitat, simultani, posició, temporitzat, oscil·lador | 2n BAT → Pneumàtica |
 
-Pendent: **Lleis de Kirchhoff** (1r BAT → Electricitat) i **Circuits pneumàtics** (`pneumatica-circuits.html`, 2n BAT: directe/indirecte, velocitat, simultani i O, control de posició, temporitzat i oscil·lador).
+Pendent: **Lleis de Kirchhoff** (1r BAT → Electricitat) i **Circuits amb dos cilindres** (`pneumatica-dos-cilindres.html`, 2n BAT: Exemples 3, 4 i 5 del llibre, amb plànol animat, quadre de seqüència i pas a pas; explicació curta de la vàlvula de memòria 0.3).
 
 Pneumàtica: colors del llibre (aire a pressió en blau `--air`, cos de vàlvula beix), connexions P/A/B/R, numeració 1.0/1.1/1.2/0.1/1.02, l'únic càlcul de la unitat és W = p · A · l · η. El llibre té intercanviats els peus de les Figs. 3.46 i 3.47 (la professora ja ho sap).
 
