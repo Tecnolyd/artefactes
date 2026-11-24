@@ -289,8 +289,8 @@ svg:not(.hlmode) .part-hl{opacity:1}
   <p class="eyebrow">Mòdul 3 · Seguretat</p>
   <h2>Comandament simultani</h2>
   <p class="lead">En una premsa, l'operari s'hi podria atrapar les mans. Per això el cilindre només baixa si l'operari té <b>les dues mans ocupades</b>, una a cada polsador. Hi ha dues solucions senzilles (Fig. 3.65).</p>
-  <div class="sim"><svg id="c3-svg" viewBox="0 0 640 385" role="img" aria-label="Comandament simultani en sèrie i amb vàlvula de simultaneïtat"></svg>
-    <div class="row"><button class="btn hold" type="button" id="c3-l" aria-pressed="false">Mà esquerra</button><button class="btn hold" type="button" id="c3-r" aria-pressed="false">Mà dreta</button><span class="est" style="color:var(--muted);font-family:var(--f-display)">Cada botó prem el polsador corresponent dels dos circuits alhora.</span></div>
+  <div class="sim"><svg id="c3-svg" viewBox="0 0 672 385" role="img" aria-label="Comandament simultani en sèrie i amb vàlvula de simultaneïtat"></svg>
+    <div class="row"><button class="btn hold" type="button" id="c3-l" aria-pressed="false">Mà esquerra</button><button class="btn hold" type="button" id="c3-r" aria-pressed="false">Mà dreta</button><button class="btn" type="button" id="c3-x">Deixa anar tots dos</button><span class="est" style="color:var(--muted);font-family:var(--f-display)">Clica una mà per mantenir-la premuda i clica-la de nou per deixar-la anar. Prova primer una sola mà i després les dues.</span></div>
     <p class="status" id="c3-st"></p></div>
   <p class="key">En sèrie, l'aire ha de travessar els dos polsadors un darrere l'altre. Amb la vàlvula de simultaneïtat, cal pressió a les dues entrades. En tots dos casos, cal prémer amb les dues mans.</p>
   <div class="pager"><button class="btn" type="button" data-go="velocitat">← Regulació de la velocitat</button><button class="btn primary" type="button" data-go="automatics">Següent: Circuits automàtics →</button></div>
@@ -536,7 +536,10 @@ function stepC2(dt){const S=50;C2.v=approach(C2.v,C2.p?0:1,6,dt);
 
 /* ======================= 3 · SIMULTANI ======================= */
 const C3={l:false,r:false,v12:1,v13:1,v11:1,e1:0,v22:1,v23:1,v21:1,e2:0};
-holdBtn($('c3-l'),v=>C3.l=v);holdBtn($('c3-r'),v=>C3.r=v);
+function latchBtn(btn,name,on){let v=false;const upd=()=>{btn.setAttribute('aria-pressed',v);btn.textContent=(v?'✋ ':'')+name+(v?' · premut':'');};
+  btn.addEventListener('click',()=>{v=!v;upd();on(v);});upd();return x=>{v=x;upd();on(v);};}
+const c3L=latchBtn($('c3-l'),'Mà esquerra',v=>C3.l=v),c3R=latchBtn($('c3-r'),'Mà dreta',v=>C3.r=v);
+$('c3-x').addEventListener('click',()=>{c3L(false);c3R(false);});
 function stepC3(dt){const S=40;let s='';
   C3.v12=approach(C3.v12,C3.l?0:1,6,dt);const r12=valve(VDEF.v32nt,{x:70,y:305,S,pos:C3.v12,actL:'polsador',actR:'molla',onL:C3.l,portLen:14,labels:false});
   C3.v13=approach(C3.v13,C3.r?0:1,6,dt);const r13=valve(VDEF.v32nt,{x:70,y:215,S,pos:C3.v13,actL:'polsador',actR:'molla',onL:C3.r,portLen:14,labels:false,pIn:!!r12.pp.A,src:false});
@@ -546,7 +549,7 @@ function stepC3(dt){const S=40;let s='';
   s+=c1.svg+pipe(`M${f1(xA)},${r11.top} L${f1(xA)},100 L${f1(c1.ant)},100 L${f1(c1.ant)},${c1.bot}`,pA,pA&&m1<0?1:0,3)+pipe(`M${f1(xB)},${r11.top} L${f1(xB)},110 L${f1(c1.post)},110 L${f1(c1.post)},${c1.bot}`,pB,pB&&m1>0?1:0,3);
   s+=pipe(`M${f1(r12.portX('A'))},${r12.top} L${f1(r13.portX('P'))},${r13.bot}`,!!r12.pp.A,r12.pp.A&&!r13.pp.A?0:(r12.pp.A?1:0),2.4)+r11.svg+r12.svg+r13.svg;
   s+=pilot(`M${f1(r13.portX('A'))},${r13.top} L${f1(r13.portX('A'))},${r11.mid} L${f1(r11.attL)},${r11.mid}`,sig1,sig1?1:0);
-  s+=lbl(150,24,'1.0')+lbl(150,134,'1.1')+lbl(180,240,'1.3 (mà dreta)')+lbl(180,330,'1.2 (mà esquerra)')+txt(150,375,'En sèrie','sv-mut','start');
+  s+=lbl(150,24,'1.0')+lbl(150,134,'1.1')+lbl(224,230,'1.3')+lbl(224,244,'(mà dreta)')+lbl(224,320,'1.2')+lbl(224,334,'(mà esquerra)')+txt(150,375,'En sèrie','sv-mut','start');
   C3.v22=approach(C3.v22,C3.l?0:1,6,dt);const r22=valve(VDEF.v32nt,{x:340,y:270,S,pos:C3.v22,actL:'polsador',actR:'molla',onL:C3.l,portLen:14,labels:false});
   C3.v23=approach(C3.v23,C3.r?0:1,6,dt);const r23=valve(VDEF.v32nt,{x:520,y:270,S,pos:C3.v23,actL:'polsador',actR:'molla',onL:C3.r,portLen:14,labels:false});
   const X=!!r22.pp.A,Y=!!r23.pp.A,sig2=X&&Y;
@@ -653,7 +656,7 @@ show((location.hash||'').slice(1),false);
     var a=d.createElement('a');a.className='btn';a.href='https://tecnolyd.github.io/artefactes/pneumatica-circuits.html';a.target='_blank';a.rel='noopener';a.textContent='⛶ Obre a pantalla completa';
     var seg2=d.querySelector('.top .seg');if(seg2)seg2.parentNode.insertBefore(a,seg2);
   }
-  var br=d.querySelector('.brand');if(br){var v=d.createElement('span');v.className='ver';v.textContent='v1';br.appendChild(v);}
+  var br=d.querySelector('.brand');if(br){var v=d.createElement('span');v.className='ver';v.textContent='v2';br.appendChild(v);}
 })();
 </script>
 
