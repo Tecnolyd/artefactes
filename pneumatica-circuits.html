@@ -467,6 +467,7 @@ function exFlow(d,dir,speed){let s=`<path d="${d}" fill="none" stroke="${MUT}" s
   if(dir&&!reduce){const off=((-dir*T*30*(speed||1))%14).toFixed(1);s+=`<path d="${d}" fill="none" stroke="${FG}" stroke-width="1.6" stroke-dasharray="2 12" stroke-dashoffset="${off}" stroke-linecap="round"/>`;}return s;}
 const lbl=(x,y,t,anchor)=>`<text x="${f1(x)}" y="${f1(y)}" class="sv-num" text-anchor="${anchor||'start'}" style="font-weight:500">${t}</text>`;
 function endMark(x,y,label,on){const c=on?'var(--hot)':FG;return `<line x1="${f1(x)}" y1="${y}" x2="${f1(x)}" y2="${y+16}" stroke="${c}" stroke-width="${on?2.4:1.6}"/>`+txt(f1(x),y-4,label,'sv-num').replace('class="sv-num"',`class="sv-num" style="fill:${c};font-weight:${on?700:500}"`);}
+function biMove(s,k,L,R,dt){const t='t_'+k;if(s[t]===undefined)s[t]=s[k]>0.5?1:0;if(L&&!R)s[t]=0;else if(R&&!L)s[t]=1;s[k]=approach(s[k],s[t],6,dt);}
 const biTarget=(pos,L,R)=>L&&!R?0:(R&&!L?1:(pos>0.5?1:0));
 const badgeC=(x,y,kind,t)=>{const w=t.length*7.2+24,c=kind==='ok'?['var(--ok-soft)','var(--ok)']:kind==='bad'?['var(--bad-soft)','var(--bad)']:['var(--accent-soft)','var(--accent)'];
   return `<rect x="${f1(x-w/2)}" y="${y-13}" width="${f1(w)}" height="25" rx="12.5" fill="${c[0]}" stroke="${c[1]}" stroke-width="1.3"/><text x="${x}" y="${y+5}" text-anchor="middle" class="sv-fg" style="fill:${c[1]};font-size:14px">${t}</text>`;};
@@ -569,6 +570,7 @@ function stepC3(dt){const S=40;let s='';
 /* ======================= 4 · AUTOMÀTICS ======================= */
 const C4={k:'pos',p:false,m:false,a:false,o:40};
 const A={pos:{v12:1,v13:1,v11:1,e1:0,w12:1,w13:1,w11:1,e2:0},temp:{v12:1,v11:1,e:0,pt:0,vt:0,tm:0},osc:{v15:1,v16:1,v14:1,v12:1,v13:1,v11:1,e:0,n:0,last:0}};
+window.__dbg={A,C4};
 function c4Ctl(){const c=$('c4-ctl');C4.p=C4.m=C4.a=false;
   if(C4.k==='osc'){c.innerHTML='<button class="btn hold" type="button" id="c4-m" aria-pressed="false">Marxa (1.5)</button><button class="btn hold" type="button" id="c4-a" aria-pressed="false">Aturada (1.6)</button>';holdBtn($('c4-m'),v=>C4.m=v);holdBtn($('c4-a'),v=>C4.a=v);}
   else{c.innerHTML='<button class="btn hold" type="button" id="c4-p" aria-pressed="false">Mantén premut 1.2</button>'+(C4.k==='temp'?`<label class="ctl" style="flex:1 1 380px;grid-template-columns:auto minmax(140px,1fr) 70px"><span>Obertura de l'agulla</span><input type="range" id="c4-o" min="10" max="100" step="1" value="${C4.o}"><output id="c4-oo">${C4.o} %</output></label>`:'');
@@ -585,14 +587,14 @@ function stepC4(dt){let s='',st='';const S=40;
   if(C4.k==='pos'){const a=A.pos,co={x:180,y:46,L:130,H:36,type:'SE'},cd={x:500,y:46,L:130,H:36,type:'DE'};
     a.v12=approach(a.v12,C4.p?0:1,6,dt);const r12=valve(VDEF.v32nt,{x:40,y:250,S,pos:a.v12,actL:'polsador',actR:'molla',onL:C4.p,portLen:14,labels:false});
     const s13=a.e1>0.97;a.v13=approach(a.v13,s13?0:1,6,dt);const r13=valve(VDEF.v32nt,{x:250,y:250,S,pos:a.v13,actL:'rodet',actR:'molla',onL:s13,portLen:14,labels:false});
-    const L1=!!r12.pp.A,R1=!!r13.pp.A;a.v11=approach(a.v11,biTarget(a.v11,L1,R1),6,dt);const r11=valve(VDEF.v32nt,{x:238,y:150,S,pos:a.v11,actL:'pilot',actR:'pilot',onL:L1,onR:R1,portLen:14,labels:false});
+    const L1=!!r12.pp.A,R1=!!r13.pp.A;biMove(a,'v11',L1,R1,dt);const r11=valve(VDEF.v32nt,{x:238,y:150,S,pos:a.v11,actL:'pilot',actR:'pilot',onL:L1,onR:R1,portLen:14,labels:false});
     const p1=!!r11.pp.A,pr=a.e1;a.e1=cylMove(a.e1,p1,false,'SE',dt,0.4,0.5);const m1=Math.sign(a.e1-pr);const c1=cylL(Object.assign({ext:a.e1,post:p1},co));
     s+=c1.svg+pipe(`M${f1(r11.portX('A'))},${r11.top} L${f1(c1.post)},${c1.bot}`,p1,m1>0?1:0,3)+r11.svg+r12.svg+r13.svg;
     s+=pilot(`M${f1(r12.portX('A'))},${r12.top} L${f1(r12.portX('A'))},${r11.mid} L${f1(r11.attL)},${r11.mid}`,L1,L1?1:0)+pilot(`M${f1(r13.portX('A'))},${r13.top} L${f1(r13.portX('A'))},216 L384,216 L384,${r11.mid} L${f1(r11.attR)},${r11.mid}`,R1,R1?1:0);
     s+=endMark(rodEndAt(co,1),16,'1.3',s13)+lbl(180,40,'1.0')+lbl(238,145,'1.1')+lbl(40,245,'1.2')+lbl(250,245,'1.3')+txt(40,360,'Simple efecte','sv-mut','start');
     a.w12=approach(a.w12,C4.p?0:1,6,dt);const w12=valve(VDEF.v32nt,{x:380,y:250,S,pos:a.w12,actL:'polsador',actR:'molla',onL:C4.p,portLen:14,labels:false});
     const t13=a.e2>0.97;a.w13=approach(a.w13,t13?0:1,6,dt);const w13=valve(VDEF.v32nt,{x:530,y:250,S,pos:a.w13,actL:'rodet',actR:'molla',onL:t13,portLen:14,labels:false});
-    const L2=!!w12.pp.A,R2=!!w13.pp.A;a.w11=approach(a.w11,biTarget(a.w11,L2,R2),6,dt);const w11=valve(VDEF.v42,{x:466,y:150,S:44,pos:a.w11,actL:'pilot',actR:'pilot',onL:L2,onR:R2,portLen:14,labels:false});
+    const L2=!!w12.pp.A,R2=!!w13.pp.A;biMove(a,'w11',L2,R2,dt);const w11=valve(VDEF.v42,{x:466,y:150,S:44,pos:a.w11,actL:'pilot',actR:'pilot',onL:L2,onR:R2,portLen:14,labels:false});
     const qA=!!w11.pp.A,qB=!!w11.pp.B,pr2=a.e2;a.e2=cylMove(a.e2,qB,qA,'DE',dt,0.4,0.45);const m2=Math.sign(a.e2-pr2);const c2=cylL(Object.assign({ext:a.e2,post:qB,ant:qA},cd));
     s+=c2.svg+pipesDE(w11,c2,qA,qB,m2,112,124)+w11.svg+w12.svg+w13.svg;
     s+=pilot(`M${f1(w12.portX('A'))},${w12.top} L${f1(w12.portX('A'))},${w11.mid} L${f1(w11.attL)},${w11.mid}`,L2,L2?1:0)+pilot(`M${f1(w13.portX('A'))},${w13.top} L${f1(w13.portX('A'))},222 L628,222 L628,${w11.mid} L${f1(w11.attR)},${w11.mid}`,R2,R2?1:0);
@@ -603,7 +605,7 @@ function stepC4(dt){let s='',st='';const S=40;
     a.v12=approach(a.v12,C4.p?0:1,6,dt);const r12=valve(VDEF.v32nt,{x:170,y:290,S,pos:a.v12,actL:'polsador',actR:'molla',onL:C4.p,portLen:14,labels:false});
     const k=0.06+0.6*C4.o/100,L1=!!r12.pp.A;
     const sw=a.pt>=3;a.vt=approach(a.vt,sw?1:0,6,dt);const rt=valve(VDEF.v32ntR,{x:520,y:300,S:36,pos:a.vt,actR:'pilot',actL:'molla',onR:sw,portLen:12,labels:false});
-    const R1=!!rt.pp.A;a.v11=approach(a.v11,biTarget(a.v11,L1,R1),6,dt);const r11=valve(VDEF.v42,{x:330,y:190,S:50,pos:a.v11,actL:'pilot',actR:'pilot',onL:L1,onR:R1,portLen:14,labels:false});
+    const R1=!!rt.pp.A;biMove(a,'v11',L1,R1,dt);const r11=valve(VDEF.v42,{x:330,y:190,S:50,pos:a.v11,actL:'pilot',actR:'pilot',onL:L1,onR:R1,portLen:14,labels:false});
     const pA=!!r11.pp.A,pB=!!r11.pp.B,pr=a.e;a.e=cylMove(a.e,pB,pA,'DE',dt,0.4,0.45);const mv=Math.sign(a.e-pr);
     if(pB){a.pt+=(6-a.pt)*(1-Math.exp(-k*dt));a.tm+=dt;}else{a.pt+=(0-a.pt)*(1-Math.exp(-5*dt));a.tm=0;}
     const c=cylL(Object.assign({ext:a.e,post:pB,ant:pA},cd));s+=c.svg+pipesDE(r11,c,pA,pB,mv,160,150)+r11.svg+r12.svg;
@@ -618,10 +620,10 @@ function stepC4(dt){let s='',st='';const S=40;
   else{const a=A.osc,cd={x:330,y:46,L:170,H:38,type:'DE'};
     a.v15=approach(a.v15,C4.m?0:1,6,dt);const r15=valve(VDEF.v32nt,{x:30,y:340,S,pos:a.v15,actL:'polsador',actR:'molla',onL:C4.m,portLen:14,labels:false});
     a.v16=approach(a.v16,C4.a?0:1,6,dt);const r16=valve(VDEF.v32nt,{x:300,y:340,S,pos:a.v16,actL:'polsador',actR:'molla',onL:C4.a,portLen:14,labels:false});
-    const m=!!r15.pp.A,at=!!r16.pp.A;a.v14=approach(a.v14,biTarget(a.v14,m,at),6,dt);const r14=valve(VDEF.v32nt,{x:150,y:285,S,pos:a.v14,actL:'pilot',actR:'pilot',onL:m,onR:at,portLen:14,labels:false});
+    const m=!!r15.pp.A,at=!!r16.pp.A;biMove(a,'v14',m,at,dt);const r14=valve(VDEF.v32nt,{x:150,y:285,S,pos:a.v14,actL:'pilot',actR:'pilot',onL:m,onR:at,portLen:14,labels:false});
     const s12=a.e<0.03,s13=a.e>0.97;a.v12=approach(a.v12,s12?0:1,6,dt);const r12=valve(VDEF.v32nt,{x:150,y:200,S,pos:a.v12,actL:'rodet',actR:'molla',onL:s12,portLen:14,labels:false,pIn:!!r14.pp.A,src:false});
     a.v13=approach(a.v13,s13?0:1,6,dt);const r13=valve(VDEF.v32nt,{x:520,y:200,S,pos:a.v13,actL:'rodet',actR:'molla',onL:s13,portLen:14,labels:false});
-    const L1=!!r12.pp.A,R1=!!r13.pp.A;a.v11=approach(a.v11,biTarget(a.v11,L1,R1),6,dt);const r11=valve(VDEF.v42,{x:330,y:150,S:50,pos:a.v11,actL:'pilot',actR:'pilot',onL:L1,onR:R1,portLen:14,labels:false});
+    const L1=!!r12.pp.A,R1=!!r13.pp.A;biMove(a,'v11',L1,R1,dt);const r11=valve(VDEF.v42,{x:330,y:150,S:50,pos:a.v11,actL:'pilot',actR:'pilot',onL:L1,onR:R1,portLen:14,labels:false});
     const pA=!!r11.pp.A,pB=!!r11.pp.B,pr=a.e;a.e=cylMove(a.e,pB,pA,'DE',dt,0.42,0.48);const mv=Math.sign(a.e-pr);if(mv>0&&a.last<=0)a.n++;a.last=mv||a.last;
     const c=cylL(Object.assign({ext:a.e,post:pB,ant:pA},cd));s+=c.svg+pipesDE(r11,c,pA,pB,mv,112,100)+r11.svg+r12.svg+r13.svg+r14.svg+r15.svg+r16.svg;
     s+=pipe(`M${f1(r14.portX('A'))},${r14.top} L${f1(r12.portX('P'))},${r12.bot}`,!!r14.pp.A,0,2.4);
@@ -656,7 +658,7 @@ show((location.hash||'').slice(1),false);
     var a=d.createElement('a');a.className='btn';a.href='https://tecnolyd.github.io/artefactes/pneumatica-circuits.html';a.target='_blank';a.rel='noopener';a.textContent='⛶ Obre a pantalla completa';
     var seg2=d.querySelector('.top .seg');if(seg2)seg2.parentNode.insertBefore(a,seg2);
   }
-  var br=d.querySelector('.brand');if(br){var v=d.createElement('span');v.className='ver';v.textContent='v2';br.appendChild(v);}
+  var br=d.querySelector('.brand');if(br){var v=d.createElement('span');v.className='ver';v.textContent='v3';br.appendChild(v);}
 })();
 </script>
 

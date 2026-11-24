@@ -26,8 +26,8 @@ Guia per continuar fent artefactes en una conversa nova. Llegeix-la sencera aban
 | generador-dinamo.html | Generadors i dinamo (v7, autoavaluació a Google Forms: autoavaluacio-generador-dinamo.gs) | 1r BAT → Màquines elèctriques |
 | regles-ma.html | Regles de la mà esquerra i dreta (v4, pendent foto de la mà) | 1r BAT → Màquines elèctriques |
 | pneumatica-components.html | Components pneumàtics (v4): cilindres, distribuïdores, comandaments i vàlvules de control | 2n BAT → Pneumàtica |
-| pneumatica-circuits.html | Circuits pneumàtics (v2): indirecte, velocitat, simultani, posició, temporitzat, oscil·lador | 2n BAT → Pneumàtica |
-| pneumatica-dos-cilindres.html | Circuits amb dos cilindres (v1): Exemples 3, 4 i 5 del llibre (estampació, transport, mecanització amb memòria 0.3), plànol animat, quadre de seqüència, continu / pas a pas | 2n BAT → Pneumàtica |
+| pneumatica-circuits.html | Circuits pneumàtics (v3): indirecte, velocitat, simultani, posició, temporitzat, oscil·lador | 2n BAT → Pneumàtica |
+| pneumatica-dos-cilindres.html | Circuits amb dos cilindres (v2): Exemples 3, 4 i 5 del llibre (estampació, transport, mecanització amb memòria 0.3), plànol de situació com al llibre (Figs. 3.73, 3.75, 3.77) al costat de l'esquema, quadre de seqüència amb senyals, continu / pas a pas (una etapa i s'atura) | 2n BAT → Pneumàtica |
 
 Pendent: **Lleis de Kirchhoff** (1r BAT → Electricitat).
 

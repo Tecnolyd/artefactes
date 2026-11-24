@@ -232,11 +232,25 @@ svg:not(.hlmode) .part-hl{opacity:1}
 #parts-svg,#cyl-svg{max-width:780px}
 #mono-svg,#bi-svg{max-width:420px}
 .vinfo .v{font-size:1.05em}
-.plan-grid{display:grid;grid-template-columns:minmax(0,1fr) 200px;gap:16px;align-items:start}
+
 .seqt td,.seqt th{text-align:center;font-family:var(--f-mono);font-size:1.05em;padding:6px 10px}
 .seqt tr.on td{background:var(--hot-soft);color:var(--hot);font-weight:700}
 .sim .btn:disabled{opacity:.4;cursor:not-allowed}
 @media (max-width:760px){.plan-grid{grid-template-columns:minmax(0,1fr)}}
+
+.exsim{padding:10px 14px 14px}
+.exctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;position:sticky;top:var(--toph,56px);z-index:4;background:var(--surface);padding:8px 0;margin:-2px 0 10px;border-bottom:1px solid var(--line)}
+.exgrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:18px;align-items:start}
+.exgrid svg{display:block;width:100%;height:auto}
+.exinfo{display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;align-items:start;margin-top:10px}
+.exinfo .status{margin:0;min-height:5.5em}
+.exinfo .tbl{margin:0}
+.seqt td,.seqt th{padding:5px 8px}
+.seqt td:last-child,.seqt th:last-child{font-size:.82em;white-space:nowrap}
+.seqt tr.past td{color:var(--muted)}
+.seqt tr.next td{background:var(--accent-soft);color:var(--accent);font-weight:600}
+@media (max-width:980px){.exgrid{grid-template-columns:minmax(0,1fr)}.exl svg{max-width:560px;margin-inline:auto}}
+@media (max-width:560px){.exinfo{grid-template-columns:minmax(0,1fr)}}
 </style>
 <header class="top">
   <div class="brand">Circuits amb <span>dos cilindres</span></div>
@@ -268,10 +282,10 @@ svg:not(.hlmode) .part-hl{opacity:1}
   </div>
   <h3>Com fer servir els simuladors</h3>
   <ul>
-    <li><b>A dalt</b> hi ha el plànol de situació (la màquina); <b>a sota</b>, l'esquema pneumàtic del llibre amb la seva numeració; <b>al costat</b>, el quadre de seqüència amb l'etapa actual destacada.</li>
+    <li>A l'esquerra hi ha el <b>plànol de situació</b> (la màquina, com al llibre) i el <b>quadre de seqüència</b>; a la dreta, l'<b>esquema pneumàtic</b> amb la numeració del llibre. Es veuen alhora: el que es mou al plànol és el que canvia a l'esquema.</li>
     <li>Els cicles són <b>semiautomàtics</b>: prem el polsador 1.2 per iniciar-ne un.</li>
-    <li>En mode <b>Pas a pas</b>, el circuit s'atura en acabar cada moviment: pots veure quin final de cursa s'ha trepitjat i quin senyal ha arribat abans de prémer «Pas següent».</li>
-    <li>Els finals de cursa trepitjats es marquen en <span style="color:var(--hot);font-weight:600">vermell</span>.</li>
+    <li>En mode <b>Pas a pas</b>, el circuit fa <b>una etapa i s'atura</b>. Tot queda congelat: es veu quin final de cursa s'ha trepitjat (en vermell) i el text explica què passarà a l'etapa següent. Amb «Pas següent» es fa l'etapa següent.</li>
+    <li>Els finals de cursa trepitjats es marquen en <span style="color:var(--hot);font-weight:600">vermell</span> al plànol i a l'esquema. Al plànol, el rodet és just on arriba la peça que el trepitja.</li>
   </ul>
   <div class="legend"><span><i class="lg-air"></i>aire a pressió</span><span><i class="lg-pil"></i>senyal</span><span><i class="lg-off"></i>sense pressió</span></div>
   <div class="pager"><span></span><button class="btn primary" type="button" data-go="ex3">Següent: Estampació →</button></div>
@@ -283,7 +297,7 @@ svg:not(.hlmode) .part-hl{opacity:1}
   <p class="lead">En prémer el polsador, el cilindre A posiciona la peça contra la paret i el cilindre B hi estampa la data de caducitat. Després tornen tots dos alhora.</p>
   <div class="simwrap" id="w3"></div>
   <div class="cards">
-    <div class="card"><h4>Com funciona</h4><p>1.2 pilota 1.1 i A avança lentament. En arribar a la paret, la tija trepitja 2.2, que pilota 2.1: B baixa i estampa. Abaix, B trepitja 2.3, que actua sobre els pilotatges drets de 1.1 i 2.1: tornen tots dos.</p></div>
+    <div class="card"><h4>Com funciona</h4><p>1.2 pilota 1.1 i A avança lentament. La peça arriba a la paret i trepitja 2.2, que pilota 2.1: B baixa i estampa. Abaix, el tampó trepitja 2.3, que actua sobre els pilotatges drets de 1.1 i 2.1: tornen tots dos.</p></div>
     <div class="card"><h4>Detalls</h4><p>Són cilindres de simple efecte: tornen per la molla. Els reguladors 1.02 i 2.02, a l'entrada dels cilindres, donen un avanç lent i un retrocés ràpid.</p></div>
   </div>
   <div class="pager"><button class="btn" type="button" data-go="seq">← Seqüències</button><button class="btn primary" type="button" data-go="ex4">Següent: Transport de peces →</button></div>
@@ -295,7 +309,7 @@ svg:not(.hlmode) .part-hl{opacity:1}
   <p class="lead">El cilindre A puja la peça del nivell inferior al superior, i el cilindre B l'empeny horitzontalment fins al seu lloc.</p>
   <div class="simwrap" id="w4"></div>
   <div class="cards">
-    <div class="card"><h4>Com funciona</h4><p>1.2 i 1.4 (B a dins) en sèrie pilotes 1.1: A puja. A dalt, A trepitja 2.2: B avança. Al final, B trepitja 1.3: A baixa. Abaix, A trepitja 2.3: B torna.</p></div>
+    <div class="card"><h4>Com funciona</h4><p>1.2 i 1.4 (B a dins), en sèrie, pilotegen 1.1: A puja. A dalt, A trepitja 2.2: B avança. Al final, B trepitja 1.3: A baixa. Abaix, A trepitja 2.3: B torna.</p></div>
     <div class="card"><h4>Per què 1.4</h4><p>1.4 està en sèrie amb el polsador: el cicle només pot començar si B és a dins. Així no s'engega amb la màquina a mig camí.</p></div>
   </div>
   <div class="pager"><button class="btn" type="button" data-go="ex3">← Estampació</button><button class="btn primary" type="button" data-go="ex5">Següent: Unitat de mecanització →</button></div>
@@ -487,170 +501,238 @@ const sLineC=(d,on)=>pilot(d,on,on?1:0);
 
 
 function biMove(s,k,L,R,dt){const t='t_'+k;if(s[t]===undefined)s[t]=s[k]>0.5?1:0;if(L&&!R)s[t]=0;else if(R&&!L)s[t]=1;s[k]=approach(s[k],s[t],6,dt);}
-
 /* ======================= controlador comú ======================= */
-function seqTable(rows,cur){return '<p class="panel-t">Quadre de seqüència</p><div class="tbl"><table class="seqt"><thead><tr><th>Etapa</th><th>A</th><th>B</th></tr></thead><tbody>'+
-  rows.map((r,i)=>`<tr class="${cur===i+1?'on':''}"><td>${i+1}</td><td>${r[0]}</td><td>${r[1]}</td></tr>`).join('')+'</tbody></table></div>';}
+// def: {rows:[[A,B,senyal]…], move:[…], after:[…], next:[…], idle:fn|str, planVB, schVB, init, frame}
+function seqTable(def,s){const paused=s.mode==='pas'&&s.paused,hi=s.cur||(!paused?s.done:0);
+  return '<div class="tbl"><table class="seqt"><thead><tr><th>Etapa</th><th>A</th><th>B</th><th>Senyal</th></tr></thead><tbody>'+
+  def.rows.map((r,i)=>{const k=i+1;let c='';if(hi===k)c='on';else if(paused&&k<=s.done)c='past';else if(paused&&k===s.done+1)c='next';
+    return `<tr class="${c}"><td>${k}</td><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td></tr>`;}).join('')+'</tbody></table></div>';}
 function makeEx(key,def){const w=$('w'+key.slice(2));
-  w.innerHTML=`<div class="sim"><div class="plan-grid"><div><p class="panel-t">Plànol de situació</p><svg id="${key}-plan" viewBox="${def.planVB}" role="img" aria-label="Plànol de situació"></svg></div><div id="${key}-seq"></div></div>
-  <p class="panel-t" style="margin-top:12px">Esquema pneumàtic</p><svg id="${key}-sch" viewBox="${def.schVB}" role="img" aria-label="Esquema pneumàtic"></svg>
-  <div class="row"><button class="btn hold" type="button" id="${key}-p" aria-pressed="false">Prem 1.2 (inici)</button>
+  w.innerHTML=`<div class="sim exsim">
+  <div class="exctl"><button class="btn hold" type="button" id="${key}-p" aria-pressed="false">Prem 1.2 (inici)</button>
   <div class="seg" role="group" aria-label="Mode"><button type="button" data-${key}m="cont" aria-pressed="true">Continu</button><button type="button" data-${key}m="pas" aria-pressed="false">Pas a pas</button></div>
   <button class="btn primary" type="button" id="${key}-n" disabled>Pas següent ▶</button><button class="btn" type="button" id="${key}-r">Reinicia</button></div>
-  <p class="status" id="${key}-st"></p></div>`;
-  const st=Object.assign({p:false,mode:'cont',paused:false,mov:false,stage:0,lastSeq:''},def.init());
-  holdBtn($(key+'-p'),v=>{st.p=v;if(v)st.paused=false;});
+  <div class="exgrid"><div class="exl"><p class="panel-t">Plànol de situació</p><svg id="${key}-plan" viewBox="${def.planVB}" role="img" aria-label="Plànol de situació"></svg>
+    <div class="exinfo"><div id="${key}-seq"></div><p class="status" id="${key}-st"></p></div></div>
+  <div class="exr"><p class="panel-t">Esquema pneumàtic</p><svg id="${key}-sch" viewBox="${def.schVB}" role="img" aria-label="Esquema pneumàtic"></svg></div></div></div>`;
+  const st=Object.assign({p:false,mode:'cont',paused:false,mov:false,cur:0,done:0,lastSeq:'',lastSt:''},def.init());
+  holdBtn($(key+'-p'),v=>{st.p=v;});
   segGroup(`[data-${key}m]`,key+'m',v=>{st.mode=v;st.paused=false;});
   $(key+'-n').addEventListener('click',()=>{st.paused=false;});
-  $(key+'-r').addEventListener('click',()=>{for(const k in st)if(k.startsWith('t_'))delete st[k];Object.assign(st,def.init(),{paused:false,mov:false,stage:0});});
+  $(key+'-r').addEventListener('click',()=>{for(const k in st)if(k.startsWith('t_'))delete st[k];Object.assign(st,def.init(),{paused:false,mov:false,cur:0,done:0});});
   return {st,def,key};}
-function stepEx(E,dt){const s=E.st,allow=!(s.mode==='pas'&&s.paused);
-  const r=E.def.frame(s,dt,allow);
-  if(s.mov&&!r.moving&&s.mode==='pas'&&!r.idle)s.paused=true;s.mov=r.moving;
-  if(r.stage)s.stage=r.stage;else if(r.idle)s.stage=0;
+function stepEx(E,dt){const s=E.st,d=E.def,run=!(s.mode==='pas'&&s.paused);
+  const r=d.frame(s,run?dt:0);
+  if(r.moving)s.cur=r.stage||s.cur;
+  else if(s.mov){// s'acaba de parar un moviment
+    if(r.idle){s.cur=0;s.done=0;}else{s.done=s.cur;s.cur=0;if(s.mode==='pas')s.paused=true;}}
+  if(r.idle&&!r.moving){s.cur=0;s.done=0;}
+  s.mov=r.moving;
   $(E.key+'-plan').innerHTML=r.plan;$(E.key+'-sch').innerHTML=r.sch;
-  const sq=seqTable(E.def.rows,s.stage);if(sq!==s.lastSeq){$(E.key+'-seq').innerHTML=sq;s.lastSeq=sq;}
-  const nb=$(E.key+'-n');nb.disabled=!(s.mode==='pas'&&s.paused);
-  let txt=r.status;if(s.mode==='cont'&&!r.moving&&!r.idle&&s.lastSt)txt=s.lastSt;else s.lastSt=r.status;
-  const h=(s.mode==='pas'&&s.paused?'<span class="pill info">Aturat</span> ':'')+txt;const el=$(E.key+'-st');if(el.innerHTML!==h)el.innerHTML=h;}
-// cilindre del plànol de situació (horitzontal o vertical)
-function planCylH(x,y,L,H,ext,stroke,dir){// dir 1: la tija surt cap a la dreta; -1: cap a l'esquerra
-  const rodL=20+ext*stroke,rx=dir>0?x+L:x-rodL;let s=`<rect x="${dir>0?x+L:x-rodL}" y="${y+H/2-4}" width="${f1(rodL)}" height="8" fill="var(--steel-l)" stroke="var(--steel)"/>`;
-  s+=`<rect x="${x}" y="${y}" width="${L}" height="${H}" rx="4" fill="var(--steel-l)" stroke="${FG}" stroke-width="1.6"/><rect x="${x-4}" y="${y-3}" width="8" height="${H+6}" fill="var(--steel)"/><rect x="${x+L-4}" y="${y-3}" width="8" height="${H+6}" fill="var(--steel)"/>`;
+  const sq=seqTable(d,s);if(sq!==s.lastSeq){$(E.key+'-seq').innerHTML=sq;s.lastSeq=sq;}
+  const paused=s.mode==='pas'&&s.paused;$(E.key+'-n').disabled=!paused;
+  let h;
+  if(paused)h=`<span class="pill info">Aturat</span> <b>Etapa ${s.done} feta.</b> ${d.after[s.done-1]}<br><b>Prem «Pas següent»:</b> ${d.next[s.done]}`;
+  else if(r.moving)h=d.move[s.cur-1];
+  else if(r.idle)h=typeof d.idle==='function'?d.idle(s):d.idle;
+  else h=s.lastSt;// entre etapes (mode continu): es manté el text
+  if(!paused&&r.moving)s.lastSt=h;
+  const el=$(E.key+'-st');if(el.innerHTML!==h)el.innerHTML=h;}
+
+/* ---------- peces del plànol ---------- */
+const ST='fill="var(--steel)"',STL='fill="var(--steel-l)" stroke="var(--steel)"';
+const R_=(x,y,w,h,a)=>`<rect x="${f1(x)}" y="${f1(y)}" width="${f1(w)}" height="${f1(h)}" ${a}/>`;
+// cilindre horitzontal: cos de x a x+L; dir 1 la tija surt cap a la dreta, -1 cap a l'esquerra
+function pCylH(x,y,L,H,ext,stroke,dir,base){const rodL=(base||20)+ext*stroke;
+  let s=R_(dir>0?x+L:x-rodL,y+H/2-4,rodL,8,STL)+R_(x,y,L,H,`rx="4" fill="var(--steel-l)" stroke="${FG}" stroke-width="1.6"`)+R_(x-4,y-3,8,H+6,ST)+R_(x+L-4,y-3,8,H+6,ST);
   return {svg:s,tip:dir>0?x+L+rodL:x-rodL};}
-function planCylV(x,y,W,H,ext,stroke,dir){// dir 1: la tija surt cap avall; -1: cap amunt
-  const rodL=16+ext*stroke;let s=`<rect x="${x+W/2-4}" y="${f1(dir>0?y+H:y-rodL)}" width="8" height="${f1(rodL)}" fill="var(--steel-l)" stroke="var(--steel)"/>`;
-  s+=`<rect x="${x}" y="${y}" width="${W}" height="${H}" rx="4" fill="var(--steel-l)" stroke="${FG}" stroke-width="1.6"/><rect x="${x-3}" y="${y-4}" width="${W+6}" height="8" fill="var(--steel)"/><rect x="${x-3}" y="${y+H-4}" width="${W+6}" height="8" fill="var(--steel)"/>`;
+// cilindre vertical: cos de y a y+H; dir 1 la tija surt cap avall, -1 cap amunt
+function pCylV(x,y,W,H,ext,stroke,dir,base){const rodL=(base||20)+ext*stroke;
+  let s=R_(x+W/2-4,dir>0?y+H:y-rodL,8,rodL,STL)+R_(x,y,W,H,`rx="4" fill="var(--steel-l)" stroke="${FG}" stroke-width="1.6"`)+R_(x-3,y-4,W+6,8,ST)+R_(x-3,y+H-4,W+6,8,ST);
   return {svg:s,tip:dir>0?y+H+rodL:y-rodL};}
-function fcPlan(x,y,lbl,on,rot,below){return `<g transform="translate(${f1(x)},${f1(y)}) rotate(${rot||0})"><rect x="-10" y="-22" width="20" height="16" fill="${on?'var(--hot-soft)':'var(--body)'}" stroke="${on?'var(--hot)':'var(--body-d)'}" stroke-width="1.4"/><line x1="0" y1="-6" x2="0" y2="-2" stroke="${FG}" stroke-width="1.4"/><circle cx="0" cy="2" r="4" fill="var(--surface)" stroke="${on?'var(--hot)':FG}" stroke-width="1.6"/></g>`+txt(f1(x+(rot===90?27:(rot===-90?-27:0))),f1(y+(rot?4:(below?22:-26))),lbl,'sv-num',rot===90?'start':(rot===-90?'end':undefined)).replace('class="sv-num"',`class="sv-num" style="fill:${on?'var(--hot)':FG};font-weight:600"`);}
-const piece=(x,y,w,h,extra)=>`<rect x="${f1(x)}" y="${f1(y)}" width="${w}" height="${h}" fill="var(--cold-soft)" stroke="var(--cold)" stroke-width="1.5"/>`+(extra||'');
-const VS=34;// mida de les microvàlvules
+// final de cursa al plànol. (x,y) = punt on la peça mòbil toca el rodet; face = cap on mira el rodet; lp = costat de l'etiqueta
+function fcP(x,y,face,label,on,lp,noMount){const v={u:[0,-1],d:[0,1],l:[-1,0],r:[1,0]}[face],r=5;
+  const cx=x-v[0]*r,cy=y-v[1]*r,bx=cx-v[0]*(r+12),by=cy-v[1]*(r+12),hor=v[1]===0,bw=hor?16:18,bh=hor?18:16;
+  const col=on?'var(--hot)':FG;
+  let s=`<line x1="${f1(cx-v[0]*r)}" y1="${f1(cy-v[1]*r)}" x2="${f1(bx+v[0]*8)}" y2="${f1(by+v[1]*8)}" stroke="${col}" stroke-width="1.6"/>`;
+  if(!noMount){const mx=bx-v[0]*16,my=by-v[1]*16,px=v[1],py=v[0];s+=`<line x1="${f1(bx-v[0]*8)}" y1="${f1(by-v[1]*8)}" x2="${f1(mx)}" y2="${f1(my)}" stroke="${MUT}" stroke-width="2"/><line x1="${f1(mx-px*12)}" y1="${f1(my-py*12)}" x2="${f1(mx+px*12)}" y2="${f1(my+py*12)}" stroke="${FG}" stroke-width="2.4"/>`;
+    for(let i=-1;i<=1;i++)s+=`<line x1="${f1(mx+px*i*8)}" y1="${f1(my+py*i*8)}" x2="${f1(mx+px*i*8-v[0]*6+py*4)}" y2="${f1(my+py*i*8-v[1]*6+px*4)}" stroke="${MUT}" stroke-width="1.2"/>`;}
+  s+=R_(bx-bw/2,by-bh/2,bw,bh,`fill="${on?'var(--hot-soft)':'var(--body)'}" stroke="${on?'var(--hot)':'var(--body-d)'}" stroke-width="1.4"`);
+  s+=`<circle cx="${f1(cx)}" cy="${f1(cy)}" r="${r}" fill="${on?'var(--hot-soft)':'var(--surface)'}" stroke="${col}" stroke-width="1.8"/><circle cx="${f1(cx)}" cy="${f1(cy)}" r="1.6" fill="${col}"/>`;
+  const o={u:[0,-bh/2-7,'middle'],d:[0,bh/2+15,'middle'],l:[-bw/2-5,5,'end'],r:[bw/2+5,5,'start'],rr:[bw/2+22,5,'start']}[lp||'r'];
+  s+=`<text x="${f1(bx+o[0])}" y="${f1(by+o[1])}" text-anchor="${o[2]}" class="sv-num" style="fill:${col};font-weight:${on?700:600}">${label}</text>`;
+  return s;}
+const piece=(x,y,w,h,extra,fill)=>R_(x,y,w,h,`fill="${fill||'var(--cold-soft)'}" stroke="var(--cold)" stroke-width="1.5"`)+(extra||'');
+const hatch=id=>`<defs><pattern id="${id}" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="var(--muted)" stroke-width="2"/></pattern></defs>`;
+const floor=(x1,x2,y)=>`<line x1="${x1}" y1="${y}" x2="${x2}" y2="${y}" stroke="${FG}" stroke-width="2"/>`;
+const VS=32;// mida de les microvàlvules
+const dot=(x,y,on)=>`<circle cx="${f1(x)}" cy="${f1(y)}" r="3.2" fill="${on?AIR:MUT}"/>`;
+// línia cilindre ↔ distribuïdor amb l'aire d'escapament visible. path dibuixat des del distribuïdor cap al cilindre.
+function cylLine(d,press,mvIn,mvOut){return press?pipe(d,true,mvIn?1:0,3):(mvOut?exFlow(d,-1):pipe(d,false,0,3));}
+// línies d'un cilindre de doble efecte (tija a l'esquerra) amb regulador unidireccional a la línia anterior (frena la sortida)
+function linesDE(r,c,pA,pB,mv,reg){const xA=r.portX('A'),xB=r.portX('B'),out=mv>0,inn=mv<0;let s='';
+  s+=cylLine(`M${f1(xA)},${r.top} L${f1(xA)},148 L${f1(c.ant)},148 L${f1(c.ant)},130`,pA,inn,out);
+  s+=cylLine(`M${f1(c.ant)},70 L${f1(c.ant)},${c.bot}`,pA,inn,out);
+  s+=regSym(c.ant,100,true,out?'thr':(inn?'chk':null),inn,out?0.5:1.3)+lbl(c.ant-30,104,reg,'end');
+  s+=cylLine(`M${f1(xB)},${r.top} L${f1(xB)},154 L${f1(c.post)},154 L${f1(c.post)},${c.bot}`,pB,out,inn);
+  return s;}
 
 /* ======================= EXEMPLE 3 · ESTAMPACIÓ ======================= */
-const EX3={planVB:'0 0 640 230',schVB:'0 -14 640 394',rows:[['+',''],['','+'],['−','−']],
-  init:()=>({eA:0,eB:0,v12:1,v11:1,v21:1,v22:1,v23:1,stamped:false}),
-  frame(s,dt,allow){const S=40;let h='';
-    s.v12=approach(s.v12,s.p?0:1,6,dt);const r12=valve(VDEF.v32nt,{x:40,y:300,S,pos:s.v12,actL:'polsador',actR:'molla',onL:s.p,portLen:14,labels:false});
-    const s22=s.eA>0.97,s23=s.eB>0.97;
-    s.v22=approach(s.v22,s22?0:1,6,dt);const r22=valve(VDEF.v32nt,{x:236,y:96,S:VS,pos:s.v22,actL:'rodet',actR:'molla',onL:s22,portLen:12,labels:false});
-    s.v23=approach(s.v23,s23?0:1,6,dt);const r23=valve(VDEF.v32nt,{x:470,y:96,S:VS,pos:s.v23,actL:'rodet',actR:'molla',onL:s23,portLen:12,labels:false});
+const EX3={planVB:'0 0 540 318',schVB:'0 -18 640 388',
+  rows:[['+','','1.2'],['','+','2.2'],['−','−','2.3']],
+  move:['<b>Etapa 1 · A+:</b> 1.2 pilota 1.1 i A empeny la peça cap a la paret. L\'avanç és lent perquè 1.02 frena l\'aire que entra.',
+    '<b>Etapa 2 · B+:</b> la peça, contra la paret, trepitja 2.2, que pilota 2.1: B baixa a estampar (lentament, per 2.02).',
+    '<b>Etapa 3 · (A− B−):</b> el tampó trepitja 2.3, que pilota el costat dret de 1.1 i de 2.1: els dos cilindres tornen alhora per la molla (ràpid).'],
+  after:['A ha arribat al final: la peça és contra la paret i trepitja <b>2.2</b>.','B ha arribat abaix: el tampó trepitja <b>2.3</b>.'],
+  next:['','2.2 pilotarà 2.1 i B baixarà (etapa 2).','2.3 pilotarà 1.1 i 2.1, i tornaran tots dos alhora (etapa 3).'],
+  idle:'<b>Repòs.</b> Prem 1.2 per iniciar un cicle.',
+  init:()=>({eA:0,eB:0,v12:1,v11:1,v21:1,v22:1,v23:1,stamped:false,px:250}),
+  frame(s,dt){const S=40;let h='';
+    const cA0={x:100,y:28,L:110,H:34,type:'SE'},cB0={x:400,y:28,L:110,H:34,type:'SE'};
+    const s22=s.eA>0.97,s23=s.eB>0.97,x11=cA0.x+20-1.3*S,x21=cB0.x+20-1.3*S;
+    s.v12=approach(s.v12,s.p?0:1,6,dt);const r12=valve(VDEF.v32nt,{x:40,y:300,S:VS,pos:s.v12,actL:'polsador',actR:'molla',onL:s.p,portLen:12,labels:false});
+    s.v22=approach(s.v22,s22?0:1,6,dt);const r22=valve(VDEF.v32nt,{x:260,y:300,S:VS,pos:s.v22,actL:'rodet',actR:'molla',onL:s22,portLen:12,labels:false});
+    s.v23=approach(s.v23,s23?0:1,6,dt);const r23=valve(VDEF.v32nt,{x:460,y:300,S:VS,pos:s.v23,actL:'rodet',actR:'molla',onL:s23,portLen:12,labels:false});
     const L11=!!r12.pp.A,R=!!r23.pp.A,L21=!!r22.pp.A;
     biMove(s,'v11',L11,R,dt);biMove(s,'v21',L21,R,dt);
-    const r11=valve(VDEF.v32nt,{x:28,y:190,S,pos:s.v11,actL:'pilot',actR:'pilot',onL:L11,onR:R,portLen:14,labels:false}),r21=valve(VDEF.v32nt,{x:348,y:190,S,pos:s.v21,actL:'pilot',actR:'pilot',onL:L21,onR:R,portLen:14,labels:false});
-    const pA=!!r11.pp.A,pB=!!r21.pp.B||!!r21.pp.A;const oA=s.eA,oB=s.eB;
-    if(allow){s.eA=cylMove(s.eA,pA,false,'SE',dt,0.28,0.7);s.eB=cylMove(s.eB,pB,false,'SE',dt,0.32,0.7);}
+    const r11=valve(VDEF.v32nt,{x:x11,y:172,S,pos:s.v11,actL:'pilot',actR:'pilot',onL:L11,onR:R,portLen:12,labels:false}),r21=valve(VDEF.v32nt,{x:x21,y:172,S,pos:s.v21,actL:'pilot',actR:'pilot',onL:L21,onR:R,portLen:12,labels:false});
+    const pA=!!r11.pp.A,pB=!!r21.pp.A,oA=s.eA,oB=s.eB;
+    s.eA=cylMove(s.eA,pA,false,'SE',dt,0.28,0.7);s.eB=cylMove(s.eB,pB,false,'SE',dt,0.32,0.7);
     const mA=Math.sign(s.eA-oA),mB=Math.sign(s.eB-oB);
-    if(s.p&&s.eA<0.02&&s.eB<0.02){s.stamped=false;s.px=220;}if(s.eB>0.95)s.stamped=true;
-    const cA=cylinder({x:60,y:30,L:120,H:34,type:'SE',ext:s.eA,post:pA}),cB=cylinder({x:380,y:30,L:120,H:34,type:'SE',ext:s.eB,post:pB});
+    if(s.p&&s.eA<0.02&&s.eB<0.02){s.stamped=false;s.px=250;}if(s.eB>0.95)s.stamped=true;
+    const cA=cylinder(Object.assign({ext:s.eA,post:pA},cA0)),cB=cylinder(Object.assign({ext:s.eB,post:pB},cB0));
     h+=cA.svg+cB.svg;
-    const line=(c,r,pp,m)=>pipe(`M${f1(c.portPost)},${r.top} L${f1(c.portPost)},145`,pp,pp&&m>0?1:0,3)+(m<0?exFlow(`M${f1(c.portPost)},85 L${f1(c.portPost)},64`,-1):pipe(`M${f1(c.portPost)},85 L${f1(c.portPost)},64`,pp,pp&&m>0?1:0,3))+regSym(c.portPost,115,false,m>0?'thr':(m<0?'chk':null),m>0,m>0?0.5:1.4);
-    h+=line(cA,r11,pA,mA)+line(cB,r21,pB,mB)+r11.svg+r21.svg+r12.svg+r22.svg+r23.svg;
-    h+=pilot(`M${f1(r12.portX('A'))},${r12.top} L${f1(r12.portX('A'))},270 L6,270 L6,${r11.mid} L${f1(r11.attL)},${r11.mid}`,L11,L11?1:0);
-    h+=pilot(`M${f1(r22.portX('A'))},${r22.top} L${f1(r22.portX('A'))},74 L316,74 L316,${r21.mid} L${f1(r21.attL)},${r21.mid}`,L21,L21?1:0);
-    h+=pilot(`M${f1(r23.portX('A'))},${r23.top} L${f1(r23.portX('A'))},74 L520,74 L520,250 L196,250 L196,${r11.mid} L${f1(r11.attR)},${r11.mid}`,R,R?1:0)+pilot(`M520,${r21.mid} L${f1(r21.attR)},${r21.mid}`,R,R?-1:0)+`<circle cx="520" cy="${r21.mid}" r="3" fill="${R?AIR:MUT}"/>`;
-    h+=endMark(60+8+90+14+130,8,'2.2',s22)+endMark(380+8+90+14+130,8,'2.3',s23)+lbl(60,24,'A · 1.0')+lbl(380,24,'B · 2.0')+lbl(50,118,'1.02','end')+lbl(370,118,'2.02','end')+lbl(28,185,'1.1')+lbl(348,185,'2.1')+lbl(40,295,'1.2')+lbl(236,91,'2.2')+lbl(470,91,'2.3');
-    // plànol
-    let p=`<line x1="20" y1="190" x2="440" y2="190" stroke="${FG}" stroke-width="2"/><rect x="440" y="100" width="14" height="90" fill="url(#hatch3)" stroke="${FG}"/>`;
-    p+=`<defs><pattern id="hatch3" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="var(--muted)" stroke-width="2"/></pattern></defs>`;
-    const pa=planCylH(30,150,110,32,s.eA,190,1);p+=pa.svg+`<rect x="${f1(pa.tip)}" y="146" width="8" height="40" fill="var(--steel)"/>`;
-    s.px=Math.max(s.px||220,pa.tip+8);const px=s.px;p+=piece(px,150,70,40,s.stamped?txt(f1(px+35),174,'12/27','sv-fg').replace('class="sv-fg"','class="sv-fg" style="fill:var(--hot)"'):'');
-    const pb=planCylV(386,8,36,52,s.eB,62,1);p+=pb.svg+`<rect x="384" y="${f1(pb.tip)}" width="40" height="10" fill="var(--steel)"/>`;
-    p+=fcPlan(430,205,'2.2',s22)+fcPlan(470,138,'2.3',s23,90)+txt(85,214,'A','sv-fg')+txt(470,40,'B','sv-fg');
+    // línia del cilindre amb el regulador 1.02 / 2.02 (frena l'entrada)
+    const line=(c,r,pp,m,nm)=>{const x=c.portPost;return cylLine(`M${f1(x)},${r.top} L${f1(x)},130`,pp,m>0,m<0)+cylLine(`M${f1(x)},70 L${f1(x)},62`,pp,m>0,m<0)+
+      regSym(x,100,false,m>0?'thr':(m<0?'chk':null),m>0,m>0?0.5:1.4)+lbl(x-30,104,nm,'end');};
+    h+=line(cA,r11,pA,mA,'1.02')+line(cB,r21,pB,mB,'2.02')+r11.svg+r21.svg+r12.svg+r22.svg+r23.svg;
+    const a12=r12.portX('A'),a22=r22.portX('A'),a23=r23.portX('A');
+    h+=pilot(`M${f1(a12)},${r12.top} L${f1(a12)},276 L${f1(x11-34)},276 L${f1(x11-34)},${r11.mid} L${f1(r11.attL)},${r11.mid}`,L11,L11?1:0);
+    h+=pilot(`M${f1(a22)},${r22.top} L${f1(a22)},276 L${f1(x21-34)},276 L${f1(x21-34)},${r21.mid} L${f1(r21.attL)},${r21.mid}`,L21,L21?1:0);
+    h+=pilot(`M${f1(a23)},${r23.top} L${f1(a23)},262 L${f1(x21+150)},262 L${f1(x21+150)},${r21.mid} L${f1(r21.attR)},${r21.mid}`,R,R?1:0)+pilot(`M${f1(a23)},262 L${f1(x11+150)},262 L${f1(x11+150)},${r11.mid} L${f1(r11.attR)},${r11.mid}`,R,R?1:0)+dot(a23,262,R);
+    const tipR=(o,e)=>{const st=o.L-30;return o.x+22+st*(1+e)+40;};
+    h+=endMark(tipR(cA0,1),4,'2.2',s22)+endMark(tipR(cB0,1),4,'2.3',s23)+lbl(cA0.x,22,'A · 1.0')+lbl(cB0.x,22,'B · 2.0')+lbl(x11-18,168,'1.1')+lbl(x21-18,168,'2.1')+lbl(22,296,'1.2')+lbl(242,296,'2.2')+lbl(442,296,'2.3');
+    // plànol (Fig. 3.73)
+    let p=hatch('hx3')+floor(20,520,270)+R_(452,230,12,40,`fill="url(#hx3)" stroke="${FG}"`);
+    const pa=pCylH(40,226,120,32,s.eA,200,1);p+=pa.svg+R_(pa.tip,214,8,54,ST);
+    s.px=Math.max(s.px,pa.tip+8);const px=s.px;
+    p+=piece(px,214,64,56,s.stamped?`<text x="${f1(px+32)}" y="247" text-anchor="middle" class="sv-num" style="fill:var(--hot);font-weight:700">12/27</text>`:'');
+    const pb=pCylV(402,10,36,56,s.eB,114,1);p+=pb.svg+R_(392,pb.tip,56,14,`fill="var(--steel-l)" stroke="${FG}"`)+R_(448,pb.tip,42,4,ST);
+    p+=fcP(440,270,'u','2.2',s22,'r')+fcP(482,204,'u','2.3',s23,'r');
+    p+=txt(100,292,'A · 1.0','sv-fg')+txt(396,40,'B · 2.0','sv-fg','end');
     const stage=mA>0?1:(mB>0?2:((mA<0||mB<0)?3:0));
-    const status=mA>0?'<b>Etapa 1 · A+:</b> 1.2 ha pilotat 1.1 i A empeny la peça cap a la paret (lentament, per 1.02).':mB>0?'<b>Etapa 2 · B+:</b> A ha trepitjat 2.2, que pilota 2.1: B baixa a estampar.':(mA<0||mB<0)?'<b>Etapa 3 · (A− B−):</b> B ha trepitjat 2.3, que actua sobre els pilotatges drets de 1.1 i 2.1: tornen tots dos alhora (ràpid).':
-      (s22&&s.eB<0.02?'<b>Senyal:</b> 2.2 ja ha pilotat 2.1. Prem «Pas següent».':(s23?'<b>Senyal:</b> 2.3 ja ha pilotat 1.1 i 2.1. Prem «Pas següent».':'<b>Repòs.</b> Prem 1.2 per iniciar un cicle.'));
-    return {plan:p,sch:h,moving:mA!==0||mB!==0,stage,idle:s.eA<0.02&&s.eB<0.02&&!s.p,status};}};
+    return {plan:p,sch:h,moving:mA!==0||mB!==0,stage,idle:s.eA<0.02&&s.eB<0.02&&!s.p};}};
 
 /* ======================= EXEMPLE 4 · TRANSPORT ======================= */
-const EX4={planVB:'0 0 640 250',schVB:'0 -14 640 444',rows:[['+',''],['','+'],['−',''],['','−']],
+const EX4={planVB:'0 0 560 360',schVB:'0 -18 700 442',
+  rows:[['+','','1.2 · 1.4'],['','+','2.2'],['−','','1.3'],['','−','2.3']],
+  move:['<b>Etapa 1 · A+:</b> 1.2 i 1.4 (B a dins), connectades en sèrie, pilotegen 1.1: A puja la peça.',
+    '<b>Etapa 2 · B+:</b> A, a dalt, trepitja 2.2, que pilota 2.1: B empeny la peça cap al nivell superior.',
+    '<b>Etapa 3 · A−:</b> B, al final, trepitja 1.3, que pilota el costat dret de 1.1: A baixa.',
+    '<b>Etapa 4 · B−:</b> A, abaix, trepitja 2.3, que pilota el costat dret de 2.1: B torna.'],
+  after:['A ha arribat a dalt: la plataforma trepitja <b>2.2</b>.','B ha arribat al final: l\'empenyedor trepitja <b>1.3</b>.','A ha arribat abaix: la plataforma trepitja <b>2.3</b>.'],
+  next:['','2.2 pilotarà 2.1 i B empenyerà la peça (etapa 2).','1.3 pilotarà 1.1 i A baixarà (etapa 3).','2.3 pilotarà 2.1 i B tornarà (etapa 4).'],
+  idle:'<b>Repòs.</b> B és a dins i trepitja 1.4: prem 1.2 per iniciar un cicle.',
   init:()=>({eA:0,eB:0,v12:1,v14:1,v13:1,v22:1,v23:1,v11:1,v21:1,pc:'lift',spawn:1}),
-  frame(s,dt,allow){const S=40;let h='';const cA0={x:150,y:30,L:120,H:34,type:'DE'},cB0={x:470,y:30,L:120,H:34,type:'DE'};
+  frame(s,dt){const S=40;let h='';const cA0={x:150,y:28,L:130,H:34,type:'DE'},cB0={x:470,y:28,L:130,H:34,type:'DE'};
     const a0=s.eA<0.03,a1=s.eA>0.97,b0=s.eB<0.03,b1=s.eB>0.97;
-    s.v12=approach(s.v12,s.p?0:1,6,dt);const r12=valve(VDEF.v32nt,{x:30,y:350,S:VS,pos:s.v12,actL:'polsador',actR:'molla',onL:s.p,portLen:12,labels:false});
-    s.v14=approach(s.v14,b0?0:1,6,dt);const r14=valve(VDEF.v32nt,{x:30,y:270,S:VS,pos:s.v14,actL:'rodet',actR:'molla',onL:b0,portLen:12,labels:false,pIn:!!r12.pp.A,src:false});
-    s.v13=approach(s.v13,b1?0:1,6,dt);const r13=valve(VDEF.v32nt,{x:296,y:270,S:VS,pos:s.v13,actL:'rodet',actR:'molla',onL:b1,portLen:12,labels:false});
-    s.v22=approach(s.v22,a1?0:1,6,dt);const r22=valve(VDEF.v32nt,{x:414,y:270,S:VS,pos:s.v22,actL:'rodet',actR:'molla',onL:a1,portLen:12,labels:false});
-    s.v23=approach(s.v23,a0?0:1,6,dt);const r23=valve(VDEF.v32nt,{x:530,y:270,S:VS,pos:s.v23,actL:'rodet',actR:'molla',onL:a0,portLen:12,labels:false});
+    s.v12=approach(s.v12,s.p?0:1,6,dt);const r12=valve(VDEF.v32nt,{x:34,y:360,S:VS,pos:s.v12,actL:'polsador',actR:'molla',onL:s.p,portLen:12,labels:false});
+    s.v14=approach(s.v14,b0?0:1,6,dt);const r14=valve(VDEF.v32nt,{x:34,y:270,S:VS,pos:s.v14,actL:'rodet',actR:'molla',onL:b0,portLen:12,labels:false,pIn:!!r12.pp.A,src:false});
+    s.v13=approach(s.v13,b1?0:1,6,dt);const r13=valve(VDEF.v32nt,{x:300,y:270,S:VS,pos:s.v13,actL:'rodet',actR:'molla',onL:b1,portLen:12,labels:false});
+    s.v22=approach(s.v22,a1?0:1,6,dt);const r22=valve(VDEF.v32nt,{x:466,y:270,S:VS,pos:s.v22,actL:'rodet',actR:'molla',onL:a1,portLen:12,labels:false});
+    s.v23=approach(s.v23,a0?0:1,6,dt);const r23=valve(VDEF.v32nt,{x:540,y:360,S:VS,pos:s.v23,actL:'rodet',actR:'molla',onL:a0,portLen:12,labels:false});
     const L11=!!r14.pp.A,R11=!!r13.pp.A,L21=!!r22.pp.A,R21=!!r23.pp.A;
     biMove(s,'v11',L11,R11,dt);biMove(s,'v21',L21,R21,dt);
-    const r11=valve(VDEF.v52,{x:150,y:180,S,pos:s.v11,actL:'pilot',actR:'pilot',onL:L11,onR:R11,portLen:14,labels:false}),r21=valve(VDEF.v52,{x:470,y:180,S,pos:s.v21,actL:'pilot',actR:'pilot',onL:L21,onR:R21,portLen:14,labels:false});
+    const r11=valve(VDEF.v52,{x:150,y:172,S,pos:s.v11,actL:'pilot',actR:'pilot',onL:L11,onR:R11,portLen:12,labels:false}),r21=valve(VDEF.v52,{x:470,y:172,S,pos:s.v21,actL:'pilot',actR:'pilot',onL:L21,onR:R21,portLen:12,labels:false});
     const pA=!!r11.pp.A,pB=!!r11.pp.B,qA=!!r21.pp.A,qB=!!r21.pp.B,oA=s.eA,oB=s.eB;
-    if(allow){s.eA=cylMove(s.eA,pB,pA,'DE',dt,0.3,0.4);s.eB=cylMove(s.eB,qB,qA,'DE',dt,0.3,0.4);}
+    s.eA=cylMove(s.eA,pB,pA,'DE',dt,0.3,0.45);s.eB=cylMove(s.eB,qB,qA,'DE',dt,0.3,0.45);
     const mA=Math.sign(s.eA-oA),mB=Math.sign(s.eB-oB);
     const cA=cylL(Object.assign({ext:s.eA,post:pB,ant:pA},cA0)),cB=cylL(Object.assign({ext:s.eB,post:qB,ant:qA},cB0));
-    h+=cA.svg+cB.svg+pipesDE(r11,cA,pA,pB,mA,124,134)+pipesDE(r21,cB,qA,qB,mB,124,134)+r11.svg+r21.svg+r12.svg+r13.svg+r14.svg+r22.svg+r23.svg;
-    h+=pipe(`M${f1(r12.portX('A'))},${r12.top} L${f1(r14.portX('P'))},${r14.bot}`,!!r12.pp.A,0,2.2);
-    h+=pilot(`M${f1(r14.portX('A'))},${r14.top} L${f1(r14.portX('A'))},${r11.mid} L${f1(r11.attL)},${r11.mid}`,L11,L11?1:0)+pilot(`M${f1(r13.portX('A'))},${r13.top} L${f1(r13.portX('A'))},${r11.mid} L${f1(r11.attR)},${r11.mid}`,R11,R11?-1:0);
-    h+=pilot(`M${f1(r22.portX('A'))},${r22.top} L${f1(r22.portX('A'))},${r21.mid} L${f1(r21.attL)},${r21.mid}`,L21,L21?1:0)+pilot(`M${f1(r23.portX('A'))},${r23.top} L${f1(r23.portX('A'))},244 L630,244 L630,${r21.mid} L${f1(r21.attR)},${r21.mid}`,R21,R21?1:0);
-    h+=endMark(rodEndAt(cA0,1),8,'2.2',a1)+endMark(rodEndAt(cA0,0),8,'2.3',a0)+endMark(rodEndAt(cB0,1),8,'1.3',b1)+endMark(rodEndAt(cB0,0),8,'1.4',b0);
-    h+=lbl(236,26,'A · 1.0')+lbl(560,26,'B · 2.0')+lbl(150,175,'1.1')+lbl(470,175,'2.1')+lbl(30,345,'1.2')+lbl(30,265,'1.4')+lbl(296,265,'1.3')+lbl(414,265,'2.2')+lbl(530,265,'2.3');
-    // plànol: A puja (vertical), B empeny (horitzontal)
-    const lowY=200,upY=96,platY=lowY-(lowY-upY)*s.eA;
-    if(s.pc==='lift'&&s.eB>0.05&&a1)s.pc='push';if(s.pc==='push'&&b1)s.pc='done';if(s.pc==='done'&&a0&&b0&&!s.p){s.pc='new';s.spawn=0;}
-    if(s.pc==='new'){s.spawn=Math.min(1,s.spawn+dt*0.8);if(s.spawn>=1)s.pc='lift';}
-    let p=`<line x1="300" y1="${lowY}" x2="620" y2="${lowY}" stroke="${FG}" stroke-width="2"/><line x1="40" y1="${upY}" x2="240" y2="${upY}" stroke="${FG}" stroke-width="2"/><line x1="300" y1="${upY}" x2="620" y2="${upY}" stroke="${FG}" stroke-width="2"/>`;
-    p+=`<rect x="242" y="${f1(platY)}" width="56" height="8" fill="var(--steel)"/>`;const ca=planCylV(256,214,28,30,s.eA,98,-1);p+=ca.svg;
-    const tipB=310-s.eB*170;const cb=planCylH(430,upY-36,120,26,s.eB,170,-1);p+=cb.svg+`<rect x="${f1(cb.tip-8)}" y="${upY-40}" width="8" height="34" fill="var(--steel)"/>`;
-    let pcx=246,pcy=platY-36;if(s.pc==='push'){pcx=Math.min(246,cb.tip-8-48);pcy=upY-36;}if(s.pc==='done'){pcx=Math.min(246,92);pcy=upY-36;}
-    if(s.pc==='new'){p+=piece(246+(1-s.spawn)*300,lowY-36,48,36);p+=piece(92,upY-36,48,36).replace('var(--cold-soft)','var(--ok-soft)');}
-    else p+=piece(pcx,pcy,48,36);
-    p+=fcPlan(232,lowY-6,'2.3',a0,-90)+fcPlan(232,upY+18,'2.2',a1,-90)+fcPlan(560,upY+18,'1.4',b0,0,1)+fcPlan(400,upY+18,'1.3',b1,0,1)+txt(296,238,'A','sv-fg')+txt(560,52,'B','sv-fg');
+    h+=cA.svg+cB.svg+linesDE(r11,cA,pA,pB,mA,'1.02')+linesDE(r21,cB,qA,qB,mB,'2.02')+r11.svg+r21.svg+r12.svg+r13.svg+r14.svg+r22.svg+r23.svg;
+    const x=k=>f1(k);const a12=r12.portX('A'),a14=r14.portX('A'),a13=r13.portX('A'),a22=r22.portX('A'),a23=r23.portX('A');
+    h+=pipe(`M${x(a12)},${r12.top} L${x(r14.portX('P'))},${r14.bot}`,!!r12.pp.A,0,2.2);
+    h+=pilot(`M${x(a14)},${r14.top} L${x(a14)},${r11.mid} L${x(r11.attL)},${r11.mid}`,L11,L11?1:0)+pilot(`M${x(a13)},${r13.top} L${x(a13)},${r11.mid} L${x(r11.attR)},${r11.mid}`,R11,R11?1:0);
+    h+=pilot(`M${x(a22)},${r22.top} L${x(a22)},246 L440,246 L440,${r21.mid} L${x(r21.attL)},${r21.mid}`,L21,L21?1:0)+pilot(`M${x(a23)},${r23.top} L${x(a23)},340 L690,340 L690,${r21.mid} L${x(r21.attR)},${r21.mid}`,R21,R21?1:0);
+    h+=endMark(rodEndAt(cA0,1),4,'2.2',a1)+endMark(rodEndAt(cA0,0),4,'2.3',a0)+endMark(rodEndAt(cB0,1),4,'1.3',b1)+endMark(rodEndAt(cB0,0),4,'1.4',b0);
+    h+=lbl(cA0.x+cA0.L,22,'A · 1.0','end')+lbl(cB0.x+cB0.L,22,'B · 2.0','end')+lbl(132,168,'1.1')+lbl(452,168,'2.1')+lbl(16,356,'1.2')+lbl(16,266,'1.4')+lbl(282,266,'1.3')+lbl(448,266,'2.2')+lbl(522,356,'2.3');
+    // plànol (Fig. 3.75): A puja la peça; B l'empeny cap a l'esquerra
+    const pa=pCylV(215,298,30,50,s.eA,140,-1,40),platY=pa.tip-8;
+    const pb=pCylH(290,77,120,26,s.eB,154,-1,20),plate=pb.tip-8;
+    if(s.pc==='lift'&&mB>0)s.pc='push';if(s.pc==='push'&&b1)s.pc='done';if(s.pc==='done'&&a0&&b0&&!s.p){s.pc='new';s.spawn=0;}
+    if(s.pc==='new'){s.spawn=Math.min(1,s.spawn+dt*0.7);if(s.spawn>=1)s.pc='lift';}
+    let p=floor(294,540,250)+floor(30,196,110)+floor(262,540,110);
+    p+=pa.svg+R_(200,platY,60,8,ST)+R_(230,platY+36,62,4,ST);
+    p+=pb.svg+R_(plate,62,8,46,ST)+R_(plate+2,44,4,18,ST);
+    if(s.pc==='new'){p+=piece(206+(1-s.spawn)*300,210,48,40)+piece(60,70,48,40,'','var(--ok-soft)');}
+    else{let qx=206,qy=platY-40;if(s.pc==='push'){qx=Math.min(206,plate-48);qy=70;}if(s.pc==='done'){qx=60;qy=70;}p+=piece(qx,qy,48,40);}
+    p+=fcP(205,258,'u','2.3',a0,'l')+fcP(284,146,'d','2.2',a1,'r')+fcP(110,52,'r','1.3',b1,'u')+fcP(268,52,'l','1.4',b0,'u');
+    p+=txt(252,330,'A · 1.0','sv-fg','start')+txt(400,70,'B · 2.0','sv-fg');
     const stage=mA>0?1:(mB>0?2:(mA<0?3:(mB<0?4:0)));
-    const status=mA>0?'<b>Etapa 1 · A+:</b> 1.2 i 1.4 (B a dins) en sèrie han pilotat 1.1: A puja la peça.':mB>0?'<b>Etapa 2 · B+:</b> A a dalt trepitja 2.2, que pilota 2.1: B empeny la peça.':mA<0?'<b>Etapa 3 · A−:</b> B al final trepitja 1.3, que pilota l\'altre costat de 1.1: A baixa.':mB<0?'<b>Etapa 4 · B−:</b> A abaix trepitja 2.3, que pilota 2.1: B torna.':
-      '<b>'+(a0&&b0?'Repòs.':'Aturat entre etapes.')+'</b> '+(a0&&b0?'1.4 està trepitjat (B a dins): prem 1.2 per iniciar un cicle.':'Prem «Pas següent».');
-    return {plan:p,sch:h,moving:mA!==0||mB!==0,stage,idle:a0&&b0&&!s.p,status};}};
+    return {plan:p,sch:h,moving:mA!==0||mB!==0,stage,idle:a0&&b0&&!s.p};}};
 
 /* ======================= EXEMPLE 5 · MECANITZACIÓ (amb 0.3) ======================= */
-const EX5={planVB:'0 0 640 240',schVB:'0 -14 640 424',rows:[['+',''],['','+'],['','−'],['−','']],
-  init:()=>({eA:0,eB:0,v12:1,v14:1,v13:1,v22:1,v23:1,v11:1,v21:1,v03:1,hole:false}),
-  frame(s,dt,allow){const S=40;let h='';const cA0={x:150,y:24,L:120,H:34,type:'DE'},cB0={x:470,y:24,L:120,H:34,type:'DE'};
+const EX5={planVB:'0 0 560 300',schVB:'0 -18 700 474',
+  rows:[['+','','1.2 · 1.4 → grup I'],['','+','2.2'],['','−','2.3 → grup II'],['−','','1.3']],
+  move:['<b>Etapa 1 · A+:</b> 1.2 i 1.4 han passat 0.3 al grup I. La línia I pilota directament 1.1: A empeny la peça cap a la paret.',
+    '<b>Etapa 2 · B+:</b> la peça trepitja 2.2 (que té aire de la línia I), i 2.2 pilota 2.1: el trepant baixa i perfora.',
+    '<b>Etapa 3 · B−:</b> el trepant ha trepitjat 2.3, que ha passat 0.3 al grup II. La línia II pilota directament 2.1: B puja. 2.2 continua trepitjat, però ja no té aire.',
+    '<b>Etapa 4 · A−:</b> B, a dalt, trepitja 1.3 (que té aire de la línia II), i 1.3 pilota el costat dret de 1.1: A retrocedeix.'],
+  after:['A ha arribat a la paret: la peça trepitja <b>2.2</b>.','El trepant ha arribat abaix i trepitja <b>2.3</b>.','B ha tornat a dalt i trepitja <b>1.3</b>.'],
+  next:['','2.2 pilotarà 2.1 i el trepant baixarà (etapa 2).','2.3 passarà 0.3 al grup II: la línia II farà pujar B (etapa 3).','1.3 pilotarà 1.1 i A retrocedirà (etapa 4).'],
+  idle:s=>'<b>Repòs.</b> '+(s.v03>0.95?'Grup II actiu. B és a dalt (1.3) i A a dins (1.4): prem 1.2 per passar al grup I i començar.':'Prem 1.2.'),
+  init:()=>({eA:0,eB:0,v12:1,v14:1,v13:1,v22:1,v23:1,v11:1,v21:1,v03:1,hole:false,px:250}),
+  frame(s,dt){const S=40;let h='';const cA0={x:150,y:28,L:130,H:34,type:'DE'},cB0={x:470,y:28,L:130,H:34,type:'DE'};
     const a0=s.eA<0.03,a1=s.eA>0.97,b0=s.eB<0.03,b1=s.eB>0.97;
     const g1=s.v03<0.05,g2=s.v03>0.95;// línia I (B de 0.3) i línia II (A de 0.3)
-    s.v13=approach(s.v13,b0?0:1,6,dt);const r13=valve(VDEF.v32nt,{x:300,y:190,S:VS,pos:s.v13,actL:'rodet',actR:'molla',onL:b0,portLen:12,labels:false,pIn:g2,src:false});
-    s.v22=approach(s.v22,a1?0:1,6,dt);const r22=valve(VDEF.v32nt,{x:420,y:190,S:VS,pos:s.v22,actL:'rodet',actR:'molla',onL:a1,portLen:12,labels:false,pIn:g1,src:false});
-    s.v23=approach(s.v23,b1?0:1,6,dt);const r23=valve(VDEF.v32nt,{x:530,y:190,S:VS,pos:s.v23,actL:'rodet',actR:'molla',onL:b1,portLen:12,labels:false,pIn:g1,src:false});
-    s.v12=approach(s.v12,s.p?0:1,6,dt);const r12=valve(VDEF.v32nt,{x:30,y:190,S:VS,pos:s.v12,actL:'polsador',actR:'molla',onL:s.p,portLen:12,labels:false,pIn:g2,src:false});
-    s.v14=approach(s.v14,a0?0:1,6,dt);const r14=valve(VDEF.v32nt,{x:140,y:190,S:VS,pos:s.v14,actL:'rodet',actR:'molla',onL:a0,portLen:12,labels:false,pIn:!!r12.pp.A,src:false});
+    const YI=320,YII=334;
+    s.v13=approach(s.v13,b0?0:1,6,dt);const r13=valve(VDEF.v32nt,{x:300,y:256,S:VS,pos:s.v13,actL:'rodet',actR:'molla',onL:b0,portLen:12,labels:false,pIn:g2,src:false});
+    s.v22=approach(s.v22,a1?0:1,6,dt);const r22=valve(VDEF.v32nt,{x:466,y:256,S:VS,pos:s.v22,actL:'rodet',actR:'molla',onL:a1,portLen:12,labels:false,pIn:g1,src:false});
+    s.v12=approach(s.v12,s.p?0:1,6,dt);const r12=valve(VDEF.v32nt,{x:34,y:372,S:VS,pos:s.v12,actL:'polsador',actR:'molla',onL:s.p,portLen:12,labels:false,pIn:g2,src:false});
+    s.v14=approach(s.v14,a0?0:1,6,dt);const r14=valve(VDEF.v32nt,{x:190,y:372,S:VS,pos:s.v14,actL:'rodet',actR:'molla',onL:a0,portLen:12,labels:false,pIn:!!r12.pp.A,src:false});
+    s.v23=approach(s.v23,b1?0:1,6,dt);const r23=valve(VDEF.v32nt,{x:530,y:372,S:VS,pos:s.v23,actL:'rodet',actR:'molla',onL:b1,portLen:12,labels:false,pIn:g1,src:false});
     const toI=!!r14.pp.A,toII=!!r23.pp.A;biMove(s,'v03',toI,toII,dt);
-    const r03=valve(VDEF.v52,{x:280,y:320,S,pos:s.v03,actL:'pilot',actR:'pilot',onL:toI,onR:toII,portLen:14,labels:false});
+    const r03=valve(VDEF.v52,{x:350,y:372,S,pos:s.v03,actL:'pilot',actR:'pilot',onL:toI,onR:toII,portLen:12,labels:false});
     const L11=g1,R11=!!r13.pp.A,L21=!!r22.pp.A,R21=g2;
     biMove(s,'v11',L11,R11,dt);biMove(s,'v21',L21,R21,dt);
-    const r11=valve(VDEF.v52,{x:150,y:100,S,pos:s.v11,actL:'pilot',actR:'pilot',onL:L11,onR:R11,portLen:12,labels:false}),r21=valve(VDEF.v52,{x:470,y:100,S,pos:s.v21,actL:'pilot',actR:'pilot',onL:L21,onR:R21,portLen:12,labels:false});
+    const r11=valve(VDEF.v52,{x:150,y:172,S,pos:s.v11,actL:'pilot',actR:'pilot',onL:L11,onR:R11,portLen:12,labels:false}),r21=valve(VDEF.v52,{x:470,y:172,S,pos:s.v21,actL:'pilot',actR:'pilot',onL:L21,onR:R21,portLen:12,labels:false});
     const pA=!!r11.pp.A,pB=!!r11.pp.B,qA=!!r21.pp.A,qB=!!r21.pp.B,oA=s.eA,oB=s.eB;
-    if(allow){s.eA=cylMove(s.eA,pB,pA,'DE',dt,0.3,0.4);s.eB=cylMove(s.eB,qB,qA,'DE',dt,0.3,0.4);}
-    const mA=Math.sign(s.eA-oA),mB=Math.sign(s.eB-oB);if(s.p&&a0&&b0){s.hole=false;s.px=240;}if(s.eB>0.95)s.hole=true;
+    s.eA=cylMove(s.eA,pB,pA,'DE',dt,0.3,0.45);s.eB=cylMove(s.eB,qB,qA,'DE',dt,0.3,0.45);
+    const mA=Math.sign(s.eA-oA),mB=Math.sign(s.eB-oB);if(s.p&&a0&&b0){s.hole=false;s.px=250;}if(s.eB>0.95)s.hole=true;
     const cA=cylL(Object.assign({ext:s.eA,post:pB,ant:pA},cA0)),cB=cylL(Object.assign({ext:s.eB,post:qB,ant:qA},cB0));
-    h+=cA.svg+cB.svg+pipesDE(r11,cA,pA,pB,mA,72,80)+pipesDE(r21,cB,qA,qB,mB,72,80)+r11.svg+r21.svg+r03.svg+r12.svg+r13.svg+r14.svg+r22.svg+r23.svg;
-    // línies de grup I i II
-    h+=pilot('M14,250 L620,250',g1,0)+pilot('M30,262 L616,262',g2,0)+lbl(4,246,'I')+lbl(20,276,'II');
-    h+=pilot(`M${f1(r03.portX('B'))},${r03.top} L${f1(r03.portX('B'))},250`,g1,g1?-1:0)+pilot(`M${f1(r03.portX('A'))},${r03.top} L${f1(r03.portX('A'))},262`,g2,g2?-1:0);
-    const dot=(x,y,on)=>`<circle cx="${f1(x)}" cy="${y}" r="3" fill="${on?AIR:MUT}"/>`;
-    h+=dot(r03.portX('B'),250,g1)+dot(r03.portX('A'),262,g2);
-    // alimentacions des de les línies
-    h+=pilot(`M${f1(r22.portX('P'))},${r22.bot} L${f1(r22.portX('P'))},250`,g1,0)+dot(r22.portX('P'),250,g1)+pilot(`M${f1(r23.portX('P'))},${r23.bot} L${f1(r23.portX('P'))},250`,g1,0)+dot(r23.portX('P'),250,g1);
-    h+=pilot(`M${f1(r13.portX('P'))},${r13.bot} L${f1(r13.portX('P'))},262`,g2,0)+dot(r13.portX('P'),262,g2)+pilot(`M${f1(r12.portX('P'))},${r12.bot} L${f1(r12.portX('P'))},262`,g2,0)+dot(r12.portX('P'),262,g2);
-    h+=pipe(`M${f1(r12.portX('A'))},${r12.top} L${f1(r12.portX('A'))},170 L100,170 L100,242 L${f1(r14.portX('P'))},242 L${f1(r14.portX('P'))},${r14.bot}`,!!r12.pp.A,0,2.2);
+    h+=cA.svg+cB.svg+linesDE(r11,cA,pA,pB,mA,'1.02')+linesDE(r21,cB,qA,qB,mB,'2.02')+r11.svg+r21.svg+r03.svg+r12.svg+r13.svg+r14.svg+r22.svg+r23.svg;
+    const x=k=>f1(k);
+    // línies de grup
+    h+=pilot(`M12,${YI} L676,${YI}`,g1,0)+pilot(`M20,${YII} L688,${YII}`,g2,0)+lbl(0,YI+4,'I')+lbl(0,YII+11,'II');
+    h+=txt(40,298,g1?'Grup I actiu':(g2?'Grup II actiu':'0.3 canvia…'),'sv-fg','start').replace('class="sv-fg"',`class="sv-fg" style="fill:${g1||g2?'var(--air)':'var(--muted)'}"`);
+    const a03=r03.portX('A'),b03=r03.portX('B');
+    h+=pilot(`M${x(a03)},${r03.top} L${x(a03)},${YII}`,g2,g2?1:0)+dot(a03,YII,g2)+pilot(`M${x(b03)},${r03.top} L${x(b03)},${YI}`,g1,g1?1:0)+dot(b03,YI,g1);
+    // alimentació dels finals de cursa des de les línies
+    const p13=r13.portX('P'),p22=r22.portX('P'),p12=r12.portX('P'),p23=r23.portX('P');
+    h+=pilot(`M${x(p13)},${YII} L${x(p13)},${r13.bot}`,g2,g2?1:0)+dot(p13,YII,g2)+pilot(`M${x(p22)},${YI} L${x(p22)},${r22.bot}`,g1,g1?1:0)+dot(p22,YI,g1);
+    h+=pilot(`M20,${YII} L20,440 L${x(p12)},440 L${x(p12)},${r12.bot}`,g2,g2?1:0)+dot(20,YII,g2);
+    h+=pilot(`M676,${YI} L676,446 L${x(p23)},446 L${x(p23)},${r23.bot}`,g1,g1?1:0)+dot(676,YI,g1);
+    const a12=r12.portX('A'),p14=r14.portX('P'),a14=r14.portX('A'),a23=r23.portX('A'),a13=r13.portX('A'),a22=r22.portX('A');
+    h+=pilot(`M${x(a12)},${r12.top} L${x(a12)},350 L164,350 L164,436 L${x(p14)},436 L${x(p14)},${r14.bot}`,!!r12.pp.A,r12.pp.A?1:0);
     // senyals
-    h+=pilot(`M14,250 L14,${r11.mid} L${f1(r11.attL)},${r11.mid}`,L11,L11?-1:0)+dot(14,250,g1)+pilot(`M616,262 L616,${r21.mid} L${f1(r21.attR)},${r21.mid}`,R21,R21?-1:0)+dot(616,262,g2);
-    h+=pilot(`M${f1(r13.portX('A'))},${r13.top} L${f1(r13.portX('A'))},${r11.mid} L${f1(r11.attR)},${r11.mid}`,R11,R11?-1:0)+pilot(`M${f1(r22.portX('A'))},${r22.top} L${f1(r22.portX('A'))},${r21.mid} L${f1(r21.attL)},${r21.mid}`,L21,L21?1:0);
-    h+=pilot(`M${f1(r23.portX('A'))},${r23.top} L${f1(r23.portX('A'))},170 L634,170 L634,${r03.mid} L${f1(r03.attR)},${r03.mid}`,toII,toII?1:0)+pilot(`M${f1(r14.portX('A'))},${r14.top} L${f1(r14.portX('A'))},170 L210,170 L210,${r03.mid} L${f1(r03.attL)},${r03.mid}`,toI,toI?1:0);
+    h+=pilot(`M12,${YI} L12,${r11.mid} L${x(r11.attL)},${r11.mid}`,L11,L11?1:0)+dot(12,YI,g1)+pilot(`M688,${YII} L688,${r21.mid} L${x(r21.attR)},${r21.mid}`,R21,R21?1:0)+dot(688,YII,g2);
+    h+=pilot(`M${x(a13)},${r13.top} L${x(a13)},${r11.mid} L${x(r11.attR)},${r11.mid}`,R11,R11?1:0)+pilot(`M${x(a22)},${r22.top} L${x(a22)},232 L440,232 L440,${r21.mid} L${x(r21.attL)},${r21.mid}`,L21,L21?1:0);
+    h+=pilot(`M${x(a14)},${r14.top} L${x(a14)},350 L322,350 L322,${r03.mid} L${x(r03.attL)},${r03.mid}`,toI,toI?1:0)+pilot(`M${x(a23)},${r23.top} L${x(a23)},350 L500,350 L500,${r03.mid} L${x(r03.attR)},${r03.mid}`,toII,toII?1:0);
     h+=endMark(rodEndAt(cA0,1),4,'2.2',a1)+endMark(rodEndAt(cA0,0),4,'1.4',a0)+endMark(rodEndAt(cB0,1),4,'2.3',b1)+endMark(rodEndAt(cB0,0),4,'1.3',b0);
-    h+=lbl(236,20,'A · 1.0')+lbl(560,20,'B · 2.0')+lbl(150,95,'1.1')+lbl(470,95,'2.1')+lbl(30,185,'1.2')+lbl(140,185,'1.4')+lbl(300,185,'1.3')+lbl(420,185,'2.2')+lbl(530,185,'2.3')+lbl(198,345,'0.3','end')+lbl(198,358,'(memòria)','end');
-    h+=txt(470,330,g1?'Grup I actiu':(g2?'Grup II actiu':'…'),'sv-fg','start');
-    // plànol: A empeny la peça, B baixa el trepant
-    let p=`<line x1="20" y1="200" x2="470" y2="200" stroke="${FG}" stroke-width="2"/><rect x="470" y="70" width="14" height="130" fill="url(#hatch5)" stroke="${FG}"/><defs><pattern id="hatch5" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="var(--muted)" stroke-width="2"/></pattern></defs>`;
-    const pa=planCylH(30,160,110,32,s.eA,200,1);p+=pa.svg+`<rect x="${f1(pa.tip)}" y="156" width="8" height="40" fill="var(--steel)"/>`;
-    s.px=Math.max(s.px||240,pa.tip+8);const px=s.px;p+=piece(px,150,80,50,s.hole?`<rect x="${f1(px+34)}" y="150" width="12" height="22" fill="${FG}" opacity=".75"/>`:'');
-    const pb=planCylV(392,4,44,40,s.eB,58,1);p+=pb.svg+`<rect x="380" y="${f1(pb.tip)}" width="68" height="22" rx="3" fill="var(--steel-l)" stroke="${FG}"/>`;
-    const dy=pb.tip+22,turn=(mB!==0||b1)&&!reduce?((T*40)%8):0;p+=`<rect x="410" y="${f1(dy)}" width="8" height="30" fill="var(--steel)"/>`;for(let i=0;i<4;i++)p+=`<line x1="410" y1="${f1(dy+4+i*7+turn*0.8)}" x2="418" y2="${f1(dy+1+i*7+turn*0.8)}" stroke="var(--surface)" stroke-width="1.4"/>`;
-    p+=fcPlan(460,214,'2.2',a1)+fcPlan(498,64,'1.3',b0,90)+fcPlan(498,112,'2.3',b1,90)+fcPlan(150,140,'1.4',a0)+txt(85,224,'A','sv-fg')+txt(370,30,'B','sv-fg','end');
+    h+=lbl(cA0.x+cA0.L,22,'A · 1.0','end')+lbl(cB0.x+cB0.L,22,'B · 2.0','end')+lbl(132,168,'1.1')+lbl(452,168,'2.1')+lbl(16,368,'1.2')+lbl(172,368,'1.4')+lbl(282,252,'1.3')+lbl(448,252,'2.2')+lbl(512,368,'2.3')+lbl(332,368,'0.3');
+    // plànol (Fig. 3.77): A empeny la peça contra la paret; B fa baixar el trepant
+    let p=hatch('hx5')+floor(20,470,270)+`<path d="M470,270 L470,216 L500,216 L500,20 L512,20 L512,270 Z" fill="url(#hx5)" stroke="${FG}" stroke-width="1.4"/>`;
+    const pa=pCylH(40,229,120,32,s.eA,212,1);p+=pa.svg+R_(pa.tip,214,8,54,ST)+R_(pa.tip+2,196,4,18,ST);
+    s.px=Math.max(s.px,pa.tip+8);const px=s.px;p+=piece(px,220,70,50,s.hole?R_(px+31,220,8,12,`fill="${FG}" opacity=".75"`):'');
+    const pb=pCylV(417,8,36,56,s.eB,96,1);p+=pb.svg+R_(409,pb.tip,52,26,`rx="3" fill="var(--steel-l)" stroke="${FG}"`)+R_(461,pb.tip,33,4,ST);
+    const dy=pb.tip+26,turn=(mB!==0||b1)&&!reduce?((T*40)%8):0;p+=R_(432,dy,6,26,ST);for(let i=0;i<3;i++)p+=`<line x1="432" y1="${f1(dy+5+i*7+turn*0.8)}" x2="438" y2="${f1(dy+2+i*7+turn*0.8)}" stroke="var(--surface)" stroke-width="1.4"/>`;
+    p+=fcP(186,204,'l','1.4',a0,'u')+fcP(470,245,'l','2.2',a1,'rr',1)+fcP(486,84,'d','1.3',b0,'rr')+fcP(486,184,'u','2.3',b1,'rr');
+    p+=txt(100,292,'A · 1.0','sv-fg')+txt(411,40,'B · 2.0','sv-fg','end');
     const stage=mA>0?1:(mB>0?2:(mB<0?3:(mA<0?4:0)));
-    const status=mA>0?'<b>Etapa 1 · A+:</b> el grup I té aire i pilota 1.1: A empeny la peça.':mB>0?'<b>Etapa 2 · B+:</b> A trepitja 2.2 (alimentat pel grup I), que pilota 2.1: el trepant baixa.':mB<0?'<b>Etapa 3 · B−:</b> B ha trepitjat 2.3 i 0.3 ha passat al grup II. 2.2 continua trepitjat, però ja no té aire: per això 2.1 pot canviar i el trepant puja.':mA<0?'<b>Etapa 4 · A−:</b> B a dalt trepitja 1.3 (alimentat pel grup II), que fa retrocedir A.':
-      '<b>'+(a0&&b0?'Repòs.':'Aturat entre etapes.')+'</b> '+(a0&&b0?(g2?'Grup II actiu i 1.4 trepitjat (A a dins): prem 1.2 per passar al grup I i començar.':'Prem 1.2.'):'Prem «Pas següent».');
-    return {plan:p,sch:h,moving:mA!==0||mB!==0,stage,idle:a0&&b0&&!s.p,status};}};
-function pipesDE(r,c,pA,pB,mv,yA,yB){const xA=r.portX('A'),xB=r.portX('B');return pipe(`M${f1(xA)},${r.top} L${f1(xA)},${yA} L${f1(c.ant)},${yA} L${f1(c.ant)},${c.bot}`,pA,pA&&mv<0?1:0,3)+pipe(`M${f1(xB)},${r.top} L${f1(xB)},${yB} L${f1(c.post)},${yB} L${f1(c.post)},${c.bot}`,pB,pB&&mv>0?1:0,3);}
+    return {plan:p,sch:h,moving:mA!==0||mB!==0,stage,idle:a0&&b0&&!s.p};}};
 
 const E3=makeEx('ex3',EX3),E4=makeEx('ex4',EX4),E5=makeEx('ex5',EX5);
+function setTopH(){const t=document.querySelector('.top');if(t)document.documentElement.style.setProperty('--toph',t.offsetHeight+'px');}
+setTopH();addEventListener('resize',setTopH);
 let last=performance.now();
 function loop(now){const dt=Math.min(0.05,(now-last)/1000);last=now;T+=dt;
   if(visible($('ex3-sch')))stepEx(E3,dt);if(visible($('ex4-sch')))stepEx(E4,dt);if(visible($('ex5-sch')))stepEx(E5,dt);
@@ -674,7 +756,7 @@ show((location.hash||'').slice(1),false);
     var a=d.createElement('a');a.className='btn';a.href='https://tecnolyd.github.io/artefactes/pneumatica-dos-cilindres.html';a.target='_blank';a.rel='noopener';a.textContent='⛶ Obre a pantalla completa';
     var seg2=d.querySelector('.top .seg');if(seg2)seg2.parentNode.insertBefore(a,seg2);
   }
-  var br=d.querySelector('.brand');if(br){var v=d.createElement('span');v.className='ver';v.textContent='v1';br.appendChild(v);}
+  var br=d.querySelector('.brand');if(br){var v=d.createElement('span');v.className='ver';v.textContent='v2';br.appendChild(v);}
 })();
 </script>
 
