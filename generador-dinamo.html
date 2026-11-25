@@ -5,9 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <style>[hidden]{display:none!important}body{margin:0}/* ---- Mode classe: només el títol, la frase inicial i el simulador (més gran) ---- */
 body.classe main,body.classe .shell{max-width:none}
-body.classe .mod>:is(h3,p:not(.lead):not(.eyebrow),ul,ol,.cards,.note,.key,.est,.expl,.eq,.tbl):not([id]):not(:has([id])){display:none!important}
-body.classe .mod>:is(#ma-steps,#ma-key,#sim-key,#sim-est,#txt-anells,#txt-lam,#cv-txt,#c4-txt,#part-box,.cvtxt){display:none!important}
+body.classe .mod:has(svg,canvas,.quiz)>:is(h3,p:not(.lead):not(.eyebrow),ul,ol,.cards,.note,.key,.est,.expl,.eq,.tbl):not([id]):not(:has([id])){display:none!important}
+body.classe .mod:has(svg,canvas,.quiz)>:is(#ma-steps,#ma-key,#sim-key,#sim-est,#txt-anells,#txt-lam,#cv-txt,#c4-txt,#part-box,.cvtxt){display:none!important}
 body.classe .mod>.lead{max-width:none;font-size:1.05em}
+body.classe .mod:not(:has(svg,canvas,.quiz)) .est{display:revert!important}
 body.classe .sim>svg,body.classe .sim .two svg,body.classe .fig svg{max-width:1200px}
 body.classe :is(.sim,.fig,.exgrid,[id^="sim-"]) svg{max-height:68vh}
 </style>
@@ -929,7 +930,7 @@ show((location.hash||'').slice(1),false);
     var a=d.createElement('a');a.className='btn';a.href='https://tecnolyd.github.io/artefactes/generador-dinamo.html';a.target='_blank';a.rel='noopener';a.textContent='⛶ Obre a pantalla completa';
     var seg2=d.querySelector('.top .seg');if(seg2)seg2.parentNode.insertBefore(a,seg2);
   }
-  var br=d.querySelector('.brand');if(br){var v=d.createElement('span');v.className='ver';v.textContent='v8';br.appendChild(v);}
+  var br=d.querySelector('.brand');if(br){var v=d.createElement('span');v.className='ver';v.textContent='v9';br.appendChild(v);}
 })();
 </script>
 
