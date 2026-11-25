@@ -19,15 +19,15 @@ Guia per continuar fent artefactes en una conversa nova. Llegeix-la sencera aban
 
 | Fitxer | Artefacte | Pàgina del Sites |
 |---|---|---|
-| fonaments-termodinamica.html | Fonaments de termodinàmica (v4) | 2n BAT → Termodinàmica |
-| maquines-termiques.html | Màquines de combustió interna (v6.1) | 2n BAT → Termodinàmica |
+| fonaments-termodinamica.html | Fonaments de termodinàmica (v5) | 2n BAT → Termodinàmica |
+| maquines-termiques.html | Màquines de combustió interna (v7) | 2n BAT → Termodinàmica |
 | forces-moments.html | Forces i moments | 1r BAT i 2n BAT → Estàtica (mateix fitxer) |
 | circumferencia-unitat.html | Raons trigonomètriques | Eines matemàtiques |
-| generador-dinamo.html | Generadors i dinamo (v7, autoavaluació a Google Forms: autoavaluacio-generador-dinamo.gs) | 1r BAT → Màquines elèctriques |
-| regles-ma.html | Regles de la mà esquerra i dreta (v4, pendent foto de la mà) | 1r BAT → Màquines elèctriques |
-| pneumatica-components.html | Components pneumàtics (v4): cilindres, distribuïdores, comandaments i vàlvules de control | 2n BAT → Pneumàtica |
-| pneumatica-circuits.html | Circuits pneumàtics (v3): indirecte, velocitat, simultani, posició, temporitzat, oscil·lador | 2n BAT → Pneumàtica |
-| pneumatica-dos-cilindres.html | Circuits amb dos cilindres (v2): Exemples 3, 4 i 5 del llibre (estampació, transport, mecanització amb memòria 0.3), plànol de situació com al llibre (Figs. 3.73, 3.75, 3.77) al costat de l'esquema, quadre de seqüència amb senyals, continu / pas a pas (una etapa i s'atura) | 2n BAT → Pneumàtica |
+| generador-dinamo.html | Generadors i dinamo (v8, autoavaluació a Google Forms: autoavaluacio-generador-dinamo.gs) | 1r BAT → Màquines elèctriques |
+| regles-ma.html | Regles de la mà esquerra i dreta (v5, pendent foto de la mà) | 1r BAT → Màquines elèctriques |
+| pneumatica-components.html | Components pneumàtics (v5): cilindres, distribuïdores, comandaments i vàlvules de control | 2n BAT → Pneumàtica |
+| pneumatica-circuits.html | Circuits pneumàtics (v4): indirecte, velocitat, simultani, posició, temporitzat, oscil·lador | 2n BAT → Pneumàtica |
+| pneumatica-dos-cilindres.html | Circuits amb dos cilindres (v3): Exemples 3, 4 i 5 del llibre (estampació, transport, mecanització amb memòria 0.3), plànol de situació com al llibre (Figs. 3.73, 3.75, 3.77) al costat de l'esquema, quadre de seqüència amb senyals, continu / pas a pas (una etapa i s'atura) | 2n BAT → Pneumàtica |
 
 Pendent: **Lleis de Kirchhoff** (1r BAT → Electricitat).
 
@@ -49,7 +49,8 @@ Partir sempre del codi de `maquines-termiques.html` o de `_estil/base.css` (font
 - **Disseny** «quadern d'enginyeria»:
   - barra superior `.top` amb el títol `.brand` (la segona paraula en color calent, p. ex. «Màquines <span>tèrmiques</span>»), l'etiqueta de versió i el selector **Mode estudi / Mode classe**;
   - menú lateral `.side` de mòduls numerats; cada mòdul és una `section.mod` amb `.eyebrow` («MÒDUL 1 · …»), `h2` i `.lead`;
-  - `.est` = text que només surt en mode estudi; el **mode classe** amaga aquest text i fa la lletra més gran;
+  - `.est` = text que només surt en mode estudi;
+  - **mode classe** (per projectar): només es veu l'eyebrow, el `h2`, la `.lead` (1–2 frases sobre què simulem) i els simuladors/diagrames, més grans (svg fins a 68vh, amplada completa). S'amaguen h3, paràgrafs, llistes, `.cards`, `.note`, `.key`, `.est`, `.eq` i les taules estàtiques (bloc CSS «Mode classe: només…», igual a tots els artefactes). La `.lead` ha de ser curta;
   - components: `.card`, `.tbl`, `.btn` / `.btn.primary`, `.pill`, `.pager` (anterior/següent), diagrames SVG propis, calculadores i un **quiz d'autoavaluació** al final.
 - **Comportament incrustat** (script al final de la plantilla):
   - si la pàgina és dins d'un iframe → `body.embed`, el menú passa **a dalt** (horitzontal) i s'aprofita tota l'amplada;
