@@ -178,9 +178,9 @@ main{max-width:none}
 /* ---- específic: components pneumàtics ----
    Colors com al llibre: aire a pressió = blau (--air), conductes sense pressió = gris,
    cos de les vàlvules = beix (--body), èmbol = beix fosc (--piston), peces mòbils = acer */
-:root{--air:#2f95d6;--air-soft:#cfe8f8;--empty:#eef1f5;--body:#f6dcb8;--body-d:#c49a68;--piston:#efc493;--steel:#6f7a88;--steel-l:#c3cad3}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--air:#5fb6ee;--air-soft:#173246;--empty:#202833;--body:#3f3326;--body-d:#8b7152;--piston:#a9845a;--steel:#9aa5b4;--steel-l:#5b6673}}
-:root[data-theme="dark"]{--air:#5fb6ee;--air-soft:#173246;--empty:#202833;--body:#3f3326;--body-d:#8b7152;--piston:#a9845a;--steel:#9aa5b4;--steel-l:#5b6673}
+:root{--sig:#1e9e57;--sig-soft:#d3f1df;--air:#2f95d6;--air-soft:#cfe8f8;--empty:#eef1f5;--body:#f6dcb8;--body-d:#c49a68;--piston:#efc493;--steel:#6f7a88;--steel-l:#c3cad3}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--sig:#4fd08a;--sig-soft:#16382a;--air:#5fb6ee;--air-soft:#173246;--empty:#202833;--body:#3f3326;--body-d:#8b7152;--piston:#a9845a;--steel:#9aa5b4;--steel-l:#5b6673}}
+:root[data-theme="dark"]{--sig:#4fd08a;--sig-soft:#16382a;--air:#5fb6ee;--air-soft:#173246;--empty:#202833;--body:#3f3326;--body-d:#8b7152;--piston:#a9845a;--steel:#9aa5b4;--steel-l:#5b6673}
 .c-air{color:var(--air)}
 .legend i.lg-air,.lg-air{display:inline-block;width:26px;height:0;border-top:4px solid var(--air);vertical-align:4px;margin-right:6px}
 .legend i.lg-off,.lg-off{display:inline-block;width:26px;height:0;border-top:3px solid var(--muted);vertical-align:4px;margin-right:6px}
@@ -240,6 +240,12 @@ body.classe .mod>.lead{max-width:none;font-size:1.05em}
 body.classe .mod:not(:has(svg,canvas,.quiz)) .est{display:revert!important}
 body.classe .sim>svg,body.classe .sim .two svg,body.classe .fig svg{max-width:1200px}
 body.classe :is(.sim,.fig,.exgrid,[id^="sim-"]) svg{max-height:68vh}
+
+.legend i.lg-sig,.lg-sig{display:inline-block;width:26px;height:0;border-top:4px solid var(--sig);vertical-align:4px;margin-right:6px}
+.frase{margin:10px 0 0;padding:8px 12px;border-left:4px solid var(--accent);background:var(--accent-soft);border-radius:6px}
+.tstep{flex:1 1 100%;margin-top:4px}
+#c4-graph{max-width:830px;margin:6px auto 0}
+#c4-svg{max-width:900px}
 </style>
 <header class="top">
   <div class="brand">Circuits <span>pneumàtics</span></div>
@@ -310,8 +316,11 @@ body.classe :is(.sim,.fig,.exgrid,[id^="sim-"]) svg{max-height:68vh}
   <p class="lead">Amb <b>finals de cursa</b> (vàlvules accionades per rodet que la tija trepitja en arribar a una posició) i vàlvules <b>biestables</b>, el circuit pot fer moviments sense que ningú intervingui.</p>
   <div class="row"><div class="seg" role="group" aria-label="Circuit"><button type="button" data-au="pos" aria-pressed="true">Control de posició</button><button type="button" data-au="temp" aria-pressed="false">Temporitzat</button><button type="button" data-au="osc" aria-pressed="false">Oscil·lador</button></div></div>
   <div class="sim"><svg id="c4-svg" viewBox="0 0 640 380" role="img" aria-label="Circuit automàtic"></svg>
+    <svg id="c4-graph" viewBox="0 0 830 196" role="img" aria-label="Pressió del dipòsit en funció del temps" hidden></svg>
+    <div class="legend" id="c4-leg" hidden><span><i class="lg-air"></i>aire de comandament (x → regulador → dipòsit → pilot)</span><span><i class="lg-sig"></i>aire del senyal (alimentació P → A → pilot de 1.1)</span></div>
     <div class="row" id="c4-ctl"></div>
-    <p class="status" id="c4-st"></p></div>
+    <p class="status" id="c4-st"></p>
+    <p class="frase" id="c4-frase" hidden><b>Frase per a l'alumnat:</b> «El dipòsit prem la vàlvula; l'aire del senyal el posa l'alimentació de la vàlvula.»</p></div>
   <div id="c4-txt"></div>
   <p class="key">Un final de cursa és un «ull» del circuit: quan la tija hi arriba, envia un senyal que fa canviar la vàlvula i comença el moviment següent.</p>
   <p class="est note"><strong>Ara munta'l tu.</strong> Quan ja entenguis aquests circuits, pots provar de muntar-los al simulador lliure <a href="https://www.picuino.com/neumatic/index.html" target="_blank" rel="noopener">Picuino</a>.</p>
@@ -460,6 +469,97 @@ function valve(def,o){const S=o.S||56,n=def.boxes.length,pos=o.pos,a=activeIdx(p
     if(o.hl==='vies'){const yy=q[0]==='t'?o.y-pl-14:o.y+S+pl+(k==='P'?26:22);s+=`<circle cx="${f1(xx)}" cy="${yy}" r="10" fill="var(--hot)"/><text x="${f1(xx)}" y="${yy+4.5}" text-anchor="middle" class="sv-fg" style="fill:#fff;font-size:13px">${i+1}</text>`;}
   });
   return {svg:s,pp,a,portX:k=>o.x+def.rest*S+def.ports[k][1]*S,top:o.y-pl,bot:o.y+S+pl,mid:o.y+S/2,attL:o.x+dx-18,attR:o.x+dx+n*S+18};}
+/* ======================= TEMPORITZADOR (circuit 1.0–1.3) ======================= */
+// Dos aires: comandament (x → regulador → dipòsit → pilot) en blau; senyal (P → A → pilot de 1.1) en verd.
+const SIG='var(--sig)';
+const dot=(x,y,on)=>`<circle cx="${f1(x)}" cy="${f1(y)}" r="3.2" fill="${on?AIR:MUT}"/>`;
+function tline(d,col,op,w,dir,speed,dash){w=w||2.6;let s=`<path d="${d}" fill="none" stroke="${col}" stroke-opacity="${f1(op)}" stroke-width="${w}" stroke-linejoin="round"${dash?' stroke-dasharray="6 4"':''}/>`;
+  if(dir&&!reduce){const off=((-dir*T*30*(speed||1))%14).toFixed(1);s+=`<path d="${d}" fill="none" stroke="var(--surface)" stroke-width="${f1(w*0.5)}" stroke-dasharray="3 11" stroke-dashoffset="${off}" stroke-linecap="round"/>`;}return s;}
+const tk=o=>0.06+0.6*o/100;// constant d'ompliment (1/s) segons l'agulla
+const TSW=3,TDL=0.25;// pressió de commutació (bar) i temps que triga 1.1 a canviar (s)
+function theoP(t,k){const ts=Math.log(2)/k;if(t<=ts+TDL)return 6*(1-Math.exp(-k*t));const p1=6*(1-Math.exp(-k*(ts+TDL)));return p1*Math.exp(-5*(t-ts-TDL));}
+const TSTEPS=[
+  {n:'Buit',t:'<b>1 · Buit.</b> Pressió baixa: el pilot no pot vèncer la molla. La 3/2 està tancada.'},
+  {n:'S\'omple',t:'<b>2 · S\'omple.</b> L\'aire entra a poc a poc per l\'estranguladora i la pressió puja.'},
+  {n:'Commuta',t:'<b>3 · Commuta.</b> La pressió arriba a 3 bar: el pilot empeny i la 3/2 s\'obre. L\'aire de P surt per A cap a 1.1. El dipòsit no deixa sortir aire: només empeny.'},
+  {n:'Es buida',t:'<b>4 · Es buida.</b> 1.1 posa la línia a escapament: el dipòsit es buida de pressa per l\'antiretorn, per la mateixa boca per on ha entrat. El pilot torna amb la molla.'}];
+function stepTimes(k){const ts=Math.log(2)/k;return [0.12*ts,0.6*ts,ts+0.08,ts+TDL+0.22];}
+// estat instantani per a cada pas (sobre la corba teòrica)
+function tSnap(i,k){const ts=Math.log(2)/k,t=stepTimes(k)[i],pt=theoP(t,k),adv=t<ts+TDL;
+  const eOut=Math.min(1,0.4*(ts+TDL)),e=adv?Math.min(1,0.4*t):Math.max(0,eOut-0.45*(t-ts-TDL));
+  return {p12:i===0,v12:i===0?0:1,v11:adv?0:1,t_v11:adv?0:1,e,pt,vt:pt>=TSW?0:1,mv:adv?(e<1?1:0):-1,snap:true,t};}
+function tempFrame(a,dt,snap){let s='';const S=40,k=tk(C4.o);
+  const p12=snap?a.p12:C4.p;if(!snap)a.v12=approach(a.v12,p12?0:1,6,dt);
+  const r12=valve(VDEF.v32nt,{x:40,y:330,S,pos:a.v12,actL:'polsador',actR:'molla',onL:p12,portLen:14,labels:false});const L1=!!r12.pp.A;
+  if(!snap)a.vt=approach(a.vt,a.pt>=TSW?0:1,6,dt);
+  const rt=valve(VDEF.v32nt,{x:660,y:330,S:44,pos:a.vt,actL:[],actR:'molla',portLen:14,labels:false});const R1=!!rt.pp.A;if(!snap)a.aT=R1?(a.aT||0)+dt:0;const flowA=R1&&(a.aT||0)<0.7;
+  if(!snap)biMove(a,'v11',L1,R1,dt);
+  const r11=valve(VDEF.v42,{x:140,y:200,S:50,pos:a.v11,actL:'pilot',actR:'pilot',onL:L1,onR:false,portLen:14,labels:false});
+  const pA=!!r11.pp.A,pB=!!r11.pp.B;let mv;
+  if(!snap){const pr=a.e;a.e=cylMove(a.e,pB,pA,'DE',dt,0.4,0.45);mv=Math.sign(a.e-pr);
+    if(pB){if(a.pt<0.05&&a.tg>0.5&&!a.run){a.tg=0;a.hist=[];}a.run=true;a.pt+=(6-a.pt)*(1-Math.exp(-k*dt));}else a.pt+=(0-a.pt)*(1-Math.exp(-5*dt));
+    if(a.run){a.tg+=dt;if(a.tg<=14)a.hist.push([a.tg,a.pt]);if(!pB&&a.pt<0.03&&a.e<0.01)a.run=false;}}
+  else mv=a.mv;
+  const pt=a.pt,filling=pB&&pt<5.7,empt=!pB&&pt>0.05,op=0.25+0.75*Math.min(1,pt/6);
+  // cilindre i línies
+  const cd={x:120,y:40,L:170,H:38,type:'DE'},c=cylL(Object.assign({ext:a.e,post:pB,ant:pA},cd));
+  s+=c.svg+pipesDE(r11,c,pA,pB,mv,170,158);
+  s+=pilot(`M${f1(r12.portX('A'))},${r12.top} L${f1(r12.portX('A'))},${r11.mid} L${f1(r11.attL)},${r11.mid}`,L1,L1?1:0);
+  // ---- temporitzador 1.3 ----
+  s+=`<rect x="330" y="80" width="490" height="360" rx="8" fill="none" stroke="${MUT}" stroke-dasharray="6 4"/>`+lbl(342,432,'1.3 · temporitzador');
+  // entrada x des de la línia de la cambra posterior
+  const xOn=pB||empt,xOp=pB?1:op;
+  s+=tline(`M${f1(c.post)},120 L390,120`,xOn?AIR:MUT,xOn?xOp:1,2.6,filling?1:(empt?-1:0),1)+dot(c.post,120,xOn)+lbl(344,114,'x');
+  // regulador: estranguladora (dalt) i antiretorn (baix)
+  s+=tline('M390,120 L390,104 L470,104 L470,120',filling?AIR:(xOn?AIR:MUT),filling||xOn?xOp:1,2.2,filling?1:0,0.4+C4.o/100);
+  s+=tline('M470,120 L470,136 L390,136 L390,120',empt?AIR:(xOn?AIR:MUT),empt?op:(xOn?xOp:1),2.2,empt?1:0,1.6);
+  s+=`<path d="M420,94 Q430,104 420,114" fill="none" stroke="${FG}" stroke-width="1.5"/><path d="M440,94 Q430,104 440,114" fill="none" stroke="${FG}" stroke-width="1.5"/>`+arrow(418,116,442,90,FG,1.3,6);
+  s+=`<path d="M420,127 L434,136 L420,145" fill="none" stroke="${FG}" stroke-width="1.6"/><circle cx="${empt?422:428}" cy="136" r="5.5" fill="var(--surface)" stroke="${FG}" stroke-width="1.5"/>`;
+  s+=txt(430,160,'estranguladora + antiretorn','sv-mut');
+  // y: sortida del regulador, cap al dipòsit
+  s+=tline('M470,120 L540,120',pt>0.05||filling?AIR:MUT,pt>0.05||filling?op:1,2.6,filling?1:(empt?-1:0),1)+lbl(500,113,'y');
+  // dipòsit en derivació (una sola boca)
+  s+=tline('M540,120 L540,178',pt>0.05||filling?AIR:MUT,pt>0.05||filling?op:1,2.6,filling?1:(empt?-1:0),1)+dot(540,120,pt>0.05||filling);
+  const fill=Math.min(1,pt/6);s+=`<rect x="490" y="178" width="100" height="70" rx="20" fill="var(--empty)" stroke="${FG}" stroke-width="1.8"/><clipPath id="tk3"><rect x="490" y="178" width="100" height="70" rx="20"/></clipPath><rect x="490" y="${f1(248-70*fill)}" width="100" height="${f1(70*fill)}" fill="var(--air)" fill-opacity="${f1(0.15+0.5*fill)}" clip-path="url(#tk3)"/>`;
+  s+=txt(540,218,fmt(+pt.toFixed(1))+' bar','sv-num')+txt(540,266,'dipòsit (una sola boca)','sv-mut');
+  // línia del dipòsit al pilot (pressió, sense moviment)
+  const xl=660+(1-a.vt)*44,pcx=xl-62;
+  s+=tline(`M540,120 L610,120 L610,352 L${f1(pcx)},352`,pt>0.05?AIR:MUT,pt>0.05?op:1,2.2,0,0,true);
+  // pilot: petit cilindre de simple efecte (èmbol + molla)
+  const d=Math.min(1,pt/TSW)*20,px=pcx+6+d;
+  s+=`<rect x="${f1(pcx)}" y="338" width="62" height="28" rx="3" fill="var(--surface)" stroke="${FG}" stroke-width="1.6"/>`;
+  s+=`<rect x="${f1(pcx+1)}" y="339" width="${f1(px-pcx-1)}" height="26" fill="var(--air)" fill-opacity="${f1(pt>0.05?0.12+0.5*Math.min(1,pt/6):0)}"/>`;
+  s+=spring(px+6,xl-2,352,14,5,'var(--steel)')+`<rect x="${f1(px)}" y="340" width="6" height="24" fill="var(--piston)" stroke="${FG}" stroke-width="1.2"/><line x1="${f1(px+6)}" y1="352" x2="${f1(xl)}" y2="352" stroke="var(--steel)" stroke-width="3"/>`;
+  s+=txt(648,402,'La pressió del dipòsit empeny el pilot','sv-mut','end')+(pt>=TSW?txt(f1(pcx+31),384,'fi de cursa','sv-num').replace('class="sv-num"','class="sv-num" style="fill:var(--hot);font-weight:600"'):'');
+  // vàlvula 3/2 amb alimentació P (aire del senyal, verd)
+  s+=(flowA?rt.svg:rt.svg.replace(/<path[^>]*stroke-dashoffset[^>]*\/>/g,'')).split('var(--air-soft)').join('var(--sig-soft)').split('var(--air)').join(SIG)+lbl(660,324,'3/2','start');
+  s+=txt(f1(rt.portX('P')-12),420,'P','sv-num','end');
+  // senyal A → pilot dret de 1.1 (verd)
+  const ax=rt.portX('A');
+  s+=tline(`M${f1(ax)},${rt.top} L${f1(ax)},292 L322,292 L322,${r11.mid} L${f1(r11.attR)},${r11.mid}`,R1?SIG:MUT,1,R1?2.6:1.8,flowA?1:0,1,true)+txt(f1(ax+8),308,'A','sv-num','start');
+  s+=r11.svg+r12.svg;
+  const xr=r11.attR-18;s+=`<rect x="${f1(xr)}" y="${r11.mid-6}" width="18" height="12" fill="${R1?'var(--sig-soft)':'var(--surface)'}" stroke="${FG}" stroke-width="1.5"/><path d="M${f1(xr+18)},${r11.mid-6} L${f1(xr+11)},${r11.mid} L${f1(xr+18)},${r11.mid+6}" fill="none" stroke="${R1?SIG:FG}" stroke-width="1.5"/>`;
+  s+=lbl(120,34,'1.0')+lbl(140,194,'1.1')+lbl(40,324,'1.2');
+  let st;
+  if(snap)st='';
+  else st=p12&&a.e<1&&pB?'<b>1.2:</b> 1.1 canvia i el cilindre avança. La mateixa línia comença a omplir el dipòsit.':
+    (pB?(pt<TSW?`<b>S'omple:</b> l'aire entra pel regulador i el dipòsit puja a ${fmt(+pt.toFixed(1))} bar. El pilot encara no pot vèncer la molla.`:'<b>Commuta:</b> el pilot ha fet fi de cursa i la 3/2 s\'ha obert. L\'aire verd de P passa per A i pilota 1.1.'+(filling?'':' El dipòsit ja és a la pressió de la línia: no hi entra més aire, però continua empenyent el pilot.')):
+    (empt?'<b>Es buida:</b> 1.1 ha posat la línia a escapament. El dipòsit es buida de pressa per l\'antiretorn i el cilindre retrocedeix.':(a.e>0.01?'<b>Retrocés:</b> el cilindre torna sol.':'Fes un toc a 1.2. Canvia l\'obertura de l\'agulla i mira quant temps es queda la tija fora.')));
+  return {svg:s,st};}
+function tempGraph(a,snapT){const k=tk(C4.o),ts=Math.log(2)/k,tmax=Math.max(6,Math.ceil(ts+2.5));
+  const gx=70,gy=170,gw=700,gh=130,X=t=>gx+gw*Math.min(t,tmax)/tmax,Y=p=>gy-gh*p/6;let h='';
+  h+=`<line x1="${gx}" y1="${gy}" x2="${gx+gw}" y2="${gy}" stroke="${FG}" stroke-width="1.4"/><line x1="${gx}" y1="${gy}" x2="${gx}" y2="${gy-gh-8}" stroke="${FG}" stroke-width="1.4"/>`;
+  for(let t=0;t<=tmax;t+=1)h+=`<line x1="${f1(X(t))}" y1="${gy}" x2="${f1(X(t))}" y2="${gy+4}" stroke="${FG}"/>`+txt(f1(X(t)),gy+17,String(t),'sv-num');
+  [0,3,6].forEach(p=>h+=txt(gx-8,f1(Y(p)+4),String(p),'sv-num','end'));
+  h+=txt(gx+gw+8,gy+5,'t (s)','sv-mut','start')+txt(gx-6,gy-gh-14,'p del dipòsit (bar)','sv-mut','start');
+  h+=`<line x1="${gx}" y1="${f1(Y(TSW))}" x2="${gx+gw}" y2="${f1(Y(TSW))}" stroke="var(--hot)" stroke-dasharray="5 4"/>`+txt(gx+gw-4,f1(Y(TSW)-6),'commutació: 3 bar','sv-mut','end');
+  let pr='';for(let t=0;t<=tmax+0.001;t+=0.05)pr+=(pr?' L':'M')+f1(X(t))+','+f1(Y(theoP(t,k)));
+  h+=`<path d="${pr}" fill="none" stroke="${AIR}" stroke-width="1.6" stroke-dasharray="3 4" opacity=".75"/>`;
+  h+=`<line x1="${f1(X(ts))}" y1="${f1(Y(TSW))}" x2="${f1(X(ts))}" y2="${gy}" stroke="var(--hot)" stroke-width="1.4"/>`+txt(f1(X(ts)+6),gy-gh+4,'retard ≈ '+fmt(+ts.toFixed(1))+' s','sv-fg','start');
+  const hh=a.hist.filter(q=>q[0]<=tmax);if(snapT==null&&hh.length>1)h+=`<path d="${hh.map((q,i)=>(i?'L':'M')+f1(X(q[0]))+','+f1(Y(q[1]))).join(' ')}" fill="none" stroke="${AIR}" stroke-width="3"/>`;
+  if(snapT!=null)h+=`<circle cx="${f1(X(snapT))}" cy="${f1(Y(theoP(snapT,k)))}" r="7" fill="var(--hot)" stroke="var(--surface)" stroke-width="2"/>`;
+  else if(a.run&&a.tg<=tmax)h+=`<circle cx="${f1(X(a.tg))}" cy="${f1(Y(a.pt))}" r="5" fill="${AIR}"/>`;
+  return h;}
 
 /* ---------- utilitats de circuit ---------- */
 const SUP={'-':'⁻','0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹'};
@@ -576,22 +676,27 @@ function stepC3(dt){const S=40;let s='';
   $('c3-st').innerHTML=st;}
 
 /* ======================= 4 · AUTOMÀTICS ======================= */
-const C4={k:'pos',p:false,m:false,a:false,o:40};
-const A={pos:{v12:1,v13:1,v11:1,e1:0,w12:1,w13:1,w11:1,e2:0},temp:{v12:1,v11:1,e:0,pt:0,vt:0,tm:0},osc:{v15:1,v16:1,v14:1,v12:1,v13:1,v11:1,e:0,n:0,last:0}};
+const C4={k:'pos',p:false,m:false,a:false,o:30,tmode:'sim',step:0};
+const A={pos:{v12:1,v13:1,v11:1,e1:0,w12:1,w13:1,w11:1,e2:0},temp:{v12:1,v11:1,e:0,pt:0,vt:1,tg:0,hist:[],run:false},osc:{v15:1,v16:1,v14:1,v12:1,v13:1,v11:1,e:0,n:0,last:0}};
 window.__dbg={A,C4};
-function c4Ctl(){const c=$('c4-ctl');C4.p=C4.m=C4.a=false;
+function c4Ctl(){const c=$('c4-ctl');C4.p=C4.hp=C4.m=C4.a=false;C4.pT=0;
   if(C4.k==='osc'){c.innerHTML='<button class="btn hold" type="button" id="c4-m" aria-pressed="false">Marxa (1.5)</button><button class="btn hold" type="button" id="c4-a" aria-pressed="false">Aturada (1.6)</button>';holdBtn($('c4-m'),v=>C4.m=v);holdBtn($('c4-a'),v=>C4.a=v);}
-  else{c.innerHTML='<button class="btn hold" type="button" id="c4-p" aria-pressed="false">Mantén premut 1.2</button>'+(C4.k==='temp'?`<label class="ctl" style="flex:1 1 380px;grid-template-columns:auto minmax(140px,1fr) 70px"><span>Obertura de l'agulla</span><input type="range" id="c4-o" min="10" max="100" step="1" value="${C4.o}"><output id="c4-oo">${C4.o} %</output></label>`:'');
-    holdBtn($('c4-p'),v=>C4.p=v);if(C4.k==='temp')$('c4-o').addEventListener('input',e=>{C4.o=+e.target.value;$('c4-oo').textContent=C4.o+' %';});}
-  $('c4-svg').setAttribute('viewBox',C4.k==='osc'?'0 0 640 410':'0 0 640 370');
+  else{c.innerHTML='<button class="btn hold" type="button" id="c4-p" aria-pressed="false">Prem 1.2</button>'+(C4.k==='temp'?`<label class="ctl" style="flex:1 1 380px;grid-template-columns:auto minmax(140px,1fr) 70px"><span>Obertura de l'agulla</span><input type="range" id="c4-o" min="10" max="100" step="1" value="${C4.o}"><output id="c4-oo">${C4.o} %</output></label>`:'');
+    if(C4.k==='temp')c.innerHTML+=`<div class="row tstep"><div class="seg" role="group" aria-label="Mode"><button type="button" data-tm="sim" aria-pressed="${C4.tmode==='sim'}">Simulació</button><button type="button" data-tm="pas" aria-pressed="${C4.tmode==='pas'}">Pas a pas</button></div><button class="btn" type="button" id="c4-prev">◀ Anterior</button><span class="pill info" id="c4-sn"></span><button class="btn primary" type="button" id="c4-next">Següent ▶</button></div>`;
+    holdBtn($('c4-p'),v=>{C4.hp=v;if(v)C4.pT=0.5;});
+    if(C4.k==='temp'){$('c4-o').addEventListener('input',e=>{C4.o=+e.target.value;$('c4-oo').textContent=C4.o+' %';});
+      segGroup('[data-tm]','tm',v=>{C4.tmode=v;tUI();});$('c4-prev').addEventListener('click',()=>{C4.step=Math.max(0,C4.step-1);tUI();});$('c4-next').addEventListener('click',()=>{C4.step=Math.min(3,C4.step+1);tUI();});tUI();}}
+  const isT=C4.k==='temp';['c4-graph','c4-leg','c4-frase'].forEach(id=>{const el=$(id);if(isT)el.removeAttribute('hidden');else el.setAttribute('hidden','');});
+  $('c4-svg').setAttribute('viewBox',C4.k==='osc'?'0 0 640 410':(C4.k==='temp'?'0 0 830 446':'0 0 640 370'));
   $('c4-txt').innerHTML=C4TXT[C4.k];}
 const C4TXT={
   pos:'<div class="cards"><div class="card"><h4>Com funciona</h4><p>En prémer el polsador 1.2, s\'actua sobre un pilotatge del distribuïdor 1.1 i la tija avança fins que toca el final de cursa 1.3 (accionat per rodet). Aquest dona un senyal a l\'altre pilotatge i el cilindre retrocedeix sol fins a la posició inicial.</p></div><div class="card"><h4>Per què biestable</h4><p>El distribuïdor 1.1 té un pilotatge a cada costat i recorda l\'últim senyal. Per això n\'hi ha prou amb un toc curt a 1.2: el cilindre fa tot el recorregut encara que deixis anar el polsador.</p></div></div>',
-  temp:'<div class="cards"><div class="card"><h4>Com funciona</h4><p>En prémer 1.2, el cilindre avança. La cambra posterior també envia aire al temporitzador 1.3: el seu dipòsit s\'omple a poc a poc i, passat un temps, 1.3 pilota l\'altre costat de 1.1 i el cilindre retrocedeix sol.</p></div><div class="card"><h4>El retard</h4><p>L\'agulla de la reguladora del temporitzador fixa quant triga a omplir-se el dipòsit: com més tancada, més temps es queda la tija fora.</p></div></div>',
+  temp:'<div class="cards"><div class="card"><h4>Com funciona</h4><p>En prémer 1.2, el cilindre avança. La línia de la cambra posterior també entra al temporitzador 1.3 (x): el dipòsit s\'omple a poc a poc i la seva pressió empeny el pilot de la 3/2. A 3 bar, la 3/2 s\'obre i l\'aire de la seva alimentació P surt per A i pilota l\'altre costat de 1.1: el cilindre retrocedeix sol.</p></div><div class="card"><h4>El retard</h4><p>L\'agulla de la reguladora del temporitzador fixa quant triga a omplir-se el dipòsit: com més tancada, més temps es queda la tija fora.</p></div></div>',
   osc:'<div class="cards"><div class="card"><h4>Com funciona</h4><p>Marxa (1.5) activa la vàlvula de memòria 1.4, que dona aire al final de cursa 1.2. Amb la tija a dins, 1.2 està trepitjat i fa avançar el cilindre; en arribar al final, 1.3 el fa retrocedir; en tornar, 1.2 el torna a fer avançar… És un vaivé continu.</p></div><div class="card"><h4>L\'aturada</h4><p>Aturada (1.6) canvia 1.4 i deixa 1.2 sense aire. El cilindre acaba el cicle que està fent, retrocedeix i ja no torna a avançar.</p></div></div>'};
+function tUI(){const pas=C4.tmode==='pas';$('c4-prev').disabled=!pas||C4.step===0;$('c4-next').disabled=!pas||C4.step===3;$('c4-p').disabled=pas;const sn=$('c4-sn');sn.textContent=pas?`Pas ${C4.step+1} de 4 · ${TSTEPS[C4.step].n}`:'';sn.style.visibility=pas?'visible':'hidden';}
 segGroup('[data-au]','au',v=>{C4.k=v;c4Ctl();});c4Ctl();
 function pipesDE(r,c,pA,pB,mv,yA,yB){const xA=r.portX('A'),xB=r.portX('B');return pipe(`M${f1(xA)},${r.top} L${f1(xA)},${yA} L${f1(c.ant)},${yA} L${f1(c.ant)},${c.bot}`,pA,pA&&mv<0?1:0,3)+pipe(`M${f1(xB)},${r.top} L${f1(xB)},${yB} L${f1(c.post)},${yB} L${f1(c.post)},${c.bot}`,pB,pB&&mv>0?1:0,3);}
-function stepC4(dt){let s='',st='';const S=40;
+function stepC4(dt){let s='',st='';const S=40;C4.pT=Math.max(0,(C4.pT||0)-dt);C4.p=!!C4.hp||C4.pT>0;
   if(C4.k==='pos'){const a=A.pos,co={x:180,y:46,L:130,H:36,type:'SE'},cd={x:500,y:46,L:130,H:36,type:'DE'};
     a.v12=approach(a.v12,C4.p?0:1,6,dt);const r12=valve(VDEF.v32nt,{x:40,y:250,S,pos:a.v12,actL:'polsador',actR:'molla',onL:C4.p,portLen:14,labels:false});
     const s13=a.e1>0.97;a.v13=approach(a.v13,s13?0:1,6,dt);const r13=valve(VDEF.v32nt,{x:250,y:250,S,pos:a.v13,actL:'rodet',actR:'molla',onL:s13,portLen:14,labels:false});
@@ -609,22 +714,8 @@ function stepC4(dt){let s='',st='';const S=40;
     s+=endMark(rodEndAt(cd,1),16,'1.3',t13)+lbl(500,40,'1.0')+lbl(466,145,'1.1')+lbl(380,245,'1.2')+lbl(530,245,'1.3')+txt(380,360,'Doble efecte','sv-mut','start');
     st=C4.p?(a.e1>0.97||a.e2>0.97?'<b>Final de cursa 1.3 trepitjat:</b> envia senyal a l\'altre pilotatge. Si encara prems 1.2, els dos senyals s\'anul·len; deixa\'l anar.':'<b>1.2 premut:</b> pilota 1.1 i els cilindres avancen.'):
       (s13||t13?'<b>1.3 trepitjat:</b> 1.1 canvia i el cilindre retrocedeix sol.':(a.e1>0.01||a.e2>0.01?'<b>El cilindre continua sol:</b> 1.1 és biestable i recorda el senyal de 1.2.':'Fes un toc curt a 1.2: el cilindre fa tot el recorregut sol.'));}
-  else if(C4.k==='temp'){const a=A.temp,cd={x:330,y:46,L:170,H:38,type:'DE'};
-    a.v12=approach(a.v12,C4.p?0:1,6,dt);const r12=valve(VDEF.v32nt,{x:170,y:290,S,pos:a.v12,actL:'polsador',actR:'molla',onL:C4.p,portLen:14,labels:false});
-    const k=0.06+0.6*C4.o/100,L1=!!r12.pp.A;
-    const sw=a.pt>=3;a.vt=approach(a.vt,sw?1:0,6,dt);const rt=valve(VDEF.v32ntR,{x:520,y:300,S:36,pos:a.vt,actR:'pilot',actL:'molla',onR:sw,portLen:12,labels:false});
-    const R1=!!rt.pp.A;biMove(a,'v11',L1,R1,dt);const r11=valve(VDEF.v42,{x:330,y:190,S:50,pos:a.v11,actL:'pilot',actR:'pilot',onL:L1,onR:R1,portLen:14,labels:false});
-    const pA=!!r11.pp.A,pB=!!r11.pp.B,pr=a.e;a.e=cylMove(a.e,pB,pA,'DE',dt,0.4,0.45);const mv=Math.sign(a.e-pr);
-    if(pB){a.pt+=(6-a.pt)*(1-Math.exp(-k*dt));a.tm+=dt;}else{a.pt+=(0-a.pt)*(1-Math.exp(-5*dt));a.tm=0;}
-    const c=cylL(Object.assign({ext:a.e,post:pB,ant:pA},cd));s+=c.svg+pipesDE(r11,c,pA,pB,mv,160,150)+r11.svg+r12.svg;
-    s+=pilot(`M${f1(r12.portX('A'))},${r12.top} L${f1(r12.portX('A'))},${r11.mid} L${f1(r11.attL)},${r11.mid}`,L1,L1?1:0);
-    // temporitzador 1.3
-    s+=`<rect x="508" y="132" width="126" height="228" rx="6" fill="none" stroke="${MUT}" stroke-dasharray="5 4"/>`+lbl(626,150,'1.3','end');
-    s+=pipe(`M${f1(c.post)},118 L560,118 L560,${135}`,pB,pB&&a.pt<5.9?1:0,2.4)+regSym(560,170,true,pB?'thr':(a.pt>0.05?'chk':null),pB,0.4+C4.o/100)+pipe('M560,206 L560,222',pB||a.pt>0.05,0,2.4);
-    s+=`<rect x="526" y="222" width="68" height="42" rx="18" fill="var(--empty)" stroke="${FG}" stroke-width="1.6"/><clipPath id="tk2"><rect x="526" y="222" width="68" height="42" rx="18"/></clipPath><rect x="526" y="${f1(264-42*a.pt/6)}" width="68" height="${f1(42*a.pt/6)}" fill="var(--air)" fill-opacity="${f1(0.15+0.5*a.pt/6)}" clip-path="url(#tk2)"/>`+txt(560,247,fmt(a.pt)+' bar','sv-num');
-    s+=pilot(`M594,243 L622,243 L622,${rt.mid} L${f1(rt.attR)},${rt.mid}`,a.pt>0.05,0)+rt.svg+pilot(`M${f1(rt.portX('A'))},${rt.top} L${f1(rt.portX('A'))},272 L505,272 L505,${r11.mid} L${f1(r11.attR)},${r11.mid}`,R1,R1?1:0);
-    s+=lbl(330,40,'1.0')+lbl(330,185,'1.1')+lbl(170,285,'1.2');
-    st=C4.p&&a.e<1?'<b>1.2:</b> 1.1 canvia i el cilindre avança.':(pB?(a.pt<3?`<b>Esperant:</b> el dipòsit del temporitzador s'omple (${fmt(a.pt)} bar). A 3 bar farà canviar 1.1.`:'<b>Temps complert:</b> 1.3 pilota 1.1 i el cilindre retrocedeix.'):(a.e>0.01?'<b>Retrocés:</b> el dipòsit es buida de pressa per l\'antiretorn.':'Fes un toc a 1.2. Canvia l\'obertura de l\'agulla i mira quant temps es queda la tija fora.'));}
+  else if(C4.k==='temp'){if(C4.tmode==='pas'){const k=tk(C4.o),sn=tSnap(C4.step,k);const r=tempFrame(sn,0,true);s=r.svg;st=TSTEPS[C4.step].t;$('c4-graph').innerHTML=tempGraph(A.temp,sn.t);}
+    else{const r=tempFrame(A.temp,dt,false);s=r.svg;st=r.st;$('c4-graph').innerHTML=tempGraph(A.temp,null);}}
   else{const a=A.osc,cd={x:330,y:46,L:170,H:38,type:'DE'};
     a.v15=approach(a.v15,C4.m?0:1,6,dt);const r15=valve(VDEF.v32nt,{x:30,y:340,S,pos:a.v15,actL:'polsador',actR:'molla',onL:C4.m,portLen:14,labels:false});
     a.v16=approach(a.v16,C4.a?0:1,6,dt);const r16=valve(VDEF.v32nt,{x:300,y:340,S,pos:a.v16,actL:'polsador',actR:'molla',onL:C4.a,portLen:14,labels:false});
@@ -666,7 +757,7 @@ show((location.hash||'').slice(1),false);
     var a=d.createElement('a');a.className='btn';a.href='https://tecnolyd.github.io/artefactes/pneumatica-circuits.html';a.target='_blank';a.rel='noopener';a.textContent='⛶ Obre a pantalla completa';
     var seg2=d.querySelector('.top .seg');if(seg2)seg2.parentNode.insertBefore(a,seg2);
   }
-  var br=d.querySelector('.brand');if(br){var v=d.createElement('span');v.className='ver';v.textContent='v5';br.appendChild(v);}
+  var br=d.querySelector('.brand');if(br){var v=d.createElement('span');v.className='ver';v.textContent='v6';br.appendChild(v);}
 })();
 </script>
 
